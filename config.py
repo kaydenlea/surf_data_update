@@ -82,7 +82,28 @@ NOAA_BASE_URLS = [
     "https://nomads.ncep.noaa.gov/dods/wave/gfswave",
 ]
 
+# NOAA Variable Mapping (must match dataset variable names)
+NOAA_VARS = {
+    "primary_swell_height": "swell_2",      # 2nd sequence swell (usually dominant)
+    "primary_swell_period": "swper_2",
+    "primary_swell_direction": "swdir_2",
+    "secondary_swell_height": "swell_3",    # 3rd sequence swell
+    "secondary_swell_period": "swper_3",
+    "secondary_swell_direction": "swdir_3",
+    "tertiary_swell_height": "swell_1",     # 1st sequence swell (tertiary for us)
+    "tertiary_swell_period": "swper_1",
+    "tertiary_swell_direction": "swdir_1",
+    "surf_sig_height": "htsgwsfc",          # Significant wave height
+    "wind_speed": "windsfc",                # Wind speed m/s
+    "wind_direction": "wdirsfc",            # Wind direction degrees
+    "primary_wave_period": "perpwsfc",      # Primary wave period
+    "primary_wave_direction": "dirpwsfc",   # Primary wave direction
+}
+
+# Optional grid search parameters (maintain parity with original project)
+LAT_OFFSETS = [-0.05, 0, 0.05]
+LON_OFFSETS = [-0.1, 0, 0.1]
+
 OPENMETEO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 OPENMETEO_MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
 VISUAL_CROSSING_BASE = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
-
