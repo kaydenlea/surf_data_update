@@ -24,7 +24,7 @@ from utils import (
     chunk_iter, safe_float, meters_to_feet, api_request_with_retry
 )
 from database import (
-    fetch_all_beaches, upsert_tide_data
+    fetch_all_beaches, upsert_tide_data, delete_all_tide_data
 )
 
 import pytz
@@ -118,10 +118,11 @@ def main():
     if not beaches:
         logger.error("TIDES: No beaches found, aborting")
         return False
+    # Clear existing tide data for a clean daily refresh
+    delete_all_tide_data()
     _ = update_tides_for_beaches(beaches)
     return True
 
 if __name__ == "__main__":
     ok = main()
     raise SystemExit(0 if ok else 1)
-

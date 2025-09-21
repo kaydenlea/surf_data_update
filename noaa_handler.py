@@ -770,21 +770,20 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         if ts.tzinfo is None:
             ts = ts.tz_localize("UTC")
         
-        # FIXED: Map NOAA 3-hour intervals to clean Pacific 3-hour intervals
-        utc_hour = ts.hour
-        
-        # NOAA gives us 00Z, 03Z, 06Z, 09Z, 12Z, 15Z, 18Z, 21Z
-        # Map these to Pacific 00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00
-        pacific_intervals = [0, 3, 6, 9, 12, 15, 18, 21]
-        interval_index = (utc_hour // 3) % 8
-        target_pacific_hour = pacific_intervals[interval_index]
-        
-        # Create clean Pacific timestamp
-        pacific_date = ts.tz_convert("America/Los_Angeles").date()
-        clean_pacific_time = pd.Timestamp.combine(
-            pacific_date,
-            pd.Timestamp(f"{target_pacific_hour:02d}:00:00").time()
-        ).tz_localize("America/Los_Angeles")
+        # Align to the nearest 3-hour boundary in Pacific time (midnight-anchored)
+        local = ts.tz_convert("America/Los_Angeles")
+        hour = int(local.strftime('%H'))
+        remainder = hour % 3
+        lower = hour - remainder
+        upper = lower + 3
+        target_hour = lower if (hour - lower) <= (upper - hour) else upper
+        if target_hour >= 24:
+            target_hour = 0
+            local = (local + pd.Timedelta(days=1))
+        clean_pacific_time = pd.Timestamp(
+            year=local.year, month=local.month, day=local.day,
+            hour=target_hour, minute=0, second=0, tz="America/Los_Angeles"
+        )
         
         # Use the clean timestamp
         final_timestamp = clean_pacific_time.isoformat()

@@ -222,6 +222,39 @@ def upsert_daily_conditions(records, table_name="daily_county_conditions"):
     logger.info(f"   Successfully upserted {total_inserted} daily records to {table_name}")
     return total_inserted
 
+def upsert_tide_data(records, table_name="beach_tides_hourly"):
+    """Upsert tide records (hourly) to database in chunks."""
+    logger.info(f"   Uploading {len(records)} tide records to {table_name}...")
+    total_inserted = 0
+
+    if not records:
+        logger.warning(f"   No records to upsert to {table_name}")
+        return 0
+
+    for chunk in chunk_iter(records, UPSERT_CHUNK):
+        try:
+            supabase.table(table_name).upsert(
+                chunk,
+                on_conflict="beach_id,timestamp"
+            ).execute()
+            total_inserted += len(chunk)
+            logger.debug(f"   Upserted chunk of {len(chunk)} tide records")
+        except Exception as e:
+            logger.error(f"ERROR: Error upserting {table_name} chunk: {e}")
+
+    logger.info(f"   Successfully upserted {total_inserted} tide records to {table_name}")
+    return total_inserted
+
+def delete_all_tide_data(table_name="beach_tides_hourly"):
+    """Delete all existing tide records (safe coarse delete)."""
+    try:
+        supabase.table(table_name).delete().neq("beach_id", None).execute()
+        logger.info(f"   Deleted all rows from {table_name}")
+        return True
+    except Exception as e:
+        logger.error(f"ERROR: Failed to delete existing tide data from {table_name}: {e}")
+        return False
+
 def get_beach_by_id(beach_id):
     """Get a specific beach by ID."""
     try:
