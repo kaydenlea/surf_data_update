@@ -118,8 +118,10 @@ def main():
     if not beaches:
         logger.error("TIDES: No beaches found, aborting")
         return False
-    # Clear existing tide data for a clean daily refresh
-    delete_all_tide_data()
+    # Optional delete can be controlled via env; default to no-delete to avoid downtime
+    import os
+    if os.environ.get("TIDE_DELETE", "none") == "all":
+        delete_all_tide_data()
     _ = update_tides_for_beaches(beaches)
     return True
 

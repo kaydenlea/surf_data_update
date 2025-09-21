@@ -2,8 +2,8 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Runs daily at 06:05 America/Los_Angeles ≈ 14:05 UTC (adjust for DST if needed)
-    - cron: "05 14 * * *"
+    # Run hourly and gate to local midnight to handle DST cleanly
+    - cron: "0 * * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -11,12 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
+      UPSERT_ONLY: "1"
+      TIDE_DELETE: "none"
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       VC_API_KEY: ${{ secrets.VC_API_KEY }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Guard – only continue at 00:05 America/Los_Angeles
+        run: |
+          NOW=$(TZ=America/Los_Angeles date +"%H%M")
+          if [ "$NOW" != "0005" ]; then
+            echo "Not 00:05 PT (NOW=$NOW); exiting successfully."
+            exit 0
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
