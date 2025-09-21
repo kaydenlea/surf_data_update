@@ -832,6 +832,7 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         wind_direction = safe_float(grid_data['wind_direction_deg'][i])
         
         # Calculate wave energy using CDIP spectral data if available, otherwise fallback
+        wave_energy_kj = None
         if cdip_data and 'wave_energy_density' in cdip_data and cdip_data['wave_energy_density'] is not None:
             # Find the matching time index in CDIP data
             try:
@@ -841,28 +842,19 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
                     if abs((cdip_time - pacific_time_for_match).total_seconds()) < 1800:  # Within 30 minutes
                         cdip_time_idx = idx
                         break
-                
+
                 if cdip_time_idx is not None and cdip_idx is not None:
                     cdip_wave_energy = calculate_cdip_wave_energy(cdip_data, cdip_idx, cdip_time_idx)
                     if cdip_wave_energy is not None:
                         wave_energy_kj = cdip_wave_energy
-                        logger.debug(f"   Using CDIP spectral energy: {wave_energy_kj:.1f} kJ/m²")
-                    else:
-                        # Fallback to calculated energy from primary swell
-                        wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
-                else:
-                    # Fallback to calculated energy from primary swell
-                    wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
+                        logger.debug(f"   Using CDIP spectral energy: {wave_energy_kj:.1f} kJ/ft")
             except Exception as e:
                 logger.debug(f"   Error using CDIP spectral energy, falling back: {e}")
-                wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
-        else:
+
+        if wave_energy_kj is None:
             # Standard calculation using PRIMARY (highest ranked) swell
             wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
-        
-        # Override to ensure Surf-Forecast-like index scale consistently
-        wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
-        
+
         record = {
             "beach_id": beach_id,
             "timestamp": final_timestamp,  # Clean Pacific intervals: 00:00, 03:00, 06:00, etc.
