@@ -2,7 +2,7 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Run hourly and gate to local midnight to handle DST cleanly
+    # Run hourly and gate to local 00:30 to handle DST cleanly
     - cron: "0 * * * *"
   workflow_dispatch: {}
 
@@ -20,11 +20,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Guard – only continue at 00:05 America/Los_Angeles
+      - name: Guard – only continue at 00:30 America/Los_Angeles
         run: |
           NOW=$(TZ=America/Los_Angeles date +"%H%M")
-          if [ "$NOW" != "0005" ]; then
-            echo "Not 00:05 PT (NOW=$NOW); exiting successfully."
+          if [ "$NOW" != "0030" ]; then
+            echo "Not 00:30 PT (NOW=$NOW); exiting successfully."
             exit 0
           fi
 
