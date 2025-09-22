@@ -255,6 +255,16 @@ def delete_all_tide_data(table_name="beach_tides_hourly"):
         logger.error(f"ERROR: Failed to delete existing tide data from {table_name}: {e}")
         return False
 
+def delete_tide_data_before(cutoff_iso: str, table_name="beach_tides_hourly"):
+    """Delete tide records older than the given ISO8601 timestamp."""
+    try:
+        supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
+        logger.info(f"   Deleted tide rows before {cutoff_iso}")
+        return True
+    except Exception as e:
+        logger.error(f"ERROR: Failed to delete outdated tide data before {cutoff_iso}: {e}")
+        return False
+
 def get_beach_by_id(beach_id):
     """Get a specific beach by ID."""
     try:

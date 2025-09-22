@@ -24,7 +24,8 @@ from utils import (
     chunk_iter, safe_float, meters_to_feet, api_request_with_retry
 )
 from database import (
-    fetch_all_beaches, upsert_tide_data, delete_all_tide_data
+    fetch_all_beaches, upsert_tide_data, delete_all_tide_data,
+    delete_tide_data_before
 )
 
 import pytz
@@ -118,10 +119,14 @@ def main():
     if not beaches:
         logger.error("TIDES: No beaches found, aborting")
         return False
-    # Optional delete can be controlled via env; default to no-delete to avoid downtime
+    # Optional delete can be controlled via env; default removes rows before today's midnight
     import os
-    if os.environ.get("TIDE_DELETE", "none") == "all":
+    tide_delete_mode = os.environ.get("TIDE_DELETE", "outdated")
+    if tide_delete_mode == "all":
         delete_all_tide_data()
+    else:
+        cutoff = pacific_midnight_today().isoformat()
+        delete_tide_data_before(cutoff)
     _ = update_tides_for_beaches(beaches)
     return True
 
