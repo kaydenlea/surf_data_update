@@ -2,8 +2,9 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Run hourly and gate to local 00:30 to handle DST cleanly
-    - cron: "0 * * * *"
+    # Run once daily at 00:30 America/Los_Angeles
+    - cron: "30 0 * * *"
+      timezone: America/Los_Angeles
   workflow_dispatch: {}
 
 jobs:
@@ -20,7 +21,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Guard – only continue at 00:30 America/Los_Angeles
+      - name: Guard - only continue at 00:30 America/Los_Angeles
         run: |
           NOW=$(TZ=America/Los_Angeles date +"%H%M")
           if [ "$NOW" != "0030" ]; then
