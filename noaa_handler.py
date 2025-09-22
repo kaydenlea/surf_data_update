@@ -442,12 +442,13 @@ def get_noaa_dataset_url():
     logger.info(f"   Current PST time: {now_pst.strftime('%Y-%m-%d %H:%M:%S %Z')}")
     logger.info(f"   Using dataset date: {today_str} (UTC-based for NOAA compatibility)")
     
-    # Try today first - REDUCED runs to minimize requests
+    runs_to_try = ["18z", "12z", "06z", "00z"]  # Try newest model cycles first
+
+    # Try today first
     logger.info(f"   Trying today's data: {today_str}")
     for base_url in NOAA_BASE_URLS:
         logger.info(f"   Base URL: {base_url}")
-        # REDUCED: Only try most recent runs to minimize server hits
-        for run in ["18z", "12z"]:  # Reduced from 4 runs to 2
+        for run in runs_to_try:
             # CORRECTED URL FORMAT - includes the full dataset filename
             url = f"{base_url}/{today_str}/gfswave.wcoast.0p16_{run}"
             logger.info(f"   Testing URL: {url}")
@@ -467,7 +468,7 @@ def get_noaa_dataset_url():
     # REDUCED: Only try first 2 base URLs
     for base_url in NOAA_BASE_URLS[:2]:
         logger.info(f"   Base URL: {base_url}")
-        for run in ["18z", "12z"]:  # Try latest runs first
+        for run in runs_to_try:
             url = f"{base_url}/{yesterday_str}/gfswave.wcoast.0p16_{run}"
             logger.info(f"   Testing URL: {url}")
             success, message = test_noaa_url(url)
@@ -484,24 +485,23 @@ def get_noaa_dataset_url():
         fallback_str = fallback_date.strftime("%Y%m%d")
         logger.info(f"   Trying {days_back} days back: {fallback_str}")
         
-        # Only try first base URL and most recent run to minimize requests
         base_url = NOAA_BASE_URLS[0]
-        run = "18z"
-        url = f"{base_url}/{fallback_str}/gfswave.wcoast.0p16_{run}"
-        logger.info(f"   Testing URL: {url}")
-        success, message = test_noaa_url(url)
-        if success:
-            logger.info(f"   FOUND: Using {fallback_str} {run} ({days_back} days back)")
-            return url
-        
-        time.sleep(NOAA_DATASET_TEST_DELAY)
+        for run in runs_to_try:
+            url = f"{base_url}/{fallback_str}/gfswave.wcoast.0p16_{run}"
+            logger.info(f"   Testing URL: {url}")
+            success, message = test_noaa_url(url)
+            if success:
+                logger.info(f"   FOUND: Using {fallback_str} {run} ({days_back} days back)")
+                return url
+
+            time.sleep(NOAA_DATASET_TEST_DELAY)
     
     # Comprehensive error message
     logger.error("   EXHAUSTED ALL OPTIONS:")
     logger.error(f"      Current UTC time: {now_utc.isoformat()}")
     logger.error(f"      Tried dates: {today_str}, {yesterday_str}, and {days_back} days back")
     logger.error(f"      Tried base URLs: {len(NOAA_BASE_URLS)} different protocols")
-    logger.error(f"      Tried runs: 18z, 12z (reduced to minimize requests)")
+    logger.error(f"      Tried runs: {', '.join(runs_to_try)}")
     logger.error("      Possible causes:")
     logger.error("        - Network connectivity issues")
     logger.error("        - NOAA server maintenance")
