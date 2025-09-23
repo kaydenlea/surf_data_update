@@ -5,9 +5,10 @@ Handles all Supabase interactions including data fetching, cleanup, and upserts
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time as dtime
 from supabase import create_client, Client
 from config import SUPABASE_URL, SUPABASE_KEY, UPSERT_CHUNK
+import pytz
 from utils import log_step, valid_coord, chunk_iter
 
 # Get shared logger
@@ -17,72 +18,32 @@ logger = logging.getLogger("surf_update")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def cleanup_old_data(batch_size: int = 100):
-    """Delete existing forecast and daily condition data in safe batches.
+    """Delete stale forecast and daily condition data prior to today's window.
 
-    - Forecast: delete by beach_id chunks to avoid statement timeouts on huge range deletes.
-    - Daily conditions: full delete by date ranges (smaller table, typically safe).
+    This run keeps the current-day forecast horizon intact and only removes rows
+    older than today's Pacific midnight (forecast_data) or calendar date
+    (daily_county_conditions).
     """
     log_step("Cleaning up old data", 1)
 
     try:
-        # -------- Forecast data (batched by beach_id) --------
-        logger.info("DELETE: Purging forecast_data in batches by beach_id...")
-        try:
-            # Fetch ALL beach IDs with pagination (Supabase defaults to 1000 per page)
-            beach_ids = []
-            page_size = 1000
-            start = 0
-            while True:
-                end_idx = start + page_size - 1
-                resp = (
-                    supabase
-                    .table("beaches")
-                    .select("id", count="exact")
-                    .range(start, end_idx)
-                    .execute()
-                )
-                rows = resp.data or []
-                beach_ids.extend([r["id"] for r in rows if r.get("id") is not None])
-                if len(rows) < page_size:
-                    break
-                start += page_size
+        pacific = pytz.timezone('America/Los_Angeles')
+        now_pacific = datetime.now(pacific)
+        midnight_today = pacific.localize(datetime.combine(now_pacific.date(), dtime(0, 0)))
+        cutoff_date = now_pacific.date()
 
-            if not beach_ids:
-                logger.warning("   No beach IDs found; skipping forecast delete")
-            else:
-                total = len(beach_ids)
-                processed = 0
-                for chunk in chunk_iter(beach_ids, batch_size):
-                    try:
-                        supabase.table("forecast_data").delete().in_("beach_id", chunk).execute()
-                        processed += len(chunk)
-                        logger.info(f"   Deleted forecast rows for {processed}/{total} beaches...")
-                    except Exception as e:
-                        logger.warning(f"   Batch delete failed for {len(chunk)} beaches: {e}")
-                logger.info("   Forecast data purge (by beach_id) completed")
-        except Exception as e:
-            logger.warning(f"   Forecast batched deletion failed: {e}; attempting coarse range delete")
-            try:
-                # Last-resort coarse deletes (may still time out on very large tables)
-                supabase.table("forecast_data").delete().neq("beach_id", None).execute()
-                logger.info("   Coarse forecast delete succeeded")
-            except Exception as e2:
-                logger.warning(f"   Coarse forecast delete also failed: {e2}; will rely on UPSERT")
+        logger.info(f"DELETE: Removing forecast_data before {midnight_today.isoformat()}")
+        forecast_ok = cleanup_forecast_data_by_date(midnight_today)
 
-        # -------- Daily county conditions (usually small) --------
-        logger.info("DELETE: Deleting all daily_county_conditions entries...")
-        try:
-            supabase.table("daily_county_conditions").delete().neq("county", None).execute()
-            logger.info("   Daily conditions deleted successfully")
-        except Exception as e:
-            logger.warning(f"   Daily conditions deletion failed: {e}, will use UPSERT")
+        logger.info(f"DELETE: Removing daily_county_conditions before {cutoff_date.isoformat()}")
+        daily_ok = cleanup_daily_conditions_by_date(cutoff_date)
 
         log_step("Old data cleanup completed")
-        return True
+        return forecast_ok and daily_ok
 
     except Exception as e:
         logger.error(f"ERROR: Error during cleanup: {e}")
-        return True  # Continue with UPSERT mode
+        return False
 
 def fetch_all_beaches(page_size: int = 1000):
     """Fetch all beaches with valid coordinates."""
