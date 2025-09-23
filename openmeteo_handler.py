@@ -11,6 +11,9 @@ Fills these fields if they are None:
   - water_temp_f
   - pressure_inhg
   - tide_level_ft  (applies +TIDE_ADJUSTMENT_FT)
+  - primary_swell_height_ft / primary_swell_period_s / primary_swell_direction
+  - surf_height_min_ft / surf_height_max_ft
+  - wave_energy_kj
 """
 
 import time
@@ -31,6 +34,10 @@ from utils import (
     chunk_iter
 )
 
+from swell_ranking import (
+    calculate_wave_energy_kj, get_surf_height_range
+)
+
 # Initialize Open-Meteo client with caching and retry
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=3, backoff_factor=0.2)
@@ -45,6 +52,12 @@ TARGET_FIELDS = (
     "water_temp_f",
     "pressure_inhg",
     "tide_level_ft",
+    "primary_swell_height_ft",
+    "primary_swell_period_s",
+    "primary_swell_direction",
+    "surf_height_min_ft",
+    "surf_height_max_ft",
+    "wave_energy_kj",
 )
 
 def _collect_needed_hours(existing_records):
@@ -165,7 +178,14 @@ def get_openmeteo_supplement_data(beaches, existing_records):
         marine_params = {
             "latitude": lats,
             "longitude": lons,
-            "hourly": ["sea_surface_temperature", "sea_level_height_msl"],
+            "hourly": [
+                "sea_surface_temperature",
+                "sea_level_height_msl",
+                "swell_wave_height",
+                "swell_wave_period",
+                "swell_wave_direction",
+                "wave_height"
+            ],
             "timezone": "America/Los_Angeles",
             "start_date": start_date,
             "end_date": end_date
@@ -198,8 +218,12 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 weather_code  = wh.Variables(3).ValuesAsNumpy()
                 wind_speed_kph= wh.Variables(4).ValuesAsNumpy()
 
-                water_temp_c  = mh.Variables(0).ValuesAsNumpy()
-                tide_level_m  = mh.Variables(1).ValuesAsNumpy()
+                water_temp_c      = mh.Variables(0).ValuesAsNumpy()
+                tide_level_m     = mh.Variables(1).ValuesAsNumpy()
+                swell_height_m   = mh.Variables(2).ValuesAsNumpy()
+                swell_period_s   = mh.Variables(3).ValuesAsNumpy()
+                swell_direction  = mh.Variables(4).ValuesAsNumpy()
+                wave_height_m    = mh.Variables(5).ValuesAsNumpy()
 
                 # FIXED: For each hour, align timestamps to clean 3-hour intervals
                 for j, ts_local in enumerate(timestamps):
@@ -236,9 +260,25 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     rec = updated_records[idx]
 
                     # Prepare candidate values
-                    # Tide: convert meters→feet and add adjustment
+                    # Tide: convert meters -> feet and add adjustment
                     raw_tide_ft = safe_float(meters_to_feet(tide_level_m[j]))
                     adjusted_tide_ft = (raw_tide_ft + TIDE_ADJUSTMENT_FT) if raw_tide_ft is not None else None
+
+                    # Swell and wave metrics from Marine API
+                    swell_height_m_val = safe_float(swell_height_m[j])
+                    swell_height_ft = safe_float(meters_to_feet(swell_height_m_val)) if swell_height_m_val is not None else None
+                    swell_period_s_val = safe_float(swell_period_s[j])
+                    swell_direction_val = safe_float(swell_direction[j])
+                    wave_height_m_val = safe_float(wave_height_m[j])
+
+                    surf_min_ft, surf_max_ft = get_surf_height_range(wave_height_m_val) if wave_height_m_val is not None else (None, None)
+                    surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
+                    surf_max_ft = safe_float(surf_max_ft) if surf_max_ft is not None else None
+
+                    wave_energy_kj = None
+                    if swell_height_ft is not None and swell_period_s_val is not None and swell_period_s_val > 0:
+                        wave_energy_kj = calculate_wave_energy_kj(swell_height_ft, swell_period_s_val)
+                        wave_energy_kj = safe_float(wave_energy_kj) if wave_energy_kj is not None else None
 
                     candidates = {
                         "temperature":   safe_float(celsius_to_fahrenheit(temp_c[j])),
@@ -248,6 +288,12 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                         "water_temp_f":  safe_float(celsius_to_fahrenheit(water_temp_c[j])),
                         "pressure_inhg": safe_float(hpa_to_inhg(pressure_hpa[j])),
                         "tide_level_ft": adjusted_tide_ft,
+                        "primary_swell_height_ft": swell_height_ft,
+                        "primary_swell_period_s": swell_period_s_val,
+                        "primary_swell_direction": swell_direction_val,
+                        "surf_height_min_ft": surf_min_ft,
+                        "surf_height_max_ft": surf_max_ft,
+                        "wave_energy_kj": wave_energy_kj,
                     }
 
                     # Guardrail: ensure gusts are never lower than speed
