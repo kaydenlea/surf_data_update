@@ -2,8 +2,8 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Run once daily at 22:30 America/Los_Angeles (~05:30 UTC availability)
-    - cron: "30 22 * * *"
+    # Run once daily at 00:30 America/Los_Angeles (~07:30 UTC availability during DST)
+    - cron: "30 0 * * *"
       timezone: America/Los_Angeles
   workflow_dispatch: {}
 
@@ -21,11 +21,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Guard - only continue at 22:30 America/Los_Angeles
+      - name: Guard - only continue at 00:30 America/Los_Angeles
         run: |
           NOW=$(TZ=America/Los_Angeles date +"%H%M")
-          if [ "$NOW" != "2230" ]; then
-            echo "Not 22:30 PT (NOW=$NOW); exiting successfully."
+          if [ "$NOW" != "0030" ]; then
+            echo "Not 00:30 PT (NOW=$NOW); exiting successfully."
             exit 0
           fi
 
