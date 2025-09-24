@@ -129,6 +129,40 @@ def _ensure_today_midnight_start(records, beaches):
 
     return all_out
 
+def _drop_records_before_today(records):
+    """Remove any forecast rows that fall before today's Pacific midnight."""
+    if not records:
+        return records
+
+    import pytz
+
+    pacific = pytz.timezone('America/Los_Angeles')
+    midnight_today = datetime.now(pacific).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    filtered = []
+    removed = 0
+    for rec in records:
+        ts_str = rec.get("timestamp")
+        if not ts_str:
+            filtered.append(rec)
+            continue
+        try:
+            cleaned = ts_str.replace('Z', '+00:00') if ts_str.endswith('Z') else ts_str
+            ts = datetime.fromisoformat(cleaned)
+        except Exception:
+            filtered.append(rec)
+            continue
+        if ts.tzinfo is None:
+            ts = pacific.localize(ts)
+        if ts >= midnight_today:
+            filtered.append(rec)
+        else:
+            removed += 1
+    if removed:
+        logger.info(f"   Dropped {removed} NOAA forecast records before today's midnight")
+    return filtered
+
+
 def update_forecast_data_hybrid(beaches):
     """
     Update forecast data using:
@@ -160,6 +194,7 @@ def update_forecast_data_hybrid(beaches):
             logger.info(f"   Sample NOAA timestamp (should be America/Los_Angeles ISO): {sample_ts}")
 
         # Ensure we start from today's 12:00 AM (Pacific) per-beach
+        all_noaa_records = _drop_records_before_today(all_noaa_records)
         all_noaa_records = _ensure_today_midnight_start(all_noaa_records, beaches)
 
         # --- OPEN-METEO SUPPLEMENT ---

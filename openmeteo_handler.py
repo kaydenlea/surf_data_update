@@ -12,6 +12,7 @@ Fills these fields if they are None:
   - pressure_inhg
   - tide_level_ft  (applies +TIDE_ADJUSTMENT_FT)
   - primary_swell_height_ft / primary_swell_period_s / primary_swell_direction
+  - secondary_swell_height_ft / secondary_swell_period_s / secondary_swell_direction
   - surf_height_min_ft / surf_height_max_ft
   - wave_energy_kj
 """
@@ -55,6 +56,9 @@ TARGET_FIELDS = (
     "primary_swell_height_ft",
     "primary_swell_period_s",
     "primary_swell_direction",
+    "secondary_swell_height_ft",
+    "secondary_swell_period_s",
+    "secondary_swell_direction",
     "surf_height_min_ft",
     "surf_height_max_ft",
     "wave_energy_kj",
@@ -184,7 +188,10 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 "swell_wave_height",
                 "swell_wave_period",
                 "swell_wave_direction",
-                "wave_height"
+                "wave_height",
+                "wind_wave_height",
+                "wind_wave_period",
+                "wind_wave_direction"
             ],
             "timezone": "America/Los_Angeles",
             "start_date": start_date,
@@ -224,6 +231,9 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 swell_period_s   = mh.Variables(3).ValuesAsNumpy()
                 swell_direction  = mh.Variables(4).ValuesAsNumpy()
                 wave_height_m    = mh.Variables(5).ValuesAsNumpy()
+                wind_wave_height_m = mh.Variables(6).ValuesAsNumpy()
+                wind_wave_period_s = mh.Variables(7).ValuesAsNumpy()
+                wind_wave_direction = mh.Variables(8).ValuesAsNumpy()
 
                 # FIXED: For each hour, align timestamps to clean 3-hour intervals
                 for j, ts_local in enumerate(timestamps):
@@ -270,6 +280,23 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     swell_period_s_val = safe_float(swell_period_s[j])
                     swell_direction_val = safe_float(swell_direction[j])
                     wave_height_m_val = safe_float(wave_height_m[j])
+                    try:
+                        wind_wave_height_m_val = safe_float(wind_wave_height_m[j])
+                    except Exception:
+                        wind_wave_height_m_val = None
+                    wind_wave_height_ft = safe_float(meters_to_feet(wind_wave_height_m_val)) if wind_wave_height_m_val is not None else None
+                    try:
+                        wind_wave_period_s_val = safe_float(wind_wave_period_s[j])
+                    except Exception:
+                        wind_wave_period_s_val = None
+                    try:
+                        wind_wave_direction_val = safe_float(wind_wave_direction[j])
+                    except Exception:
+                        wind_wave_direction_val = None
+
+                    secondary_height_ft = wind_wave_height_ft if wind_wave_height_ft is not None else swell_height_ft
+                    secondary_period_s_val = wind_wave_period_s_val if wind_wave_period_s_val is not None else swell_period_s_val
+                    secondary_direction_val = wind_wave_direction_val if wind_wave_direction_val is not None else swell_direction_val
 
                     surf_min_ft, surf_max_ft = get_surf_height_range(wave_height_m_val) if wave_height_m_val is not None else (None, None)
                     surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
@@ -291,6 +318,9 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                         "primary_swell_height_ft": swell_height_ft,
                         "primary_swell_period_s": swell_period_s_val,
                         "primary_swell_direction": swell_direction_val,
+                        "secondary_swell_height_ft": secondary_height_ft,
+                        "secondary_swell_period_s": secondary_period_s_val,
+                        "secondary_swell_direction": secondary_direction_val,
                         "surf_height_min_ft": surf_min_ft,
                         "surf_height_max_ft": surf_max_ft,
                         "wave_energy_kj": wave_energy_kj,
