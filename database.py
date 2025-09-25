@@ -5,7 +5,7 @@ Handles all Supabase interactions including data fetching, cleanup, and upserts
 """
 
 import logging
-from datetime import datetime, timedelta, time as dtime, timezone
+from datetime import datetime, timedelta, time as dtime
 from supabase import create_client, Client
 from config import SUPABASE_URL, SUPABASE_KEY, UPSERT_CHUNK
 import pytz
@@ -30,11 +30,10 @@ def cleanup_old_data(batch_size: int = 100):
         pacific = pytz.timezone('America/Los_Angeles')
         now_pacific = datetime.now(pacific)
         midnight_today = pacific.localize(datetime.combine(now_pacific.date(), dtime(0, 0)))
-        midnight_utc = midnight_today.astimezone(timezone.utc)
         cutoff_date = now_pacific.date()
 
         logger.info(f"DELETE: Removing forecast_data before {midnight_today.isoformat()} (Pacific)")
-        forecast_ok = cleanup_forecast_data_by_date(midnight_utc)
+        forecast_ok = cleanup_forecast_data_by_date(midnight_today)
 
         logger.info(f"DELETE: Removing daily_county_conditions before {cutoff_date.isoformat()}")
         daily_ok = cleanup_daily_conditions_by_date(cutoff_date)
@@ -276,17 +275,29 @@ def cleanup_forecast_data_by_date(cutoff_date):
         if isinstance(cutoff_date, datetime):
             cutoff_dt = cutoff_date
         else:
-            cutoff_dt = pacific.localize(datetime.combine(cutoff_date, dtime(0, 0)))
+            cutoff_dt = datetime.combine(cutoff_date, dtime(0, 0))
         if cutoff_dt.tzinfo is None:
             cutoff_dt = pacific.localize(cutoff_dt)
-        cutoff_utc = cutoff_dt.astimezone(timezone.utc)
-        cutoff_iso = cutoff_utc.isoformat().replace('+00:00', 'Z')
+        cutoff_iso = cutoff_dt.isoformat()
         resp = supabase.table("forecast_data").delete().lt('timestamp', cutoff_iso).execute()
         deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else None
         if deleted is not None:
-            logger.info(f"   Cleaned up {deleted} forecast rows older than {cutoff_iso} UTC")
+            logger.info(f"   Cleaned up {deleted} forecast rows older than {cutoff_iso}")
         else:
-            logger.info(f"   Cleaned up forecast data older than {cutoff_iso} UTC")
+            logger.info(f"   Cleaned up forecast data older than {cutoff_iso}")
+        try:
+            earliest_resp = (
+                supabase.table('forecast_data')
+                .select('timestamp')
+                .order('timestamp', desc=False)
+                .limit(1)
+                .execute()
+            )
+            if earliest_resp.data:
+                earliest = earliest_resp.data[0].get('timestamp')
+                logger.info(f"   Earliest forecast timestamp remaining: {earliest}")
+        except Exception as log_err:
+            logger.debug(f"   Unable to fetch earliest forecast timestamp: {log_err}")
         return True
     except Exception as e:
         logger.error(f"ERROR: Error cleaning up forecast data: {e}")
