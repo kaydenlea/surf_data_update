@@ -35,11 +35,14 @@ def cleanup_old_data(batch_size: int = 100):
         logger.info(f"DELETE: Removing forecast_data before {midnight_today.isoformat()} (Pacific)")
         forecast_ok = cleanup_forecast_data_by_date(midnight_today)
 
+        logger.info(f"DELETE: Removing beach_tides_hourly before {midnight_today.isoformat()} (Pacific)")
+        tide_ok = delete_tide_data_before(midnight_today)
+
         logger.info(f"DELETE: Removing daily_county_conditions before {cutoff_date.isoformat()}")
         daily_ok = cleanup_daily_conditions_by_date(cutoff_date)
 
         log_step("Old data cleanup completed")
-        return forecast_ok and daily_ok
+        return forecast_ok and tide_ok and daily_ok
 
     except Exception as e:
         logger.error(f"ERROR: Error during cleanup: {e}")
@@ -216,14 +219,42 @@ def delete_all_tide_data(table_name="beach_tides_hourly"):
         logger.error(f"ERROR: Failed to delete existing tide data from {table_name}: {e}")
         return False
 
-def delete_tide_data_before(cutoff_iso: str, table_name="beach_tides_hourly"):
-    """Delete tide records older than the given ISO8601 timestamp."""
+def delete_tide_data_before(cutoff, table_name="beach_tides_hourly"):
+    """Delete tide records older than the given cutoff (datetime or ISO string)."""
     try:
-        supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
-        logger.info(f"   Deleted tide rows before {cutoff_iso}")
+        pacific = pytz.timezone('America/Los_Angeles')
+        if isinstance(cutoff, str):
+            cleaned = cutoff.replace('Z', '+00:00') if cutoff.endswith('Z') else cutoff
+            cutoff_dt = datetime.fromisoformat(cleaned)
+        else:
+            cutoff_dt = cutoff
+        if cutoff_dt.tzinfo is None:
+            cutoff_dt = pacific.localize(cutoff_dt)
+        else:
+            cutoff_dt = cutoff_dt.astimezone(pacific)
+        cutoff_iso = cutoff_dt.isoformat()
+        resp = supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
+        deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else None
+        if deleted is not None:
+            logger.info(f"   Deleted {deleted} tide rows before {cutoff_iso}")
+        else:
+            logger.info(f"   Deleted tide rows before {cutoff_iso}")
+        try:
+            earliest_resp = (
+                supabase.table(table_name)
+                .select('timestamp')
+                .order('timestamp', desc=False)
+                .limit(1)
+                .execute()
+            )
+            if earliest_resp.data:
+                earliest = earliest_resp.data[0].get('timestamp')
+                logger.info(f"   Earliest tide timestamp remaining: {earliest}")
+        except Exception as log_err:
+            logger.debug(f"   Unable to fetch earliest tide timestamp: {log_err}")
         return True
     except Exception as e:
-        logger.error(f"ERROR: Failed to delete outdated tide data before {cutoff_iso}: {e}")
+        logger.error(f"ERROR: Failed to delete outdated tide data before {cutoff}: {e}")
         return False
 
 def get_beach_by_id(beach_id):
