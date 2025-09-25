@@ -35,23 +35,31 @@ cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=3, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 
-def pacific_midnight_today():
+def pacific_midnight_today(now=None):
     tz = pytz.timezone('America/Los_Angeles')
-    today = datetime.now(tz).date()
+    now = now or datetime.now(tz)
+    if now.tzinfo is None:
+        now = tz.localize(now)
+    else:
+        now = now.astimezone(tz)
+    today = now.date()
     return tz.localize(datetime.combine(today, datetime.min.time()))
 
-def derive_date_range(days=DAYS_FORECAST):
-    start = pacific_midnight_today()
-    end = start + timedelta(days=days)
-    # Open‑Meteo uses date strings inclusive
-    return start.strftime("%Y-%m-%d"), (end - timedelta(seconds=1)).strftime("%Y-%m-%d")
+def derive_date_range(days=DAYS_FORECAST, midnight=None):
+    base_start = midnight or pacific_midnight_today()
+    if days < 1:
+        raise ValueError('days must be >= 1 for tide date range')
+    end = base_start + timedelta(days=days - 1)
+    # Open-Meteo uses date strings inclusive
+    return base_start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
 
-def update_tides_for_beaches(beaches):
+
+def update_tides_for_beaches(beaches, day_start):
     if not beaches:
         logger.error("No beaches provided for tide update")
         return 0
 
-    start_date, end_date = derive_date_range()
+    start_date, end_date = derive_date_range(midnight=day_start)
     logger.info(f"TIDES: Fetching hourly tides from {start_date} 00:00 PT through {end_date} 23:00 PT")
 
     total = 0
@@ -89,7 +97,7 @@ def update_tides_for_beaches(beaches):
 
                 for j, ts_local in enumerate(timestamps):
                     # Only keep timestamps on/after today's midnight (defensive)
-                    if ts_local < pacific_midnight_today():
+                    if ts_local < day_start:
                         continue
 
                     raw_m = safe_float(tide_level_m[j])
@@ -121,13 +129,13 @@ def main():
         return False
     # Optional delete can be controlled via env; default removes rows before today's midnight
     import os
+    day_start = pacific_midnight_today()
     tide_delete_mode = os.environ.get("TIDE_DELETE", "outdated")
     if tide_delete_mode == "all":
         delete_all_tide_data()
     else:
-        cutoff = pacific_midnight_today().isoformat()
-        delete_tide_data_before(cutoff)
-    _ = update_tides_for_beaches(beaches)
+        delete_tide_data_before(day_start)
+    _ = update_tides_for_beaches(beaches, day_start)
     return True
 
 if __name__ == "__main__":

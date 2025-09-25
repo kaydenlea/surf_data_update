@@ -224,21 +224,55 @@ def delete_tide_data_before(cutoff, table_name="beach_tides_hourly"):
     try:
         pacific = pytz.timezone('America/Los_Angeles')
         if isinstance(cutoff, str):
-            cleaned = cutoff.replace('Z', '+00:00') if cutoff.endswith('Z') else cutoff
+            cleaned = cutoff.strip()
+            cleaned = cleaned.replace('Z', '+00:00') if cleaned.endswith('Z') else cleaned
             cutoff_dt = datetime.fromisoformat(cleaned)
         else:
             cutoff_dt = cutoff
+
         if cutoff_dt.tzinfo is None:
             cutoff_dt = pacific.localize(cutoff_dt)
         else:
             cutoff_dt = cutoff_dt.astimezone(pacific)
-        cutoff_iso = cutoff_dt.isoformat()
-        resp = supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
-        deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else None
-        if deleted is not None:
-            logger.info(f"   Deleted {deleted} tide rows before {cutoff_iso}")
-        else:
-            logger.info(f"   Deleted tide rows before {cutoff_iso}")
+
+        cutoff_dt = pacific.normalize(cutoff_dt)
+        cutoff_variants = [
+            ("utc", cutoff_dt.astimezone(pytz.utc).isoformat().replace('+00:00', 'Z')),
+            ("pacific", cutoff_dt.isoformat()),
+        ]
+
+        deleted = 0
+        used_variant = None
+        last_error = None
+
+        for label, cutoff_iso in cutoff_variants:
+            try:
+                resp = supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
+                deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else 0
+                used_variant = (label, cutoff_iso)
+                if deleted:
+                    logger.info(
+                        f"   Deleted {deleted} tide rows before {cutoff_iso} using {label} cutoff"
+                    )
+                    break
+                else:
+                    logger.debug(
+                        f"   No tide rows matched cutoff {cutoff_iso} using {label} comparison"
+                    )
+            except Exception as delete_err:
+                last_error = delete_err
+                logger.debug(
+                    f"   Tide delete attempt with cutoff {cutoff_iso} ({label}) failed: {delete_err}"
+                )
+
+        if used_variant is None:
+            raise last_error or RuntimeError("Unable to execute tide deletion request")
+
+        if deleted == 0:
+            logger.info(
+                f"   No tide rows older than {cutoff_dt.isoformat()} found to delete"
+            )
+
         try:
             earliest_resp = (
                 supabase.table(table_name)
