@@ -2,9 +2,9 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Run once daily at 00:30 America/Los_Angeles (~07:30 UTC availability during DST)
-    - cron: "30 0 * * *"
-      timezone: America/Los_Angeles
+    # Run once daily at 07:30 UTC so it lands at 00:30 PT during DST
+    - cron: "30 7 * * *"
+      timezone: UTC
   workflow_dispatch: {}
 
 jobs:
