@@ -347,63 +347,7 @@ def cleanup_forecast_data_by_date(cutoff_date):
             cutoff_dt = cutoff_dt.astimezone(pacific)
 
         cutoff_dt = pacific.normalize(cutoff_dt)
-        cutoff_variants = [
-            ("utc", cutoff_dt.astimezone(pytz.utc).isoformat().replace('+00:00', 'Z')),
-            ("pacific", cutoff_dt.isoformat()),
-        ]
-
-        deleted = 0
-        used_variant = None
-        last_error = None
-
-        for label, cutoff_iso in cutoff_variants:
-            try:
-                resp = (
-                    supabase
-                    .table("forecast_data")
-                    .delete()
-                    .lt('timestamp', cutoff_iso)
-                    .execute()
-                )
-                deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else 0
-                used_variant = (label, cutoff_iso)
-                if deleted:
-                    logger.info(
-                        f"   Deleted {deleted} forecast rows before {cutoff_iso} using {label} cutoff"
-                    )
-                    break
-                else:
-                    logger.debug(
-                        f"   No forecast rows matched cutoff {cutoff_iso} using {label} comparison"
-                    )
-            except Exception as delete_err:
-                last_error = delete_err
-                logger.debug(
-                    f"   Forecast delete attempt with cutoff {cutoff_iso} ({label}) failed: {delete_err}"
-                )
-
-        if used_variant is None:
-            raise last_error or RuntimeError("Unable to execute forecast deletion request")
-
-        if deleted == 0:
-            logger.info(
-                f"   No forecast rows older than {cutoff_dt.isoformat()} found to delete"
-            )
-
-        try:
-            earliest_resp = (
-                supabase.table('forecast_data')
-                .select('timestamp')
-                .order('timestamp', desc=False)
-                .limit(1)
-                .execute()
-            )
-            if earliest_resp.data:
-                earliest = earliest_resp.data[0].get('timestamp')
-                logger.info(f"   Earliest forecast timestamp remaining: {earliest}")
-        except Exception as log_err:
-            logger.debug(f"   Unable to fetch earliest forecast timestamp: {log_err}")
-        return True
+        return delete_tide_data_before(cutoff_dt, table_name="forecast_data")
     except Exception as e:
         logger.error(f"ERROR: Error cleaning up forecast data: {e}")
         return False
