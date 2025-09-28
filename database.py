@@ -6,6 +6,7 @@ Handles all Supabase interactions including data fetching, cleanup, and upserts
 
 import logging
 from datetime import datetime, timedelta, time as dtime
+from numbers import Real
 from supabase import create_client, Client
 from config import SUPABASE_URL, SUPABASE_KEY, UPSERT_CHUNK
 import pytz
@@ -140,39 +141,76 @@ def fetch_all_counties(page_size: int = 1000):
     log_step(f"Calculated centroids for {len(counties)} counties")
     return counties
 
+
+
+def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False):
+    """Drop None (and optionally zero-float) fields before upsert to preserve prior values."""
+    cleaned = []
+    for rec in records:
+        if any(rec.get(key) is None for key in required_keys):
+            logger.debug(f"   Skipping record missing required keys {required_keys}: {rec}")
+            continue
+        filtered = {}
+        for key, value in rec.items():
+            if key in required_keys:
+                filtered[key] = value
+                continue
+            if value is None:
+                continue
+            if skip_zero_floats and isinstance(value, Real) and not isinstance(value, bool):
+                try:
+                    as_float = float(value)
+                except (TypeError, ValueError):
+                    as_float = None
+                if as_float is not None and abs(as_float) < 1e-9:
+                    continue
+            filtered[key] = value
+        cleaned.append(filtered)
+    return cleaned
+
 def upsert_forecast_data(records, table_name="forecast_data"):
     """Upsert forecast records to database in chunks."""
-    logger.info(f"   Uploading {len(records)} records to {table_name}...")
-    total_inserted = 0
-    
     if not records:
         logger.warning(f"   No records to upsert to {table_name}")
         return 0
-    
-    for chunk in chunk_iter(records, UPSERT_CHUNK):
+
+    prepared = _prepare_records_for_upsert(records, {"beach_id", "timestamp"}, skip_zero_floats=True)
+    if not prepared:
+        logger.warning(f"   No forecast records had non-null values to upsert into {table_name}")
+        return 0
+
+    logger.info(f"   Uploading {len(prepared)} records to {table_name}...")
+    total_inserted = 0
+
+    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
-                chunk, 
+                chunk,
                 on_conflict="beach_id,timestamp"
             ).execute()
             total_inserted += len(chunk)
             logger.debug(f"   Upserted chunk of {len(chunk)} records")
         except Exception as e:
             logger.error(f"ERROR: Error upserting {table_name} chunk: {e}")
-    
+
     logger.info(f"   Successfully upserted {total_inserted} records to {table_name}")
     return total_inserted
 
 def upsert_daily_conditions(records, table_name="daily_county_conditions"):
     """Upsert daily condition records to database in chunks."""
-    logger.info(f"   Uploading {len(records)} daily records to {table_name}...")
-    total_inserted = 0
-    
     if not records:
         logger.warning(f"   No records to upsert to {table_name}")
         return 0
-    
-    for chunk in chunk_iter(records, UPSERT_CHUNK):
+
+    prepared = _prepare_records_for_upsert(records, {"county", "date"})
+    if not prepared:
+        logger.warning(f"   No daily records had non-null values to upsert into {table_name}")
+        return 0
+
+    logger.info(f"   Uploading {len(prepared)} daily records to {table_name}...")
+    total_inserted = 0
+
+    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,
@@ -182,20 +220,25 @@ def upsert_daily_conditions(records, table_name="daily_county_conditions"):
             logger.debug(f"   Upserted chunk of {len(chunk)} daily records")
         except Exception as e:
             logger.error(f"ERROR: Error upserting {table_name} chunk: {e}")
-    
+
     logger.info(f"   Successfully upserted {total_inserted} daily records to {table_name}")
     return total_inserted
 
 def upsert_tide_data(records, table_name="beach_tides_hourly"):
-    """Upsert tide records (hourly) to database in chunks."""
-    logger.info(f"   Uploading {len(records)} tide records to {table_name}...")
-    total_inserted = 0
-
+    """Upsert tide records to database in chunks."""
     if not records:
         logger.warning(f"   No records to upsert to {table_name}")
         return 0
 
-    for chunk in chunk_iter(records, UPSERT_CHUNK):
+    prepared = _prepare_records_for_upsert(records, {"beach_id", "timestamp"})
+    if not prepared:
+        logger.warning(f"   No tide records had non-null values to upsert into {table_name}")
+        return 0
+
+    logger.info(f"   Uploading {len(prepared)} tide records to {table_name}...")
+    total_inserted = 0
+
+    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,
