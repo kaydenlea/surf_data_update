@@ -826,6 +826,10 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         # NOAA surf height (compact display range in feet) - enhanced with CDIP where available
         sig_wave_height_m = safe_float(grid_data['sig_wave_height'][i])
         surf_min_ft, surf_max_ft = get_surf_height_range(sig_wave_height_m)
+
+        # Ensure ultra-small surf ranges default to 0-1ft instead of null-1ft
+        if surf_min_ft is None and surf_max_ft is not None and surf_max_ft <= 1:
+            surf_min_ft = 0.0
         
         # Wind speed: defer to Open-Meteo supplement (do not use NOAA here)
         wind_speed_mph = None
