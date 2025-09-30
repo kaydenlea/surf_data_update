@@ -198,6 +198,20 @@ def safe_float(x):
     except Exception:
         return None
 
+
+def normalize_surf_range(min_ft, max_ft):
+    """Ensure surf ranges clamp to 0 when the maximum is near-flat (<=1ft)."""
+    max_val = safe_float(max_ft)
+    min_val = safe_float(min_ft)
+
+    if max_val is None:
+        return min_val, max_val
+
+    if max_val <= 1.0:
+        min_val = 0.0
+
+    return min_val, max_val
+
 def safe_int(x):
     """Convert to int; return None for NaN/Inf or unparseable values."""
     try:

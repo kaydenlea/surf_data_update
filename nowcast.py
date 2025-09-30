@@ -17,7 +17,7 @@ from typing import List, Dict, Optional, Tuple
 # Import your existing config and database utilities
 try:
     from config import SUPABASE_URL, SUPABASE_KEY, logger, UPSERT_CHUNK
-    from utils import chunk_iter, safe_float
+    from utils import chunk_iter, safe_float, normalize_surf_range
     from database import supabase  # Use existing supabase client
 except ImportError:
     print("ERROR: Could not import required modules - make sure config.py, utils.py, and database.py are available")
@@ -307,6 +307,7 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
             
             # Compute compact Surfline-style height range (in feet)
             rmin_ft, rmax_ft = get_surf_height_range(hs_m)
+            rmin_ft, rmax_ft = normalize_surf_range(rmin_ft, rmax_ft)
 
             # Update ONLY the wave-related fields with CDIP nowcast data
             updated_record.update({
@@ -420,7 +421,8 @@ def create_cdip_nowcast_records(beaches: List[Dict], cdip_data: Dict) -> List[Di
                 
                 # Calculate compact Surfline-style surf height range (feet)
                 surf_min_ft, surf_max_ft = get_surf_height_range(hs_m)
-                
+                surf_min_ft, surf_max_ft = normalize_surf_range(surf_min_ft, surf_max_ft)
+
                 # Calculate wave energy (spectral if available, otherwise parametric)
                 # Use index consistently even when spectral is available
                 wave_energy_kj = calculate_wave_energy_kj(hs_ft, tp_s)

@@ -18,6 +18,7 @@ Fills these fields if they are None:
 """
 
 import time
+import math
 import pandas as pd
 from collections import defaultdict
 
@@ -32,7 +33,7 @@ from config import (
 from utils import (
     api_request_with_retry, safe_openmeteo_delay, safe_float, safe_int,
     celsius_to_fahrenheit, kph_to_mph, meters_to_feet, hpa_to_inhg,
-    chunk_iter
+    chunk_iter, normalize_surf_range
 )
 
 from swell_ranking import (
@@ -63,6 +64,100 @@ TARGET_FIELDS = (
     "surf_height_max_ft",
     "wave_energy_kj",
 )
+
+
+def _haversine_distance(lat1, lon1, lat2, lon2):
+    """Compute great-circle distance between two points (km)."""
+    if None in (lat1, lon1, lat2, lon2):
+        return None
+    try:
+        lat1_rad = math.radians(float(lat1))
+        lon1_rad = math.radians(float(lon1))
+        lat2_rad = math.radians(float(lat2))
+        lon2_rad = math.radians(float(lon2))
+    except (TypeError, ValueError):
+        return None
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(max(0.0, min(1.0, a))))
+    return 6371.0 * c
+
+
+FIELDS_FOR_NEIGHBOR_FILL = (
+    "weather",
+    "wind_direction_deg",
+    "secondary_swell_height_ft",
+    "secondary_swell_period_s",
+    "secondary_swell_direction",
+    "tertiary_swell_height_ft",
+    "tertiary_swell_period_s",
+    "tertiary_swell_direction",
+)
+
+
+def _fill_missing_fields_from_neighbors(records, beach_meta, fields=FIELDS_FOR_NEIGHBOR_FILL):
+    """Fill missing fields using nearest neighbor records at the same timestamp."""
+    if not records:
+        return records
+
+    grouped = defaultdict(list)
+    for idx, rec in enumerate(records):
+        ts = rec.get("timestamp")
+        bid = rec.get("beach_id")
+        if not ts or bid not in beach_meta:
+            continue
+        grouped[ts].append(idx)
+
+    filled_counts = {field: 0 for field in fields}
+
+    for ts, indices in grouped.items():
+        per_record_meta = []
+        for idx in indices:
+            rec = records[idx]
+            bid = rec.get("beach_id")
+            meta = beach_meta.get(bid)
+            if not meta or meta[1] is None or meta[2] is None:
+                per_record_meta.append(None)
+            else:
+                per_record_meta.append((meta[1], meta[2]))
+
+        for field in fields:
+            available = []
+            missing = []
+            for local_idx, record_idx in enumerate(indices):
+                meta = per_record_meta[local_idx]
+                if meta is None:
+                    continue
+                lat, lon = meta
+                val = records[record_idx].get(field)
+                if val is not None:
+                    available.append((lat, lon, val))
+                else:
+                    missing.append((record_idx, lat, lon))
+
+            if not available or not missing:
+                continue
+
+            for record_idx, lat, lon in missing:
+                best_val = None
+                best_dist = None
+                for av_lat, av_lon, val in available:
+                    distance = _haversine_distance(lat, lon, av_lat, av_lon)
+                    if distance is None:
+                        continue
+                    if best_dist is None or distance < best_dist:
+                        best_dist = distance
+                        best_val = val
+                if best_val is not None:
+                    records[record_idx][field] = best_val
+                    filled_counts[field] += 1
+
+    total_filled = sum(filled_counts.values())
+    if total_filled:
+        summary = ", ".join(f"{field}: {count}" for field, count in filled_counts.items() if count)
+        logger.info(f"   Open-Meteo supplement: filled {total_filled} fields via nearest neighbors ({summary})")
+    return records
 
 def _collect_needed_hours(existing_records):
     """
@@ -299,6 +394,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     secondary_direction_val = wind_wave_direction_val if wind_wave_direction_val is not None else swell_direction_val
 
                     surf_min_ft, surf_max_ft = get_surf_height_range(wave_height_m_val) if wave_height_m_val is not None else (None, None)
+                    surf_min_ft, surf_max_ft = normalize_surf_range(surf_min_ft, surf_max_ft)
                     surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
                     surf_max_ft = safe_float(surf_max_ft) if surf_max_ft is not None else None
 
@@ -350,6 +446,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 logger.error(f"      Supplement processing failed for beach_id={bid}: {e}")
 
     # 7) Done — only missing fields were filled, keys untouched, alignment preserved
+    updated_records = _fill_missing_fields_from_neighbors(updated_records, beach_meta)
     logger.info("   Open-Meteo supplement: fill complete.")
     return updated_records
 # ---------------- Optional utilities retained from your original file ----------------
