@@ -32,6 +32,7 @@ jobs:
       - name: Run 3-hour nowcast
         run: |
           python nowcast.py
+          python fill_neighbors.py
 
       - name: Upload nowcast log (optional)
         if: always()
