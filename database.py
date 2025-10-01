@@ -5,18 +5,34 @@ Handles all Supabase interactions including data fetching, cleanup, and upserts
 """
 
 import logging
+import math
+from collections import defaultdict
 from datetime import datetime, timedelta, time as dtime
 from numbers import Real
 from supabase import create_client, Client
 from config import SUPABASE_URL, SUPABASE_KEY, UPSERT_CHUNK
 import pytz
-from utils import log_step, valid_coord, chunk_iter
+from utils import log_step, valid_coord, chunk_iter, safe_float
 
 # Get shared logger
 logger = logging.getLogger("surf_update")
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+_BEACH_COORD_CACHE = None
+
+FIELDS_FOR_NEIGHBOR_FILL = (
+    'weather',
+    'wind_direction_deg',
+    'secondary_swell_height_ft',
+    'secondary_swell_period_s',
+    'secondary_swell_direction',
+    'tertiary_swell_height_ft',
+    'tertiary_swell_period_s',
+    'tertiary_swell_direction',
+)
+
 
 def cleanup_old_data(batch_size: int = 100):
     """Delete stale forecast and daily condition data prior to today's window.
@@ -143,6 +159,115 @@ def fetch_all_counties(page_size: int = 1000):
 
 
 
+def _normalize_timestamp(ts):
+    if ts is None:
+        return None
+    if isinstance(ts, datetime):
+        dt = ts
+    else:
+        ts_str = str(ts).strip()
+        if ts_str.endswith('Z'):
+            ts_str = ts_str[:-1] + '+00:00'
+        try:
+            dt = datetime.fromisoformat(ts_str)
+        except ValueError:
+            return None
+    if dt.tzinfo is None:
+        dt = pytz.UTC.localize(dt)
+    else:
+        dt = dt.astimezone(pytz.UTC)
+    return dt.isoformat()
+
+
+def _haversine_distance(lat1, lon1, lat2, lon2):
+    try:
+        lat1 = float(lat1)
+        lon1 = float(lon1)
+        lat2 = float(lat2)
+        lon2 = float(lon2)
+    except (TypeError, ValueError):
+        return float('inf')
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(min(1.0, math.sqrt(max(0.0, a))))
+    return 6371.0 * c
+
+
+def _get_beach_coord_map():
+    global _BEACH_COORD_CACHE
+    if _BEACH_COORD_CACHE is not None:
+        return _BEACH_COORD_CACHE
+    logger.debug('Fetching beach coordinate map for neighbor fill')
+    resp = supabase.table('beaches').select('id,LATITUDE,LONGITUDE').execute()
+    data = resp.data or []
+    coord_map = {}
+    for row in data:
+        lat = row.get('LATITUDE')
+        lon = row.get('LONGITUDE')
+        if valid_coord(lat) and valid_coord(lon):
+            coord_map[row['id']] = (float(lat), float(lon))
+    _BEACH_COORD_CACHE = coord_map
+    logger.debug('Loaded %s beach coordinates', len(coord_map))
+    return coord_map
+
+
+def _fill_records_with_neighbors(records, fields=None, fill_surf_min=False):
+    if not records:
+        return records
+    coord_map = _get_beach_coord_map()
+    fields = tuple(fields) if fields else FIELDS_FOR_NEIGHBOR_FILL
+    grouped = defaultdict(list)
+    for idx, rec in enumerate(records):
+        ts_norm = _normalize_timestamp(rec.get('timestamp'))
+        bid = rec.get('beach_id')
+        if ts_norm is None or bid not in coord_map:
+            continue
+        grouped[(ts_norm)].append(idx)
+
+    for ts_key, indices in grouped.items():
+        per_meta = []
+        for idx in indices:
+            bid = records[idx].get('beach_id')
+            per_meta.append(coord_map.get(bid))
+        for field in fields:
+            donors = []  # (lat, lon, value)
+            missing = []  # (idx, lat, lon)
+            for meta, rec_idx in zip(per_meta, indices):
+                if meta is None:
+                    continue
+                lat, lon = meta
+                value = records[rec_idx].get(field)
+                if value is None:
+                    missing.append((rec_idx, lat, lon))
+                else:
+                    donors.append((lat, lon, value))
+            if not missing:
+                continue
+            if not donors:
+                continue
+            for rec_idx, lat, lon in missing:
+                best_value = None
+                best_distance = float('inf')
+                for d_lat, d_lon, d_value in donors:
+                    distance = _haversine_distance(lat, lon, d_lat, d_lon)
+                    if distance < best_distance:
+                        best_distance = distance
+                        best_value = d_value
+                if best_value is not None:
+                    records[rec_idx][field] = best_value
+                    donors.append((lat, lon, best_value))
+    if fill_surf_min:
+        for rec in records:
+            if rec.get('surf_height_min_ft') is None:
+                rec['surf_height_min_ft'] = 0.0
+    return records
+
+
 def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False):
     """Drop None (and optionally zero-float) fields before upsert to preserve prior values."""
     cleaned = []
@@ -174,7 +299,8 @@ def upsert_forecast_data(records, table_name="forecast_data"):
         logger.warning(f"   No records to upsert to {table_name}")
         return 0
 
-    prepared = _prepare_records_for_upsert(records, {"beach_id", "timestamp"}, skip_zero_floats=True)
+    enriched = _fill_records_with_neighbors(records, fill_surf_min=True)
+    prepared = _prepare_records_for_upsert(enriched, {"beach_id", "timestamp"}, skip_zero_floats=True)
     if not prepared:
         logger.warning(f"   No forecast records had non-null values to upsert into {table_name}")
         return 0
