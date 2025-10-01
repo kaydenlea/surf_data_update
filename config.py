@@ -13,8 +13,8 @@ if sys.platform == "win32":
     os.environ["PYTHONIOENCODING"] = "utf-8"
 
 # Secrets (must be set in environment / GitHub Actions secrets)
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://wborkytqlmkcgwzhsoiz.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib3JreXRxbG1rY2d3emhzb2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMTMxNDcsImV4cCI6MjA2OTY4OTE0N30.9kRB3eSEL_N37dy6FjGfNJEDBiCXam9nepDLowCCxk0")
 VC_API_KEY = os.environ.get("VC_API_KEY")
 
 # Script settings (match your existing project as needed)
