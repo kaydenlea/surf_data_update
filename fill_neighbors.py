@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Neighbor fill post-processor for `forecast_data`.
 After the daily/nowcast import completes, copy missing values from the nearest
@@ -74,6 +74,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit detailed diagnostics about skipped rows and fills.",
     )
+    parser.add_argument(
+        "--per-field",
+        action="store_true",
+        help="Process each field in its own neighbor pass to ensure no column is skipped.",
+    )
     return parser
 
 
@@ -103,12 +108,58 @@ def pacific_midnight_today(now: Optional[datetime] = None) -> datetime:
 def normalize_timestamp(value) -> Optional[str]:
     if value is None:
         return None
-    if isinstance(value, datetime):
-        return value.isoformat()
     try:
-        return pd.Timestamp(value).isoformat()
+        ts = pd.Timestamp(value)
     except Exception:
         return None
+    if ts.tzinfo is not None:
+        try:
+            ts = ts.tz_convert('UTC').tz_localize(None)
+        except Exception:
+            return None
+    return ts.isoformat()
+
+
+def has_real_value(value) -> bool:
+    """Treat None, NaN, blank strings, and sentinel text values as missing."""
+    if value is None:
+        return False
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return False
+        if stripped.lower() in {'nan', 'none'}:
+            return False
+    try:
+        if pd.isna(value):
+            return False
+    except Exception:
+        pass
+    return True
+
+
+def merge_stats(dest: Dict, src: Dict):
+    if not dest:
+        dest.update(src)
+        dest.setdefault("field_no_donor", Counter())
+        dest.setdefault("field_filled", Counter())
+        dest.setdefault("examples", defaultdict(list))
+        return
+
+    dest['total_records'] = src.get('total_records', dest.get('total_records', 0))
+    dest['skipped_no_timestamp'] = dest.get('skipped_no_timestamp', 0) + src.get('skipped_no_timestamp', 0)
+    dest['skipped_bad_timestamp'] = dest.get('skipped_bad_timestamp', 0) + src.get('skipped_bad_timestamp', 0)
+    dest['skipped_no_coords'] = dest.get('skipped_no_coords', 0) + src.get('skipped_no_coords', 0)
+
+    dest.setdefault('field_no_donor', Counter()).update(src.get('field_no_donor', Counter()))
+    dest.setdefault('field_filled', Counter()).update(src.get('field_filled', Counter()))
+
+    examples = dest.setdefault('examples', defaultdict(list))
+    for field, items in src.get('examples', {}).items():
+        bucket = examples[field]
+        for item in items:
+            if len(bucket) < 5:
+                bucket.append(item)
 
 
 def fetch_recent_forecast_records(
@@ -216,7 +267,7 @@ def fill_from_neighbors(
                     continue
                 lat, lon = meta
                 value = records[record_idx].get(field)
-                if value is not None:
+                if has_real_value(value):
                     donors.append((lat, lon, value))
                 else:
                     missing.append((record_idx, lat, lon))
@@ -367,7 +418,23 @@ def main(argv: Optional[List[str]] = None) -> bool:
     )
     logger.info("Post-fill: evaluating %s forecast rows", len(records))
 
-    updates, stats = fill_from_neighbors(records, beach_meta, fields, verbose=args.verbose)
+    if args.per_field:
+        aggregate_updates: Dict[Tuple[str, str], Dict] = {}
+        aggregate_stats: Dict = {}
+        for field in fields:
+            field_updates, field_stats = fill_from_neighbors(records, beach_meta, (field,), verbose=args.verbose)
+            if field_updates:
+                for update in field_updates:
+                    key = (update['beach_id'], update['timestamp'])
+                    entry = aggregate_updates.setdefault(key, {'beach_id': update['beach_id'], 'timestamp': update['timestamp']})
+                    for k, v in update.items():
+                        if k not in ('beach_id', 'timestamp'):
+                            entry[k] = v
+            merge_stats(aggregate_stats, field_stats)
+        updates = list(aggregate_updates.values())
+        stats = aggregate_stats
+    else:
+        updates, stats = fill_from_neighbors(records, beach_meta, fields, verbose=args.verbose)
 
     if not updates:
         logger.info("Post-fill: no fields required neighbor fills")

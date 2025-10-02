@@ -430,35 +430,37 @@ def create_cdip_nowcast_records(beaches: List[Dict], cdip_data: Dict) -> List[Di
                 record = {
                     "beach_id": beach["id"],
                     "timestamp": clean_pacific_time.isoformat(),
-                    
+
                     # Primary swell (CDIP nowcast data - REPLACES forecast)
                     "primary_swell_height_ft": safe_float(hs_ft),
                     "primary_swell_period_s": safe_float(tp_s),
                     "primary_swell_direction": safe_float(dp_deg) if not np.isnan(dp_deg) else None,
-                    
-                    # Secondary/tertiary swells (not available in nowcast)
-                    "secondary_swell_height_ft": None,
-                    "secondary_swell_period_s": None,
-                    "secondary_swell_direction": None,
-                    "tertiary_swell_height_ft": None,
-                    "tertiary_swell_period_s": None,
-                    "tertiary_swell_direction": None,
-                    
+
                     # Surf data (REPLACED with CDIP-based calculations)
                     "surf_height_min_ft": safe_float(surf_min_ft),
                     "surf_height_max_ft": safe_float(surf_max_ft),
                     "wave_energy_kj": safe_float(wave_energy_kj),
-                    
-                    # Wind/weather data (not available in CDIP nowcast)
-                    "wind_speed_mph": None,
-                    "wind_direction_deg": None,
-                    "wind_gust_mph": None,
-                    "water_temp_f": None,
-                    "tide_level_ft": None,
-                    "temperature": None,
-                    "weather": None,
-                    "pressure_inhg": None,
                 }
+
+                preserve_if_none = (
+                    "secondary_swell_height_ft",
+                    "secondary_swell_period_s",
+                    "secondary_swell_direction",
+                    "tertiary_swell_height_ft",
+                    "tertiary_swell_period_s",
+                    "tertiary_swell_direction",
+                    "wind_speed_mph",
+                    "wind_direction_deg",
+                    "wind_gust_mph",
+                    "water_temp_f",
+                    "tide_level_ft",
+                    "temperature",
+                    "weather",
+                    "pressure_inhg",
+                )
+
+                for field in preserve_if_none:
+                    record.pop(field, None)
                 
                 # Store in dictionary to prevent duplicates
                 records_dict[unique_key] = record

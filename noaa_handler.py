@@ -31,6 +31,63 @@ CDIP_URLS = {
 }
 M_TO_FT = 3.28084
 
+def nearest_valid_value(series, index):
+    """Return the closest non-null/non-NaN entry around the given index."""
+    if series is None:
+        return None
+    try:
+        values = np.asarray(series)
+    except Exception:
+        values = series
+    try:
+        n = len(values)
+    except TypeError:
+        return None
+    if n == 0:
+        return None
+
+    def _value_at(pos):
+        if pos < 0 or pos >= n:
+            return None
+        try:
+            val = values[pos]
+        except Exception:
+            return None
+        if isinstance(val, np.ma.MaskedArray):
+            if getattr(val, 'mask', False) is True:
+                return None
+            val = val.data
+        if isinstance(val, np.ndarray):
+            if val.size != 1:
+                return None
+            val = val.item()
+        if isinstance(val, np.generic):
+            val = val.item()
+        if val is None:
+            return None
+        try:
+            if np.isnan(val):
+                return None
+        except Exception:
+            pass
+        return val
+
+    current = _value_at(index)
+    if current is not None:
+        return current
+    for offset in range(1, n):
+        left = index - offset
+        if left >= 0:
+            val = _value_at(left)
+            if val is not None:
+                return val
+        right = index + offset
+        if right < n:
+            val = _value_at(right)
+            if val is not None:
+                return val
+    return None
+
 def load_single_cdip_dataset(url, region_name):
     """Load a single CDIP dataset (SoCal or NorCal)."""
     try:
@@ -789,33 +846,45 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         final_timestamp = clean_pacific_time.isoformat()
 
         # Prepare all 3 swell trains for ranking using cached/enhanced data
+        swell1_height_m = nearest_valid_value(grid_data['swell_1_height'], i)
+        swell1_period_s = nearest_valid_value(grid_data['swell_1_period'], i)
+        swell1_direction = nearest_valid_value(grid_data['swell_1_direction'], i)
+
+        swell2_height_m = nearest_valid_value(grid_data['swell_2_height'], i)
+        swell2_period_s = nearest_valid_value(grid_data['swell_2_period'], i)
+        swell2_direction = nearest_valid_value(grid_data['swell_2_direction'], i)
+
+        swell3_height_m = nearest_valid_value(grid_data['swell_3_height'], i)
+        swell3_period_s = nearest_valid_value(grid_data['swell_3_period'], i)
+        swell3_direction = nearest_valid_value(grid_data['swell_3_direction'], i)
+
         swell_trains = [
             {
-                'height_ft': safe_float(meters_to_feet(grid_data['swell_1_height'][i])),
-                'period_s': safe_float(grid_data['swell_1_period'][i]),
-                'direction_deg': safe_float(grid_data['swell_1_direction'][i]),
+                'height_ft': safe_float(meters_to_feet(swell1_height_m)) if swell1_height_m is not None else None,
+                'period_s': safe_float(swell1_period_s),
+                'direction_deg': safe_float(swell1_direction),
                 'beach_lat': lat0,
                 'beach_lon': lon0,
                 'source': 'swell_1_cdip_enhanced'  # Indicate CDIP enhancement
             },
             {
-                'height_ft': safe_float(meters_to_feet(grid_data['swell_2_height'][i])),
-                'period_s': safe_float(grid_data['swell_2_period'][i]),
-                'direction_deg': safe_float(grid_data['swell_2_direction'][i]),
+                'height_ft': safe_float(meters_to_feet(swell2_height_m)) if swell2_height_m is not None else None,
+                'period_s': safe_float(swell2_period_s),
+                'direction_deg': safe_float(swell2_direction),
                 'beach_lat': lat0,
                 'beach_lon': lon0,
                 'source': 'swell_2'
             },
             {
-                'height_ft': safe_float(meters_to_feet(grid_data['swell_3_height'][i])),
-                'period_s': safe_float(grid_data['swell_3_period'][i]),
-                'direction_deg': safe_float(grid_data['swell_3_direction'][i]),
+                'height_ft': safe_float(meters_to_feet(swell3_height_m)) if swell3_height_m is not None else None,
+                'period_s': safe_float(swell3_period_s),
+                'direction_deg': safe_float(swell3_direction),
                 'beach_lat': lat0,
                 'beach_lon': lon0,
                 'source': 'swell_3'
             }
         ]
-        
+
         # DYNAMICALLY RANK the swell trains for this timestamp
         primary, secondary, tertiary = rank_swell_trains(swell_trains)
         
@@ -824,13 +893,15 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         primary_period = primary['period_s'] if primary else None
         
         # NOAA surf height (compact display range in feet) - enhanced with CDIP where available
-        sig_wave_height_m = safe_float(grid_data['sig_wave_height'][i])
+        sig_wave_height_m = nearest_valid_value(grid_data['sig_wave_height'], i)
+        sig_wave_height_m = safe_float(sig_wave_height_m) if sig_wave_height_m is not None else None
         surf_min_ft, surf_max_ft = get_surf_height_range(sig_wave_height_m)
         surf_min_ft, surf_max_ft = normalize_surf_range(surf_min_ft, surf_max_ft)
 
         # Wind speed: defer to Open-Meteo supplement (do not use NOAA here)
         wind_speed_mph = None
-        wind_direction = safe_float(grid_data['wind_direction_deg'][i])
+        wind_direction = nearest_valid_value(grid_data['wind_direction_deg'], i)
+        wind_direction = safe_float(wind_direction) if wind_direction is not None else None
         
         # Calculate wave energy using CDIP spectral data if available, otherwise fallback
         wave_energy_kj = None

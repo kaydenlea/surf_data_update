@@ -19,6 +19,7 @@ Fills these fields if they are None:
 
 import time
 import math
+import numpy as np
 import pandas as pd
 from collections import defaultdict
 
@@ -39,6 +40,63 @@ from utils import (
 from swell_ranking import (
     calculate_wave_energy_kj, get_surf_height_range
 )
+
+def nearest_valid_value(series, index):
+    """Return the closest non-null/non-NaN entry around the given index."""
+    if series is None:
+        return None
+    try:
+        values = np.asarray(series)
+    except Exception:
+        values = series
+    try:
+        n = len(values)
+    except TypeError:
+        return None
+    if n == 0:
+        return None
+
+    def _value_at(pos):
+        if pos < 0 or pos >= n:
+            return None
+        try:
+            val = values[pos]
+        except Exception:
+            return None
+        if isinstance(val, np.ma.MaskedArray):
+            if getattr(val, 'mask', False) is True:
+                return None
+            val = val.data
+        if isinstance(val, np.ndarray):
+            if val.size != 1:
+                return None
+            val = val.item()
+        if isinstance(val, np.generic):
+            val = val.item()
+        if val is None:
+            return None
+        try:
+            if np.isnan(val):
+                return None
+        except Exception:
+            pass
+        return val
+
+    current = _value_at(index)
+    if current is not None:
+        return current
+    for offset in range(1, n):
+        left = index - offset
+        if left >= 0:
+            val = _value_at(left)
+            if val is not None:
+                return val
+        right = index + offset
+        if right < n:
+            val = _value_at(right)
+            if val is not None:
+                return val
+    return None
 
 # Initialize Open-Meteo client with caching and retry
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
@@ -365,29 +423,22 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     rec = updated_records[idx]
 
                     # Prepare candidate values
-                    # Tide: convert meters -> feet and add adjustment
-                    raw_tide_ft = safe_float(meters_to_feet(tide_level_m[j]))
+                    tide_level_val = nearest_valid_value(tide_level_m, j)
+                    raw_tide_ft = safe_float(meters_to_feet(tide_level_val)) if tide_level_val is not None else None
                     adjusted_tide_ft = (raw_tide_ft + TIDE_ADJUSTMENT_FT) if raw_tide_ft is not None else None
 
-                    # Swell and wave metrics from Marine API
-                    swell_height_m_val = safe_float(swell_height_m[j])
+                    swell_height_m_val = nearest_valid_value(swell_height_m, j)
                     swell_height_ft = safe_float(meters_to_feet(swell_height_m_val)) if swell_height_m_val is not None else None
-                    swell_period_s_val = safe_float(swell_period_s[j])
-                    swell_direction_val = safe_float(swell_direction[j])
-                    wave_height_m_val = safe_float(wave_height_m[j])
-                    try:
-                        wind_wave_height_m_val = safe_float(wind_wave_height_m[j])
-                    except Exception:
-                        wind_wave_height_m_val = None
+                    swell_period_s_val = safe_float(nearest_valid_value(swell_period_s, j))
+                    swell_direction_val = safe_float(nearest_valid_value(swell_direction, j))
+
+                    wave_height_m_val = nearest_valid_value(wave_height_m, j)
+                    wave_height_m_val = safe_float(wave_height_m_val) if wave_height_m_val is not None else None
+
+                    wind_wave_height_m_val = nearest_valid_value(wind_wave_height_m, j)
                     wind_wave_height_ft = safe_float(meters_to_feet(wind_wave_height_m_val)) if wind_wave_height_m_val is not None else None
-                    try:
-                        wind_wave_period_s_val = safe_float(wind_wave_period_s[j])
-                    except Exception:
-                        wind_wave_period_s_val = None
-                    try:
-                        wind_wave_direction_val = safe_float(wind_wave_direction[j])
-                    except Exception:
-                        wind_wave_direction_val = None
+                    wind_wave_period_s_val = safe_float(nearest_valid_value(wind_wave_period_s, j))
+                    wind_wave_direction_val = safe_float(nearest_valid_value(wind_wave_direction, j))
 
                     secondary_height_ft = wind_wave_height_ft if wind_wave_height_ft is not None else swell_height_ft
                     secondary_period_s_val = wind_wave_period_s_val if wind_wave_period_s_val is not None else swell_period_s_val
@@ -398,18 +449,25 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
                     surf_max_ft = safe_float(surf_max_ft) if surf_max_ft is not None else None
 
+                    temp_val = nearest_valid_value(temp_c, j)
+                    weather_val = nearest_valid_value(weather_code, j)
+                    wind_speed_val = nearest_valid_value(wind_speed_kph, j)
+                    wind_gust_val = nearest_valid_value(wind_gust_kph, j)
+                    water_temp_val = nearest_valid_value(water_temp_c, j)
+                    pressure_val = nearest_valid_value(pressure_hpa, j)
+
                     wave_energy_kj = None
                     if swell_height_ft is not None and swell_period_s_val is not None and swell_period_s_val > 0:
                         wave_energy_kj = calculate_wave_energy_kj(swell_height_ft, swell_period_s_val)
                         wave_energy_kj = safe_float(wave_energy_kj) if wave_energy_kj is not None else None
 
                     candidates = {
-                        "temperature":   safe_float(celsius_to_fahrenheit(temp_c[j])),
-                        "weather":       safe_int(weather_code[j]),
-                        "wind_speed_mph": safe_float(kph_to_mph(wind_speed_kph[j])),
-                        "wind_gust_mph": safe_float(kph_to_mph(wind_gust_kph[j])),
-                        "water_temp_f":  safe_float(celsius_to_fahrenheit(water_temp_c[j])),
-                        "pressure_inhg": safe_float(hpa_to_inhg(pressure_hpa[j])),
+                        "temperature":   safe_float(celsius_to_fahrenheit(temp_val)) if temp_val is not None else None,
+                        "weather":       safe_int(weather_val) if weather_val is not None else None,
+                        "wind_speed_mph": safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None,
+                        "wind_gust_mph": safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None,
+                        "water_temp_f":  safe_float(celsius_to_fahrenheit(water_temp_val)) if water_temp_val is not None else None,
+                        "pressure_inhg": safe_float(hpa_to_inhg(pressure_val)) if pressure_val is not None else None,
                         "tide_level_ft": adjusted_tide_ft,
                         "primary_swell_height_ft": swell_height_ft,
                         "primary_swell_period_s": swell_period_s_val,
