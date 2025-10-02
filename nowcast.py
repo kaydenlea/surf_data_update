@@ -331,32 +331,46 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
     logger.info(f"Updated {updated_count} existing records with CDIP nowcast data")
     return updated_records
 
+
 def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "forecast_data"):
     """Selectively update only the records that were modified with CDIP data."""
     if not records:
         logger.warning("No records to update")
         return 0
-    
+
     logger.info(f"Selectively updating {len(records)} forecast records...")
-    
+
+    def _prune_record(rec: Dict) -> Dict:
+        filtered = {}
+        for key, value in rec.items():
+            if key in {"beach_id", "timestamp"}:
+                filtered[key] = value
+            elif value is not None:
+                filtered[key] = value
+        return filtered
+
+    cleaned_records = [
+        _prune_record(rec) for rec in records
+        if rec.get("beach_id") and rec.get("timestamp")
+    ]
+
+    if not cleaned_records:
+        logger.warning("No CDIP records contained non-null updates after pruning")
+        return 0
+
     total_updated = 0
-    
-    # Process in smaller batches to be safer
     batch_size = 50
-    for chunk in chunk_iter(records, batch_size):
+
+    for chunk in chunk_iter(cleaned_records, batch_size):
         try:
-            # Use upsert to update existing records
             supabase.table(table_name).upsert(
                 chunk,
                 on_conflict="beach_id,timestamp"
             ).execute()
-            
             total_updated += len(chunk)
             logger.debug(f"Updated batch of {len(chunk)} records")
-            
         except Exception as e:
             logger.error(f"Error updating batch: {e}")
-            # Try individual updates as fallback
             for record in chunk:
                 try:
                     supabase.table(table_name).upsert(
@@ -366,7 +380,7 @@ def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "foreca
                     total_updated += 1
                 except Exception as record_error:
                     logger.debug(f"Failed to update record: {record_error}")
-    
+
     logger.info(f"Successfully updated {total_updated} forecast records with CDIP nowcast data")
     return total_updated
 
