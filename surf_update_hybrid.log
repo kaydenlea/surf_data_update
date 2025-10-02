@@ -3489,3 +3489,4 @@
 2025-10-01 17:49:56,241 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22secondary_swell_direction%22%2C%22tertiary_swell_period_s%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22tertiary_swell_direction%22 "HTTP/2 200 OK"
 2025-10-01 17:49:56,245 - INFO - Post-fill: upserted 12379 forecast rows with neighbor data
 2025-10-01 17:49:56,245 - INFO - Post-fill: completed neighbor backfill
+2025-10-01 19:53:59,002 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=beach_id%2Cprimary_swell_height_ft%2Csecondary_swell_height_ft%2Ctertiary_swell_height_ft%2Cwind_direction_deg%2Cweather&timestamp=eq.2025-10-01T07%3A00%3A00%2B00%3A00&limit=5 "HTTP/2 200 OK"

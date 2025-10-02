@@ -20,6 +20,7 @@ Fills these fields if they are None:
 import time
 import math
 import numpy as np
+import bisect
 import pandas as pd
 from collections import defaultdict
 
@@ -63,9 +64,9 @@ def nearest_valid_value(series, index):
             val = values[pos]
         except Exception:
             return None
+        if np.ma.is_masked(val):
+            return None
         if isinstance(val, np.ma.MaskedArray):
-            if getattr(val, 'mask', False) is True:
-                return None
             val = val.data
         if isinstance(val, np.ndarray):
             if val.size != 1:
@@ -153,6 +154,99 @@ FIELDS_FOR_NEIGHBOR_FILL = (
     "tertiary_swell_direction",
 )
 
+
+
+def _fill_weather_from_nearby_time(records, beach_meta, max_hours=6, time_weight_km=20.0):
+    """Fill missing weather codes by borrowing from nearby beaches at nearby hours."""
+    if not records:
+        return records
+
+    donors = []
+    donor_times = []
+    for rec in records:
+        weather = rec.get('weather')
+        bid = rec.get('beach_id')
+        ts = rec.get('timestamp')
+        meta = beach_meta.get(bid)
+        if weather is None or not meta or meta[1] is None or meta[2] is None or not ts:
+            continue
+        try:
+            ts_obj = pd.Timestamp(ts)
+        except Exception:
+            continue
+        donors.append((ts_obj, meta[1], meta[2], weather))
+        donor_times.append(ts_obj.value)
+
+    if not donors:
+        return records
+
+    donors_sorted = sorted(zip(donor_times, donors), key=lambda x: x[0])
+    donor_times_sorted = [time for time, _ in donors_sorted]
+    donors_data = [data for _, data in donors_sorted]
+
+    max_delta_ns = max_hours * 3600 * 1_000_000_000
+
+    filled = 0
+    for rec in records:
+        if rec.get('weather') is not None:
+            continue
+        bid = rec.get('beach_id')
+        ts = rec.get('timestamp')
+        meta = beach_meta.get(bid)
+        if not ts or not meta or meta[1] is None or meta[2] is None:
+            continue
+        try:
+            target_ts = pd.Timestamp(ts)
+        except Exception:
+            continue
+        target_val = target_ts.value
+        idx = bisect.bisect_left(donor_times_sorted, target_val)
+
+        best_val = None
+        best_cost = None
+
+        left = idx - 1
+        right = idx
+        while True:
+            progressed = False
+            if left >= 0:
+                delta = abs(donor_times_sorted[left] - target_val)
+                if delta <= max_delta_ns:
+                    ts_obj, lat, lon, weather = donors_data[left]
+                    dist = _haversine_distance(meta[1], meta[2], lat, lon)
+                    if dist is not None:
+                        cost = dist + (delta / 1_000_000_000 / 3600.0) * time_weight_km
+                        if best_cost is None or cost < best_cost:
+                            best_cost = cost
+                            best_val = weather
+                    left -= 1
+                    progressed = True
+                else:
+                    left = -1
+            if right < len(donors_data):
+                delta = abs(donor_times_sorted[right] - target_val)
+                if delta <= max_delta_ns:
+                    ts_obj, lat, lon, weather = donors_data[right]
+                    dist = _haversine_distance(meta[1], meta[2], lat, lon)
+                    if dist is not None:
+                        cost = dist + (delta / 1_000_000_000 / 3600.0) * time_weight_km
+                        if best_cost is None or cost < best_cost:
+                            best_cost = cost
+                            best_val = weather
+                    right += 1
+                    progressed = True
+                else:
+                    right = len(donors_data)
+            if not progressed:
+                break
+
+        if best_val is not None:
+            rec['weather'] = best_val
+            filled += 1
+
+    if filled:
+        logger.info(f"   Open-Meteo supplement: filled {filled} weather codes using cross-hour neighbors")
+    return records
 
 def _fill_missing_fields_from_neighbors(records, beach_meta, fields=FIELDS_FOR_NEIGHBOR_FILL):
     """Fill missing fields using nearest neighbor records at the same timestamp."""
@@ -505,6 +599,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
 
     # 7) Done — only missing fields were filled, keys untouched, alignment preserved
     updated_records = _fill_missing_fields_from_neighbors(updated_records, beach_meta)
+    updated_records = _fill_weather_from_nearby_time(updated_records, beach_meta)
     logger.info("   Open-Meteo supplement: fill complete.")
     return updated_records
 # ---------------- Optional utilities retained from your original file ----------------

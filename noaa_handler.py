@@ -53,9 +53,9 @@ def nearest_valid_value(series, index):
             val = values[pos]
         except Exception:
             return None
+        if np.ma.is_masked(val):
+            return None
         if isinstance(val, np.ma.MaskedArray):
-            if getattr(val, 'mask', False) is True:
-                return None
             val = val.data
         if isinstance(val, np.ndarray):
             if val.size != 1:
