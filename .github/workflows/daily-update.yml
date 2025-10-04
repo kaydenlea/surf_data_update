@@ -43,7 +43,6 @@ jobs:
         run: |
           python main.py
           python tide.py
-          python fill_neighbors.py
 
       - name: Upload run log artifact (optional)
         if: always()
