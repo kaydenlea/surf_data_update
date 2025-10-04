@@ -325,28 +325,7 @@ def calculate_cdip_wave_energy(cdip_data, site_idx, time_idx):
     except Exception as e:
         logger.debug(f"   Error calculating CDIP wave energy: {e}")
         return None
-    """Interpolate CDIP data to match GFS 3-hour intervals."""
-    if len(cdip_values) == 0 or len(gfs_times) == 0:
-        return np.full(len(gfs_times), np.nan)
-    
-    # Convert to numeric timestamps for interpolation
-    cdip_numeric = pd.Series(cdip_times).astype('int64').values
-    gfs_numeric = pd.Series(gfs_times).astype('int64').values
-    
-    # Remove any NaN values from CDIP data
-    valid_mask = ~np.isnan(cdip_values)
-    if not np.any(valid_mask):
-        return np.full(len(gfs_times), np.nan)
-    
-    cdip_clean_times = cdip_numeric[valid_mask]
-    cdip_clean_values = cdip_values[valid_mask]
-    
-    # Interpolate to GFS times
-    interpolated = np.interp(gfs_numeric, cdip_clean_times, cdip_clean_values, 
-                           left=np.nan, right=np.nan)
-    
-    return interpolated
-
+  
 def interpolate_cdip_to_gfs_times(cdip_times, cdip_values, gfs_times):
     """Interpolate CDIP data to match GFS 3-hour intervals."""
     if len(cdip_values) == 0 or len(gfs_times) == 0:
@@ -928,31 +907,56 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
             wave_energy_kj = calculate_wave_energy_kj(primary_height, primary_period)
 
 
-        record = {
-            "beach_id": beach_id,
-            "timestamp": final_timestamp,  # Clean Pacific intervals: 00:00, 03:00, 06:00, etc.
-        }
-
-        def _set_if_value(key, value):
-            if value is not None:
-                record[key] = value
-
-        _set_if_value("primary_swell_height_ft", primary['height_ft'] if primary else None)
-        _set_if_value("primary_swell_period_s", primary['period_s'] if primary else None)
-        _set_if_value("primary_swell_direction", primary['direction_deg'] if primary else None)
-        _set_if_value("secondary_swell_height_ft", secondary['height_ft'] if secondary else None)
-        _set_if_value("secondary_swell_period_s", secondary['period_s'] if secondary else None)
-        _set_if_value("secondary_swell_direction", secondary['direction_deg'] if secondary else None)
-        _set_if_value("tertiary_swell_height_ft", tertiary['height_ft'] if tertiary else None)
-        _set_if_value("tertiary_swell_period_s", tertiary['period_s'] if tertiary else None)
-        _set_if_value("tertiary_swell_direction", tertiary['direction_deg'] if tertiary else None)
-        _set_if_value("surf_height_min_ft", surf_min_ft)
-        _set_if_value("surf_height_max_ft", surf_max_ft)
-        _set_if_value("wave_energy_kj", wave_energy_kj)
-        _set_if_value("wind_speed_mph", wind_speed_mph)
-        _set_if_value("wind_direction_deg", wind_direction)
-
-        if nonempty_record(record):
+        record = {
+
+            "beach_id": beach_id,
+
+            "timestamp": final_timestamp,  # Clean Pacific intervals: 00:00, 03:00, 06:00, etc.
+
+        }
+
+
+
+        def _set_if_value(key, value):
+
+            if value is not None:
+
+                record[key] = value
+
+
+
+        _set_if_value("primary_swell_height_ft", primary['height_ft'] if primary else None)
+
+        _set_if_value("primary_swell_period_s", primary['period_s'] if primary else None)
+
+        _set_if_value("primary_swell_direction", primary['direction_deg'] if primary else None)
+
+        _set_if_value("secondary_swell_height_ft", secondary['height_ft'] if secondary else None)
+
+        _set_if_value("secondary_swell_period_s", secondary['period_s'] if secondary else None)
+
+        _set_if_value("secondary_swell_direction", secondary['direction_deg'] if secondary else None)
+
+        _set_if_value("tertiary_swell_height_ft", tertiary['height_ft'] if tertiary else None)
+
+        _set_if_value("tertiary_swell_period_s", tertiary['period_s'] if tertiary else None)
+
+        _set_if_value("tertiary_swell_direction", tertiary['direction_deg'] if tertiary else None)
+
+        _set_if_value("surf_height_min_ft", surf_min_ft)
+
+        _set_if_value("surf_height_max_ft", surf_max_ft)
+
+        _set_if_value("wave_energy_kj", wave_energy_kj)
+
+        _set_if_value("wind_speed_mph", wind_speed_mph)
+
+        _set_if_value("wind_direction_deg", wind_direction)
+
+
+
+        if nonempty_record(record):
+
             records.append(record)
 
 
