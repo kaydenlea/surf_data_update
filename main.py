@@ -33,7 +33,6 @@ from openmeteo_handler import (
     test_openmeteo_connection
 )
 
-from fill_neighbors import main as run_fill_neighbors, pacific_midnight_today
 # --------------------------------------------------------------------------------------
 # HYBRID FORECAST UPDATE
 # --------------------------------------------------------------------------------------
@@ -206,15 +205,6 @@ def update_forecast_data_hybrid(beaches):
         # six target fields will be newly filled where they were None.
         logger.info("   Uploading enhanced records to database…")
         total_inserted = upsert_forecast_data(enhanced_records)
-
-        # Run neighbor fill after NOAA/Open-Meteo so remaining gaps borrow from nearby beaches
-        try:
-            start_iso = pacific_midnight_today().isoformat()
-            logger.info("   Launching neighbor backfill from %s" % start_iso)
-            if not run_fill_neighbors(["--start-iso", start_iso, "--per-field"]):
-                logger.warning("   Neighbor backfill reported a failure")
-        except Exception as neighbor_err:
-            logger.error(f"   Neighbor backfill failed: {neighbor_err}")
 
         log_step(
             f"Hybrid forecast update completed: {len(beaches)} beaches, "
