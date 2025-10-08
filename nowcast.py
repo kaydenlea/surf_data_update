@@ -12,7 +12,7 @@ import pandas as pd
 import pytz
 from datetime import datetime, timezone
 from supabase import create_client, Client
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Set
 
 # Import your existing config and database utilities
 try:
@@ -243,8 +243,11 @@ def get_existing_forecast_records_for_update(table_name: str = "forecast_data") 
         logger.error(f"Failed to fetch existing forecast records: {e}")
         return []
 
-def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List[Dict], cdip_data: Dict) -> List[Dict]:
-    """Update existing forecast records with CDIP nowcast data where timestamps match."""
+def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List[Dict], cdip_data: Dict) -> Tuple[List[Dict], Set[str]]:
+    """Update existing forecast records with CDIP nowcast data where timestamps match.
+
+    Returns the updated records alongside the set of ISO date strings that were modified.
+    """
     
     logger.info("Updating existing forecast records with CDIP nowcast data...")
     
@@ -254,6 +257,7 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
     # Track what we update
     updated_count = 0
     updated_records = []
+    updated_dates: Set[str] = set()
     
     for record in existing_records:
         updated_record = record.copy()
@@ -262,9 +266,11 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
             beach_id = record['beach_id']
             record_timestamp = pd.Timestamp(record['timestamp'])
             
-            # Ensure timezone awareness
+            # Ensure timezone awareness in Pacific time
             if record_timestamp.tz is None:
                 record_timestamp = record_timestamp.tz_localize("America/Los_Angeles")
+            else:
+                record_timestamp = record_timestamp.tz_convert("America/Los_Angeles")
             
             beach = beach_lookup.get(beach_id)
             if not beach:
@@ -308,7 +314,7 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
             # Compute compact Surfline-style height range (in feet)
             rmin_ft, rmax_ft = get_surf_height_range(hs_m)
             rmin_ft, rmax_ft = normalize_surf_range(rmin_ft, rmax_ft)
-
+            
             # Update ONLY the wave-related fields with CDIP nowcast data
             updated_record.update({
                 "primary_swell_height_ft": safe_float(hs_ft),
@@ -321,6 +327,7 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
             
             # Keep ALL other existing fields (wind, weather, secondary swells, etc.)
             updated_count += 1
+            updated_dates.add(record_timestamp.date().isoformat())
             logger.debug(f"Updated record for beach {beach_id} at {record_timestamp}")
             
         except Exception as e:
@@ -329,7 +336,7 @@ def update_records_with_cdip_nowcast(existing_records: List[Dict], beaches: List
         updated_records.append(updated_record)
     
     logger.info(f"Updated {updated_count} existing records with CDIP nowcast data")
-    return updated_records
+    return updated_records, updated_dates
 
 
 def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "forecast_data"):
@@ -383,6 +390,22 @@ def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "foreca
 
     logger.info(f"Successfully updated {total_updated} forecast records with CDIP nowcast data")
     return total_updated
+
+def refresh_daily_surf_intensity_for_dates(target_dates: Set[str]):
+    """Invoke Supabase routine to refresh aggregated surf intensity for each target date."""
+    if not target_dates:
+        logger.info("No target dates to refresh for daily surf intensity")
+        return
+
+    for target_date in sorted(target_dates):
+        try:
+            logger.info(f"Refreshing daily surf intensity for {target_date}")
+            supabase.rpc(
+                "refresh_daily_beach_surf_intensity",
+                {"target_date": target_date}
+            ).execute()
+        except Exception as e:
+            logger.error(f"Failed to refresh daily surf intensity for {target_date}: {e}")
 
 def create_cdip_nowcast_records(beaches: List[Dict], cdip_data: Dict) -> List[Dict]:
     """Create nowcast records for all beaches and timestamps - REPLACES existing data."""
@@ -547,10 +570,13 @@ def main():
             return False
         
         # Update existing records with CDIP nowcast data (preserves all other data)
-        updated_records = update_records_with_cdip_nowcast(existing_records, beaches, combined_cdip_data)
+        updated_records, updated_dates = update_records_with_cdip_nowcast(existing_records, beaches, combined_cdip_data)
         
         # Selectively update only the modified records
         selective_upsert_cdip_updates(updated_records)
+
+        # Refresh daily surf intensity aggregates for affected dates
+        refresh_daily_surf_intensity_for_dates(updated_dates)
         
         logger.info("CDIP nowcast selective update completed successfully")
         return True
