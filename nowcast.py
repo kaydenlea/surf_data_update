@@ -391,6 +391,46 @@ def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "foreca
     logger.info(f"Successfully updated {total_updated} forecast records with CDIP nowcast data")
     return total_updated
 
+def delete_previous_day_surf_intensity():
+    """Delete previous day's data from daily_beach_surf_intensity table."""
+    try:
+        now_pacific = pd.Timestamp.now(tz="America/Los_Angeles")
+        yesterday = (now_pacific - pd.Timedelta(days=1)).date().isoformat()
+
+        logger.info(f"Deleting previous day's surf intensity data for {yesterday}")
+        supabase.table("daily_beach_surf_intensity").delete().eq(
+            "surf_date", yesterday
+        ).execute()
+        logger.info(f"Deleted previous day's surf intensity records")
+    except Exception as e:
+        logger.error(f"Failed to delete previous day's surf intensity: {e}")
+
+def get_all_forecast_dates() -> Set[str]:
+    """Get all unique dates that exist in the forecast_data table."""
+    try:
+        logger.info("Fetching all unique forecast dates...")
+        response = supabase.table("forecast_data").select("timestamp").execute()
+
+        if not response.data:
+            logger.warning("No forecast data found")
+            return set()
+
+        # Extract unique dates from timestamps
+        dates = set()
+        for record in response.data:
+            timestamp = pd.Timestamp(record['timestamp'])
+            if timestamp.tz is None:
+                timestamp = timestamp.tz_localize("America/Los_Angeles")
+            else:
+                timestamp = timestamp.tz_convert("America/Los_Angeles")
+            dates.add(timestamp.date().isoformat())
+
+        logger.info(f"Found {len(dates)} unique forecast dates")
+        return dates
+    except Exception as e:
+        logger.error(f"Failed to fetch forecast dates: {e}")
+        return set()
+
 def refresh_daily_surf_intensity_for_dates(target_dates: Set[str]):
     """Invoke Supabase routine to refresh aggregated surf intensity for each target date."""
     if not target_dates:
@@ -539,48 +579,52 @@ def main():
     """Main execution function - selectively updates existing forecast records with CDIP nowcast data."""
     try:
         logger.info("Starting CDIP nowcast selective update...")
-        
+
+        # Delete previous day's surf intensity data
+        delete_previous_day_surf_intensity()
+
         # Get existing forecast records that might need updates
         existing_records = get_existing_forecast_records_for_update()
         if not existing_records:
             logger.info("No existing forecast records found in nowcast time window")
             return True  # Not an error, just nothing to update
-        
+
         # Get beach locations using existing database utilities
         beaches = get_beach_locations_from_database()
         if not beaches:
             logger.error("No beaches loaded from database")
             return False
-        
+
         # Load CDIP nowcast datasets
         cdip_datasets = []
         for region, url in CDIP_NOWCAST_URLS.items():
             dataset = load_cdip_nowcast_dataset(url, region)
             if dataset:
                 cdip_datasets.append(dataset)
-        
+
         if not cdip_datasets:
             logger.error("No CDIP datasets loaded successfully")
             return False
-        
+
         # Combine datasets
         combined_cdip_data = combine_cdip_datasets(cdip_datasets)
         if not combined_cdip_data:
             logger.error("Failed to combine CDIP datasets")
             return False
-        
+
         # Update existing records with CDIP nowcast data (preserves all other data)
-        updated_records, updated_dates = update_records_with_cdip_nowcast(existing_records, beaches, combined_cdip_data)
-        
+        updated_records, _updated_dates = update_records_with_cdip_nowcast(existing_records, beaches, combined_cdip_data)
+
         # Selectively update only the modified records
         selective_upsert_cdip_updates(updated_records)
 
-        # Refresh daily surf intensity aggregates for affected dates
-        refresh_daily_surf_intensity_for_dates(updated_dates)
-        
+        # Get all dates in forecast table and refresh daily surf intensity for all
+        all_forecast_dates = get_all_forecast_dates()
+        refresh_daily_surf_intensity_for_dates(all_forecast_dates)
+
         logger.info("CDIP nowcast selective update completed successfully")
         return True
-        
+
     except Exception as e:
         logger.error(f"Error in main execution: {e}")
         return False
