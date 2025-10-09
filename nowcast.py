@@ -392,16 +392,16 @@ def selective_upsert_cdip_updates(records: List[Dict], table_name: str = "foreca
     return total_updated
 
 def delete_previous_day_surf_intensity():
-    """Delete previous day's data from daily_beach_surf_intensity table."""
+    """Delete all surf intensity data from dates before today."""
     try:
         now_pacific = pd.Timestamp.now(tz="America/Los_Angeles")
-        yesterday = (now_pacific - pd.Timedelta(days=1)).date().isoformat()
+        today = now_pacific.date().isoformat()
 
-        logger.info(f"Deleting previous day's surf intensity data for {yesterday}")
-        supabase.table("daily_beach_surf_intensity").delete().eq(
-            "surf_date", yesterday
+        logger.info(f"Deleting all surf intensity data before {today}")
+        supabase.table("daily_beach_surf_intensity").delete().lt(
+            "date", today
         ).execute()
-        logger.info(f"Deleted previous day's surf intensity records")
+        logger.info(f"Deleted all previous surf intensity records")
     except Exception as e:
         logger.error(f"Failed to delete previous day's surf intensity: {e}")
 

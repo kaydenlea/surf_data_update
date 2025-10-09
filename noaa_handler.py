@@ -6,6 +6,7 @@ Enhanced with CDIP data for more accurate swell forecasts
 """
 
 import time
+import math
 import xarray as xr
 import numpy as np
 import pandas as pd
@@ -87,6 +88,22 @@ def nearest_valid_value(series, index):
             if val is not None:
                 return val
     return None
+
+def haversine_distance_km(lat1, lon1, lat2, lon2):
+    """Great-circle distance between two latitude/longitude points in kilometers."""
+    try:
+        lat1_rad = math.radians(float(lat1))
+        lon1_rad = math.radians(float(lon1))
+        lat2_rad = math.radians(float(lat2))
+        lon2_rad = math.radians(float(lon2))
+    except (TypeError, ValueError):
+        return None
+
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
+    c = 2 * math.asin(min(1.0, math.sqrt(max(0.0, a))))
+    return 6371.0 * c
 
 def load_single_cdip_dataset(url, region_name):
     """Load a single CDIP dataset (SoCal or NorCal)."""
@@ -737,7 +754,113 @@ def get_noaa_data_bulk_optimized(ds, beaches):
             except Exception as e:
                 logger.error(f"   Error processing {beach['Name']} with cached data: {e}")
     
-    logger.info(f"   RATE-LIMITED: Processed {len(beaches)} beaches -> {len(all_records)} records (CDIP NorCal/SoCal enhanced)")
+    # Identify beaches with no NOAA records and backfill from nearest neighbor that has data.
+    records_by_beach = {}
+    for record in all_records:
+        beach_id = record.get("beach_id")
+        if beach_id is None:
+            continue
+        records_by_beach.setdefault(beach_id, []).append(record)
+
+    beach_coords = {}
+    for beach in beaches:
+        beach_id = beach.get("id")
+        lat = beach.get("LATITUDE")
+        lon = beach.get("LONGITUDE")
+        if beach_id is None or lat is None or lon is None:
+            continue
+        try:
+            beach_coords[beach_id] = (float(lat), float(lon))
+        except (TypeError, ValueError):
+            continue
+
+    donor_ids = {bid for bid in records_by_beach.keys() if bid in beach_coords}
+
+    missing_beaches = []
+    for beach in beaches:
+        beach_id = beach.get("id")
+        if beach_id is None:
+            continue
+        if beach_id not in records_by_beach:
+            missing_beaches.append(beach)
+
+    fallback_records = []
+    fallback_details = []
+    missing_without_coords = 0
+    missing_no_donor = 0
+
+    for beach in missing_beaches:
+        beach_id = beach.get("id")
+        coords = beach_coords.get(beach_id)
+        if not coords:
+            missing_without_coords += 1
+            continue
+
+        best_donor_id = None
+        best_distance = None
+        for donor_id in donor_ids:
+            donor_coords = beach_coords.get(donor_id)
+            if not donor_coords:
+                continue
+            distance = haversine_distance_km(coords[0], coords[1], donor_coords[0], donor_coords[1])
+            if distance is None:
+                continue
+            if best_distance is None or distance < best_distance:
+                best_distance = distance
+                best_donor_id = donor_id
+
+        if best_donor_id is None:
+            missing_no_donor += 1
+            continue
+
+        donor_records = records_by_beach.get(best_donor_id, [])
+        if not donor_records:
+            missing_no_donor += 1
+            continue
+
+        for donor_record in donor_records:
+            cloned = donor_record.copy()
+            cloned["beach_id"] = beach_id
+            fallback_records.append(cloned)
+
+        fallback_details.append((beach.get("Name") or beach_id, best_donor_id, best_distance, len(donor_records)))
+
+    if fallback_records:
+        all_records.extend(fallback_records)
+        fallback_beach_count = len({rec["beach_id"] for rec in fallback_records})
+        logger.warning(
+            f"   NOAA fallback: copied {len(fallback_records)} records from nearest neighbors "
+            f"for {fallback_beach_count} beaches without direct data."
+        )
+        sample_details = ", ".join(
+            f"{target}<-{donor} ({dist:.1f} km, {count} records)"
+            for target, donor, dist, count in fallback_details[:5]
+            if dist is not None
+        )
+        if sample_details:
+            logger.debug(f"      Fallback samples: {sample_details}")
+        if missing_without_coords:
+            logger.warning(f"   NOAA fallback: skipped {missing_without_coords} beaches missing coordinates.")
+        if missing_no_donor:
+            logger.warning(f"   NOAA fallback: nearest-neighbor data unavailable for {missing_no_donor} beaches.")
+    else:
+        if missing_beaches and missing_without_coords != len(missing_beaches):
+            logger.warning(
+                f"   NOAA fallback: could not locate donor data for "
+                f"{len(missing_beaches) - missing_without_coords} beaches with coordinates."
+            )
+        if missing_without_coords:
+            logger.warning(f"   NOAA fallback: skipped {missing_without_coords} beaches missing coordinates.")
+        if missing_no_donor:
+            logger.warning(f"   NOAA fallback: nearest-neighbor data unavailable for {missing_no_donor} beaches.")
+
+    fallback_note = ""
+    if fallback_records:
+        fallback_note = f", neighbor-fill for {len(fallback_details)} beaches"
+    logger.info(
+        f"   RATE-LIMITED: Processed {len(beaches)} beaches -> {len(all_records)} records "
+        f"(CDIP NorCal/SoCal enhanced{fallback_note})"
+    )
     return all_records
 
 def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals):
