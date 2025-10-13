@@ -14,7 +14,7 @@ if sys.platform == "win32":
 
 # Secrets (must be set in environment / GitHub Actions secrets)
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://wborkytqlmkcgwzhsoiz.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib3JreXRxbG1rY2d3emhzb2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMTMxNDcsImV4cCI6MjA2OTY4OTE0N30.9kRB3eSEL_N37dy6FjGfNJEDBiCXam9nepDLowCCxk0")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib3JreXRxbG1rY2d3emhzb2l6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDExMzE0NywiZXhwIjoyMDY5Njg5MTQ3fQ.MGuDZwoAoxZlLMam_PG76NqA-Cug4aXbmjkhppetq0w")
 VC_API_KEY = os.environ.get("VC_API_KEY")
 
 # Script settings (match your existing project as needed)
