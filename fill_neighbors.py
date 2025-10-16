@@ -18,7 +18,7 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 import pandas as pd
 import pytz
 
-from config import logger, UPSERT_CHUNK
+from config import logger
 from database import fetch_all_beaches, supabase
 from utils import chunk_iter
 
@@ -50,6 +50,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--fields", nargs="+", choices=FIELDS_FOR_NEIGHBOR_FILL,
                    help="Override the list of fields to backfill.")
     p.add_argument("--page-size", type=int, default=1000)
+    p.add_argument("--batch-size", type=int, default=100,
+                   help="Number of rows to update per batch (default: 100, max recommended: 500)")
     p.add_argument("--limit", type=int)
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--verbose", action="store_true")
@@ -325,45 +327,66 @@ def fill_from_neighbors(
 import time
 from typing import List, Dict
 
-def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_sleep=0.15, recycle_every=400):
+def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int = 100):
     """
-    Robust per-row UPDATE by id with throttling and retries to avoid HTTP/2 stream resets.
+    Batched UPDATE by id using Supabase upsert with conflict resolution.
+    Much faster than row-by-row updates.
     - updates: list of {"id": ..., "<field>": value, ...}
+    - batch_size: number of rows to update per batch (default 100)
     """
     if dry_run:
         logger.info("Dry-run: skipping DB writes (%s rows)", len(updates))
         return
 
+    if not updates:
+        logger.info("Post-fill: no updates to apply")
+        return
+
+    # Remove null values and empty updates
+    cleaned_updates = []
+    for row in updates:
+        update_data = {k: v for k, v in row.items() if v is not None}
+        if len(update_data) > 3:  # More than just id, beach_id, timestamp
+            cleaned_updates.append(update_data)
+
+    if not cleaned_updates:
+        logger.info("Post-fill: no non-empty updates to apply")
+        return
+
     total = 0
-    attempts_max = 4
+    attempts_max = 3
 
-    for i, row in enumerate(updates, 1):
-        row_id = row["id"]
-        update_data = {k: v for k, v in row.items() if k != "id" and v is not None}
-        if not update_data:
-            continue
-
-        # retry loop for transient httpx/http2 errors
-        delay = 0.25
+    # Process in batches
+    for batch_num, batch in enumerate(chunk_iter(cleaned_updates, batch_size)):
+        delay = 0.5
         for attempt in range(1, attempts_max + 1):
             try:
-                supabase.table("forecast_data").update(update_data).eq("id", row_id).execute()
+                # Use upsert with on_conflict to update existing rows
+                # This is much faster than individual updates
+                supabase.table("forecast_data").upsert(
+                    batch,
+                    on_conflict="id",  # Primary key conflict resolution
+                    ignore_duplicates=False  # Actually update the rows
+                ).execute()
+                total += len(batch)
+                logger.info("Post-fill: batch %d/%d completed (%d rows)",
+                           batch_num + 1,
+                           (len(cleaned_updates) + batch_size - 1) // batch_size,
+                           len(batch))
                 break
             except Exception as e:
                 if attempt == attempts_max:
+                    logger.error("Post-fill: batch %d failed after %d attempts: %s",
+                               batch_num + 1, attempts_max, e)
                     raise
+                logger.warning("Post-fill: batch %d attempt %d failed, retrying: %s",
+                             batch_num + 1, attempt, e)
                 time.sleep(delay)
                 delay = min(delay * 2, 4.0)
 
-        total += 1
-
-        # small pause to avoid exhausting HTTP/2 stream ids
-        if (i % 25) == 0:
-            time.sleep(batch_sleep)
-
-        # occasionally “recycle” the connection by a tiny pause
-        if (i % recycle_every) == 0:
-            time.sleep(0.6)
+        # Small pause between batches to avoid rate limits
+        if batch_num % 10 == 9:
+            time.sleep(0.2)
 
     logger.info("Post-fill: updated %s forecast rows with neighbor data", total)
 
@@ -467,7 +490,7 @@ def main(argv: Optional[List[str]] = None) -> bool:
         logger.info("Post-fill: no fields required neighbor fills")
         return True
 
-    upsert_updates(updates, dry_run=args.dry_run)
+    upsert_updates(updates, dry_run=args.dry_run, batch_size=args.batch_size)
     logger.info("Post-fill: completed neighbor backfill")
     return True
 
