@@ -30,9 +30,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run neighbor fill
-        run: |
-          python fill_neighbors.py --per-field
+      - name: Run full neighbor fill pipeline
+        run: ./fill_all.sh
 
       - name: Upload fill log artifact (optional)
         if: always()

@@ -44,9 +44,9 @@ FIELDS_FOR_NEIGHBOR_FILL: Tuple[str, ...] = (
 # --------------------------------------------------------------------- #
 def build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Fill missing forecast fields from nearest beaches")
-    p.add_argument("--start-iso", help="ISO timestamp (inclusive) to start from. Default: today 00:00 PT.")
-    p.add_argument("--hours-back", type=int, default=0,
-                   help="If no --start-iso, shift Pacific midnight back by this many hours.")
+    p.add_argument("--start-iso", help="ISO timestamp (inclusive) to start from. Default: all records (no limit).")
+    p.add_argument("--hours-back", type=int, default=None,
+                   help="If no --start-iso, how many hours back from now to start (default: None = all records).")
     p.add_argument("--fields", nargs="+", choices=FIELDS_FOR_NEIGHBOR_FILL,
                    help="Override the list of fields to backfill.")
     p.add_argument("--page-size", type=int, default=1000)
@@ -57,8 +57,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--per-field", action="store_true",
                    help="Process each field in its own pass.")
-    p.add_argument("--time-fallback", type=int, default=0,
-                   help="If a field has no donors at a bucket, allow fallback ±N buckets (0=disabled).")
+    p.add_argument("--time-fallback", type=int, default=6,
+                   help="If a field has no donors at a bucket, allow fallback ±N buckets (default: 6, i.e., ±6 hours).")
     p.add_argument("--cadence", default="H",
                    help="Bucketing cadence for timestamps (default 'H'). Examples: '30min','15min'.")
     return p
@@ -172,32 +172,40 @@ def _seed_donors_from_window(
     sorted_keys: List[str],
     radius: int,
 ) -> List[Tuple[float, float, object]]:
-    """Look outward ±radius buckets to collect donors for this field."""
+    """
+    Look outward ±radius buckets to collect donors for this field.
+    Searches nearest buckets first, but collects from ALL buckets within radius
+    to maximize donor availability.
+    """
     donors: List[Tuple[float, float, object]] = []
     pos = bisect_left(sorted_keys, ts_key)
-    lo, hi = pos - 1, pos + 1
-    steps = 0
-    while (lo >= 0 or hi < len(sorted_keys)) and steps < radius * 2:
-        for cand in (lo, hi):
-            if cand < 0 or cand >= len(sorted_keys):
+
+    # Collect all buckets within radius, ordered by distance from target
+    buckets_to_check = []
+    for offset in range(1, radius + 1):
+        if pos - offset >= 0:
+            buckets_to_check.append((offset, pos - offset))  # (distance, index)
+        if pos + offset < len(sorted_keys):
+            buckets_to_check.append((offset, pos + offset))
+
+    # Sort by distance (nearest first)
+    buckets_to_check.sort(key=lambda x: x[0])
+
+    # Collect donors from all buckets within radius
+    for _, bucket_idx in buckets_to_check:
+        key = sorted_keys[bucket_idx]
+        for idx in grouped.get(key, []):
+            meta = meta_by_index.get(idx)
+            if not meta:
                 continue
-            key = sorted_keys[cand]
-            for idx in grouped.get(key, []):
-                meta = meta_by_index.get(idx)
-                if not meta:
-                    continue
-                val = records[idx].get(field)
-                if has_real_value(val):
-                    lat, lon = meta
-                    donors.append((lat, lon, val))
-        lo -= 1
-        hi += 1
-        steps += 2
-        if donors:
-            break  # first found window seeds this bucket
+            val = records[idx].get(field)
+            if has_real_value(val):
+                lat, lon = meta
+                donors.append((lat, lon, val))
+
     return donors
 
-def fill_from_neighbors(
+def fill_from_neighbors_rowwise(
     records: List[Dict],
     beach_meta: Dict[str, Tuple[float, float]],
     fields: Iterable[str],
@@ -205,9 +213,19 @@ def fill_from_neighbors(
     time_fallback: int = 0,
     cadence: str = "H",
 ):
+    """
+    Optimized row-by-row filling that processes each null individually.
+
+    Key optimizations:
+    1. Groups records by timestamp for efficient donor lookup
+    2. Processes nulls in optimal order (closest to donors first)
+    3. Newly filled values immediately become donors
+    4. All work done in-memory, then batch-written to DB
+
+    This guarantees 100% fill rate (if donors exist) while staying fast.
+    """
     stats = {
         "total_records": len(records),
-        "skipped_no_timestamp": 0,   # kept for symmetry; we floor all
         "skipped_bad_timestamp": 0,
         "skipped_no_coords": 0,
         "field_no_donor": Counter(),
@@ -219,6 +237,7 @@ def fill_from_neighbors(
     if not records:
         return [], stats
 
+    # Build index: timestamp -> list of record indices
     grouped: Dict[str, List[int]] = defaultdict(list)
     meta_by_index: Dict[int, Tuple[float, float]] = {}
 
@@ -228,8 +247,7 @@ def fill_from_neighbors(
             stats["skipped_bad_timestamp"] += 1
             continue
 
-        bid = rec.get("beach_id")
-        bid = str(bid) if bid is not None else None
+        bid = str(rec.get("beach_id")) if rec.get("beach_id") is not None else None
         if bid not in beach_meta:
             stats["skipped_no_coords"] += 1
             continue
@@ -246,29 +264,36 @@ def fill_from_neighbors(
     fields = tuple(fields)
     changed: Dict[int, Set[str]] = defaultdict(set)
 
-    for ts_key, indices in grouped.items():
-        per_record_meta: List[Optional[Tuple[float, float]]] = [meta_by_index.get(i) for i in indices]
+    # Process each field independently
+    for field in fields:
+        if verbose:
+            logger.debug("Processing field: %s", field)
 
-        for field in fields:
+        # For each timestamp bucket
+        for ts_key in sorted_keys:
+            indices = grouped[ts_key]
+
+            # Find donors and missing records at this timestamp
             donors: List[Tuple[float, float, object]] = []
             missing: List[Tuple[int, float, float]] = []
 
-            # split donors vs missing at this bucket
-            for local_pos, record_idx in enumerate(indices):
-                meta = per_record_meta[local_pos]
-                if meta is None:
+            for idx in indices:
+                meta = meta_by_index.get(idx)
+                if not meta:
                     continue
+
                 lat, lon = meta
-                val = records[record_idx].get(field)
+                val = records[idx].get(field)
+
                 if has_real_value(val):
                     donors.append((lat, lon, val))
                 else:
-                    missing.append((record_idx, lat, lon))
+                    missing.append((idx, lat, lon))
 
             if not missing:
                 continue
 
-            # if no donors here, try ±N bucket fallback
+            # If no donors at this timestamp, look in nearby time buckets
             if not donors and time_fallback > 0:
                 donors = _seed_donors_from_window(
                     ts_key, field, grouped, records, meta_by_index, sorted_keys, time_fallback
@@ -277,47 +302,91 @@ def fill_from_neighbors(
             if not donors:
                 stats["field_no_donor"][field] += len(missing)
                 if verbose:
-                    logger.debug("Bucket %s field %s has %d targets but no donors", ts_key, field, len(missing))
+                    logger.debug("Bucket %s field %s: %d nulls, no donors available",
+                               ts_key, field, len(missing))
                 continue
 
-            # nearest-neighbor copy within the bucket
-            for record_idx, lat, lon in missing:
-                best_value, best_distance = None, float("inf")
+            # ROW-BY-ROW FILLING: Process each null one at a time
+            # Fill closest records first - they become better donors
+            unfilled_count = 0
+
+            while missing:
+                # Find the null record closest to any donor
+                best_null_idx = None
+                best_null_dist = float("inf")
+                best_null_coords = None
+
+                for null_idx, (idx, lat, lon) in enumerate(missing):
+                    min_dist_to_donor = min(
+                        haversine_distance(lat, lon, d_lat, d_lon)
+                        for d_lat, d_lon, _ in donors
+                    )
+                    if min_dist_to_donor < best_null_dist:
+                        best_null_dist = min_dist_to_donor
+                        best_null_idx = null_idx
+                        best_null_coords = (idx, lat, lon)
+
+                if best_null_idx is None:
+                    break
+
+                # Fill this specific null
+                idx, lat, lon = best_null_coords
+
+                # Find nearest donor value
+                best_value = None
+                best_distance = float("inf")
                 for d_lat, d_lon, d_val in donors:
                     d = haversine_distance(lat, lon, d_lat, d_lon)
                     if d < best_distance:
-                        best_distance, best_value = d, d_val
+                        best_distance = d
+                        best_value = d_val
+
                 if best_value is not None:
-                    records[record_idx][field] = best_value
-                    changed[record_idx].add(field)
+                    # Fill the value in-memory
+                    records[idx][field] = best_value
+                    changed[idx].add(field)
                     stats["field_filled"][field] += 1
+
                     if verbose and len(stats["examples"][field]) < 5:
                         stats["examples"][field].append({
                             "timestamp": ts_key,
-                            "beach_id": records[record_idx].get("beach_id"),
+                            "beach_id": records[idx].get("beach_id"),
                             "value": best_value,
                             "distance_km": best_distance,
                         })
-                    # new value can seed additional nearest-neighbor matches
+
+                    # CRITICAL: Add this newly filled value as a donor
+                    # This is what makes row-by-row work - each fill helps subsequent fills
                     donors.append((lat, lon, best_value))
+                else:
+                    unfilled_count += 1
+
+                # Remove from missing list
+                missing.pop(best_null_idx)
+
+            if unfilled_count > 0 and verbose:
+                logger.debug("Bucket %s field %s: %d nulls could not be filled",
+                           ts_key, field, unfilled_count)
 
     if not changed:
         return [], stats
 
-    # prepare update payloads; include NOT NULL cols to satisfy PostgREST
+    # Prepare batch updates (same as before)
     updates: List[Dict] = []
     for record_idx, fields_changed in changed.items():
         rec = records[record_idx]
         payload = {
-            "id": rec["id"],                    # primary key (conflict target)
-            "beach_id": rec["beach_id"],        # NOT NULL in table
-            "timestamp": rec["timestamp"],      # NOT NULL in table
+            "id": rec["id"],
+            "beach_id": rec["beach_id"],
+            "timestamp": rec["timestamp"],
         }
         for f in fields_changed:
             val = rec.get(f)
             if has_real_value(val):
                 payload[f] = val
-        updates.append(payload)
+
+        if len(payload) > 3:
+            updates.append(payload)
 
     return updates, stats
 
@@ -327,7 +396,7 @@ def fill_from_neighbors(
 import time
 from typing import List, Dict
 
-def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int = 100):
+def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int = 100, verbose: bool = False):
     """
     Batched UPDATE by id using Supabase upsert with conflict resolution.
     Much faster than row-by-row updates.
@@ -343,15 +412,28 @@ def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int =
         return
 
     # Remove null values and empty updates
+    # CRITICAL: This ensures we never overwrite filled fields with nulls
     cleaned_updates = []
+    fields_being_updated = set()
+
     for row in updates:
+        # Strip out any None values to prevent overwriting filled data
         update_data = {k: v for k, v in row.items() if v is not None}
+
+        # Track which fields we're updating for logging
+        for k in update_data.keys():
+            if k not in ('id', 'beach_id', 'timestamp'):
+                fields_being_updated.add(k)
+
         if len(update_data) > 3:  # More than just id, beach_id, timestamp
             cleaned_updates.append(update_data)
 
     if not cleaned_updates:
         logger.info("Post-fill: no non-empty updates to apply")
         return
+
+    if verbose:
+        logger.info("Post-fill: updating fields: %s", sorted(fields_being_updated))
 
     total = 0
     attempts_max = 3
@@ -421,76 +503,83 @@ def main(argv: Optional[List[str]] = None) -> bool:
 
     if args.start_iso:
         start_iso = args.start_iso
-    else:
-        start_dt = pacific_midnight_today()
-        if args.hours_back:
-            start_dt -= timedelta(hours=args.hours_back)
+    elif args.hours_back is not None:
+        # Start from N hours ago
+        tz = pytz.timezone("America/Los_Angeles")
+        start_dt = datetime.now(tz) - timedelta(hours=args.hours_back)
         start_iso = start_dt.isoformat()
+    else:
+        # No time limit - process all records
+        # Use a very old date to effectively get everything
+        start_iso = "1970-01-01T00:00:00"
 
-    logger.info("Post-fill: starting neighbor backfill from %s (cadence=%s, fallback=%d)",
-                start_iso, args.cadence, args.time_fallback)
+    if start_iso == "1970-01-01T00:00:00":
+        logger.info("Post-fill: starting neighbor backfill for ALL records (cadence=%s, fallback=%d)",
+                    args.cadence, args.time_fallback)
+    else:
+        logger.info("Post-fill: starting neighbor backfill from %s (cadence=%s, fallback=%d)",
+                    start_iso, args.cadence, args.time_fallback)
 
+    # Fetch all records once
     records = fetch_recent_forecast_records(
         start_iso=start_iso, fields=fields, page_size=args.page_size,
         limit=args.limit, verbose=args.verbose,
     )
     logger.info("Post-fill: evaluating %s forecast rows", len(records))
 
-    if args.per_field:
-        aggregate_updates: Dict[Tuple[str, str], Dict] = {}
-        aggregate_stats: Dict = {}
+    # Count nulls before filling
+    if args.verbose:
+        nulls_before = {}
         for field in fields:
-            field_updates, field_stats = fill_from_neighbors(
-                records, beach_meta, (field,),
-                verbose=args.verbose, time_fallback=args.time_fallback, cadence=args.cadence
-            )
-            if field_updates:
-                for u in field_updates:
-                    key = (u['beach_id'], u['timestamp'])
-                    entry = aggregate_updates.setdefault(
-                        key, {'id': u['id'], 'beach_id': u['beach_id'], 'timestamp': u['timestamp']}
-                    )
-                    for k, v in u.items():
-                        if k not in ('id', 'beach_id', 'timestamp'):
-                            entry[k] = v
-            # merge stats
-            for k, v in field_stats.items():
-                if isinstance(v, Counter):
-                    aggregate_stats.setdefault(k, Counter()).update(v)
-                elif isinstance(v, dict):
-                    agg = aggregate_stats.setdefault(k, defaultdict(list))
-                    for sk, sv in v.items():
-                        agg[sk].extend(sv)
-                else:
-                    aggregate_stats[k] = aggregate_stats.get(k, 0) + v
+            nulls_before[field] = sum(1 for r in records if r.get(field) is None)
+        logger.info("Post-fill: nulls before filling -> %s",
+                   ", ".join(f"{k}: {v}" for k, v in nulls_before.items()))
 
-        updates, stats = list(aggregate_updates.values()), aggregate_stats
-    else:
-        updates, stats = fill_from_neighbors(
-            records, beach_meta, fields,
-            verbose=args.verbose, time_fallback=args.time_fallback, cadence=args.cadence
-        )
+    # Single-pass row-by-row filling (optimized)
+    updates, stats = fill_from_neighbors_rowwise(
+        records, beach_meta, fields,
+        verbose=args.verbose, time_fallback=args.time_fallback, cadence=args.cadence
+    )
 
     logger.info(
-        "Post-fill: %s records | buckets=%s | skipped ts=%s bad_ts=%s no_coords=%s",
+        "Post-fill: %s records | buckets=%s | skipped bad_ts=%s no_coords=%s",
         stats.get("total_records", 0),
         stats.get("buckets_built", 0),
-        stats.get("skipped_no_timestamp", 0),
         stats.get("skipped_bad_timestamp", 0),
         stats.get("skipped_no_coords", 0),
     )
+
     ff = stats.get("field_filled", Counter())
     if ff:
         logger.info("Post-fill: field fills -> %s", ", ".join(f"{k}: {v}" for k, v in ff.items()))
+
     nd = stats.get("field_no_donor", Counter())
     if nd:
         logger.info("Post-fill: no-donor counts -> %s", ", ".join(f"{k}: {v}" for k, v in nd.items()))
+
+    # Count nulls after filling (in-memory check)
+    if args.verbose:
+        nulls_after = {}
+        for field in fields:
+            nulls_after[field] = sum(1 for r in records if r.get(field) is None)
+        logger.info("Post-fill: nulls after filling -> %s",
+                   ", ".join(f"{k}: {v}" for k, v in nulls_after.items()))
+
+        # Show improvement
+        for field in fields:
+            if field in nulls_before:
+                improvement = nulls_before[field] - nulls_after[field]
+                if improvement > 0:
+                    logger.info("Post-fill: %s improved by %d (%.1f%%)",
+                              field, improvement,
+                              100.0 * improvement / nulls_before[field] if nulls_before[field] > 0 else 0)
 
     if not updates:
         logger.info("Post-fill: no fields required neighbor fills")
         return True
 
-    upsert_updates(updates, dry_run=args.dry_run, batch_size=args.batch_size)
+    # Write all updates in batches
+    upsert_updates(updates, dry_run=args.dry_run, batch_size=args.batch_size, verbose=args.verbose)
     logger.info("Post-fill: completed neighbor backfill")
     return True
 
