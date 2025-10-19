@@ -59,8 +59,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="Process each field in its own pass.")
     p.add_argument("--time-fallback", type=int, default=6,
                    help="If a field has no donors at a bucket, allow fallback ±N buckets (default: 6, i.e., ±6 hours).")
-    p.add_argument("--cadence", default="H",
-                   help="Bucketing cadence for timestamps (default 'H'). Examples: '30min','15min'.")
+    p.add_argument("--cadence", default="h",
+                   help="Bucketing cadence for timestamps (default 'h'). Examples: '30min','15min'.")
     return p
 
 # --------------------------------------------------------------------- #
@@ -86,7 +86,7 @@ def pacific_midnight_today(now: Optional[datetime] = None) -> datetime:
     now = now.astimezone(tz) if now and now.tzinfo else now or datetime.now(tz)
     return tz.localize(datetime.combine(now.date(), datetime.min.time()))
 
-def normalize_timestamp(value: object, freq: str = "H") -> Optional[str]:
+def normalize_timestamp(value: object, freq: str = "h") -> Optional[str]:
     """
     Coerce to UTC, snap to cadence bucket, return tz-naive ISO string key
     so equal buckets compare equal (e.g., '2025-10-02T07:00:00').
@@ -306,32 +306,14 @@ def fill_from_neighbors_rowwise(
                                ts_key, field, len(missing))
                 continue
 
-            # ROW-BY-ROW FILLING: Process each null one at a time
-            # Fill closest records first - they become better donors
-            unfilled_count = 0
+            # OPTIMIZED BATCH FILLING: Fill all nulls at once, then allow filled values
+            # to propagate in a second pass if needed
+            if not missing:
+                continue
 
-            while missing:
-                # Find the null record closest to any donor
-                best_null_idx = None
-                best_null_dist = float("inf")
-                best_null_coords = None
-
-                for null_idx, (idx, lat, lon) in enumerate(missing):
-                    min_dist_to_donor = min(
-                        haversine_distance(lat, lon, d_lat, d_lon)
-                        for d_lat, d_lon, _ in donors
-                    )
-                    if min_dist_to_donor < best_null_dist:
-                        best_null_dist = min_dist_to_donor
-                        best_null_idx = null_idx
-                        best_null_coords = (idx, lat, lon)
-
-                if best_null_idx is None:
-                    break
-
-                # Fill this specific null
-                idx, lat, lon = best_null_coords
-
+            # PASS 1: Fill all missing values from existing donors
+            filled_in_pass = []
+            for idx, lat, lon in missing:
                 # Find nearest donor value
                 best_value = None
                 best_distance = float("inf")
@@ -355,18 +337,34 @@ def fill_from_neighbors_rowwise(
                             "distance_km": best_distance,
                         })
 
-                    # CRITICAL: Add this newly filled value as a donor
-                    # This is what makes row-by-row work - each fill helps subsequent fills
-                    donors.append((lat, lon, best_value))
-                else:
-                    unfilled_count += 1
+                    # Track newly filled values for potential second pass
+                    filled_in_pass.append((lat, lon, best_value))
 
-                # Remove from missing list
-                missing.pop(best_null_idx)
+            # PASS 2 (optional): Add newly filled values as donors and try again
+            # This allows propagation without the expensive while loop
+            if filled_in_pass:
+                donors.extend(filled_in_pass)
 
-            if unfilled_count > 0 and verbose:
-                logger.debug("Bucket %s field %s: %d nulls could not be filled",
-                           ts_key, field, unfilled_count)
+                # Quick second pass for any remaining nulls
+                remaining_nulls = [
+                    (idx, lat, lon) for idx, lat, lon in missing
+                    if not has_real_value(records[idx].get(field))
+                ]
+
+                for idx, lat, lon in remaining_nulls:
+                    best_value = None
+                    best_distance = float("inf")
+                    # Only check newly filled donors (much smaller list)
+                    for d_lat, d_lon, d_val in filled_in_pass:
+                        d = haversine_distance(lat, lon, d_lat, d_lon)
+                        if d < best_distance:
+                            best_distance = d
+                            best_value = d_val
+
+                    if best_value is not None:
+                        records[idx][field] = best_value
+                        changed[idx].add(field)
+                        stats["field_filled"][field] += 1
 
     if not changed:
         return [], stats

@@ -86,7 +86,7 @@ def main():
         # Group by timestamp
         by_timestamp = defaultdict(list)
         for rec in nulls:
-            ts_key = normalize_timestamp(rec['timestamp'], 'H')
+            ts_key = normalize_timestamp(rec['timestamp'], 'h')
             by_timestamp[ts_key].append(rec)
 
         print(f"  Grouped into {len(by_timestamp)} timestamps")
@@ -95,11 +95,23 @@ def main():
         field_filled = 0
         for ts_key, null_recs_at_ts in by_timestamp.items():
             # Fetch ALL records at this timestamp (to find donors)
-            all_at_ts_resp = supabase.table('forecast_data').select(
-                f'beach_id,{field}'
-            ).eq('timestamp', ts_key).execute()
+            # CRITICAL: Use pagination to get all records (Supabase defaults to 1000 limit)
+            all_at_ts = []
+            page_size = 1000
+            page = 0
+            while True:
+                start = page * page_size
+                end = start + page_size - 1
+                resp = supabase.table('forecast_data').select(
+                    f'beach_id,{field}'
+                ).eq('timestamp', ts_key).range(start, end).execute()
 
-            all_at_ts = all_at_ts_resp.data or []
+                batch = resp.data or []
+                all_at_ts.extend(batch)
+
+                if len(batch) < page_size:
+                    break
+                page += 1
 
             # Process each null one by one
             for null_rec in null_recs_at_ts:
