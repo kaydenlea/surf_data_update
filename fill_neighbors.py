@@ -23,32 +23,101 @@ from database import fetch_all_beaches, supabase
 from utils import chunk_iter
 
 # --------------------------------------------------------------------- #
-# Configurable fields to fill (add primary_* if desired)
+# IMPROVED: Auto-detect all fillable fields from forecast_data table
 # --------------------------------------------------------------------- #
-FIELDS_FOR_NEIGHBOR_FILL: Tuple[str, ...] = (
-    "weather",
-    "wind_direction_deg",
-    "secondary_swell_height_ft",
-    "secondary_swell_period_s",
-    "secondary_swell_direction",
-    "tertiary_swell_height_ft",
-    "tertiary_swell_period_s",
-    "tertiary_swell_direction",
-    # "primary_swell_height_ft",
-    # "primary_swell_period_s",
-    # "primary_swell_direction",
-)
+# Exclude these columns from neighbor fill (primary keys, timestamps, etc.)
+EXCLUDED_FIELDS = {
+    "id",
+    "beach_id",
+    "timestamp",
+    "created_at",
+    "updated_at",
+}
+
+def get_all_fillable_fields() -> Tuple[str, ...]:
+    """
+    Auto-detect all fillable columns from the forecast_data table.
+    Excludes primary keys, identifiers, and timestamps.
+    """
+    from database import supabase
+
+    try:
+        # Get a sample record to find all column names
+        result = supabase.table("forecast_data").select("*").limit(1).execute()
+
+        if not result.data:
+            # Fallback to known fields if table is empty
+            return (
+                "primary_swell_height_ft",
+                "primary_swell_period_s",
+                "primary_swell_direction",
+                "secondary_swell_height_ft",
+                "secondary_swell_period_s",
+                "secondary_swell_direction",
+                "tertiary_swell_height_ft",
+                "tertiary_swell_period_s",
+                "tertiary_swell_direction",
+                "surf_height_min_ft",
+                "surf_height_max_ft",
+                "wave_energy_kj",
+                "wind_speed_mph",
+                "wind_direction_deg",
+                "wind_gust_mph",
+                "water_temp_f",
+                "tide_level_ft",
+                "temperature",
+                "weather",
+                "pressure_inhg",
+            )
+
+        # Extract all field names except excluded ones
+        all_fields = set(result.data[0].keys())
+        fillable_fields = sorted(all_fields - EXCLUDED_FIELDS)
+
+        return tuple(fillable_fields)
+
+    except Exception as e:
+        logger.warning(f"Could not auto-detect fields: {e}, using fallback list")
+        # Fallback to comprehensive known fields
+        return (
+            "primary_swell_height_ft",
+            "primary_swell_period_s",
+            "primary_swell_direction",
+            "secondary_swell_height_ft",
+            "secondary_swell_period_s",
+            "secondary_swell_direction",
+            "tertiary_swell_height_ft",
+            "tertiary_swell_period_s",
+            "tertiary_swell_direction",
+            "surf_height_min_ft",
+            "surf_height_max_ft",
+            "wave_energy_kj",
+            "wind_speed_mph",
+            "wind_direction_deg",
+            "wind_gust_mph",
+            "water_temp_f",
+            "tide_level_ft",
+            "temperature",
+            "weather",
+            "pressure_inhg",
+        )
+
+# Get all fillable fields at module load time (cached)
+FIELDS_FOR_NEIGHBOR_FILL = get_all_fillable_fields()
 
 # --------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------- #
 def build_arg_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Fill missing forecast fields from nearest beaches")
+    p = argparse.ArgumentParser(
+        description="Fill missing forecast fields from nearest beaches (AUTO-DETECTS ALL COLUMNS)",
+        epilog=f"Auto-detected fields: {', '.join(FIELDS_FOR_NEIGHBOR_FILL)}"
+    )
     p.add_argument("--start-iso", help="ISO timestamp (inclusive) to start from. Default: all records (no limit).")
     p.add_argument("--hours-back", type=int, default=None,
                    help="If no --start-iso, how many hours back from now to start (default: None = all records).")
-    p.add_argument("--fields", nargs="+", choices=FIELDS_FOR_NEIGHBOR_FILL,
-                   help="Override the list of fields to backfill.")
+    p.add_argument("--fields", nargs="+",
+                   help="Override auto-detection and specify fields to backfill (space-separated list).")
     p.add_argument("--page-size", type=int, default=1000)
     p.add_argument("--batch-size", type=int, default=100,
                    help="Number of rows to update per batch (default: 100, max recommended: 500)")
@@ -114,6 +183,24 @@ def has_real_value(value) -> bool:
     except Exception:
         pass
     return True
+
+
+def should_skip_filling(rec: Dict, field: str) -> bool:
+    """
+    Check if a field should be skipped for filling based on other field values.
+
+    RULE: Skip surf_height_min_ft if surf_height_max_ft is 1 (no surf condition)
+    """
+    if field == "surf_height_min_ft":
+        max_height = rec.get("surf_height_max_ft")
+        if max_height is not None:
+            try:
+                if float(max_height) == 1.0:
+                    return True  # Skip filling min if max is 1 (no surf)
+            except (ValueError, TypeError):
+                pass
+
+    return False
 
 # --------------------------------------------------------------------- #
 # Fetch
@@ -261,7 +348,20 @@ def fill_from_neighbors_rowwise(
     if verbose:
         logger.debug("Built %d time buckets (cadence=%s)", len(sorted_keys), cadence)
 
-    fields = tuple(fields)
+    # IMPORTANT: Process surf_height_max_ft before surf_height_min_ft
+    # This allows us to check max when deciding whether to fill min
+    fields_list = list(fields)
+    if "surf_height_max_ft" in fields_list and "surf_height_min_ft" in fields_list:
+        # Ensure max is processed before min
+        max_idx = fields_list.index("surf_height_max_ft")
+        min_idx = fields_list.index("surf_height_min_ft")
+        if min_idx < max_idx:
+            # Swap them so max comes first
+            fields_list[max_idx], fields_list[min_idx] = fields_list[min_idx], fields_list[max_idx]
+            if verbose:
+                logger.debug("Reordered fields: surf_height_max_ft will be processed before surf_height_min_ft")
+
+    fields = tuple(fields_list)
     changed: Dict[int, Set[str]] = defaultdict(set)
 
     # Process each field independently
@@ -288,7 +388,9 @@ def fill_from_neighbors_rowwise(
                 if has_real_value(val):
                     donors.append((lat, lon, val))
                 else:
-                    missing.append((idx, lat, lon))
+                    # Check if we should skip filling this field for this record
+                    if not should_skip_filling(records[idx], field):
+                        missing.append((idx, lat, lon))
 
             if not missing:
                 continue
@@ -480,6 +582,12 @@ def main(argv: Optional[List[str]] = None) -> bool:
         logger.setLevel("DEBUG")
 
     fields = tuple(args.fields) if args.fields else FIELDS_FOR_NEIGHBOR_FILL
+
+    logger.info("=" * 80)
+    logger.info("NEIGHBOR FILL - AUTO-DETECTS ALL COLUMNS")
+    logger.info("=" * 80)
+    logger.info(f"Processing {len(fields)} fields: {', '.join(fields)}")
+    logger.info("=" * 80)
 
     beaches = fetch_all_beaches()
     if not beaches:

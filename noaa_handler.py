@@ -567,53 +567,127 @@ def get_noaa_dataset_url():
     raise Exception("No NOAA GFSwave dataset available - exhausted all URL combinations")
 
 def find_nearest_ocean_point(ds, lat0, lon0):
-    """Find the nearest valid ocean grid point for a beach location - OPTIMIZED."""
+    """
+    Find the nearest valid ocean grid point for a beach location.
+    IMPROVED: Always returns the closest valid point, even for bays/harbors.
+    Searches progressively wider areas until valid data is found.
+    """
     lon0_360 = lon0 % 360  # Convert longitude to 0-360 format for NOAA data
-    
+    test_var = "swell_2"  # Use swell_2 to test for valid ocean data
+
     # Try center point first (most likely to work)
     try:
-        test_var = "swell_2"  # Use swell_2 to test
         val = ds[test_var].isel(time=0).sel(lat=lat0, lon=lon0_360, method="nearest").values
-        
+
         if not np.isnan(val):
             grid_lat = float(ds.lat.sel(lat=lat0, method="nearest").values)
             grid_lon = float(ds.lon.sel(lon=lon0_360, method="nearest").values)
             return grid_lat, grid_lon
     except Exception:
         pass
-    
-    # REDUCED offset search to minimize server requests
-    reduced_offsets = [
-        (0, 0.1), (0, -0.1), (0.05, 0), (-0.05, 0),  # Essential offsets only
-        (0.05, 0.1), (-0.05, -0.1)  # Diagonal fallbacks
+
+    # PROGRESSIVE SEARCH STRATEGY:
+    # 1. Try nearby offsets (small radius)
+    # 2. Try medium radius (includes offshore direction)
+    # 3. Try large radius (for inland bays/harbors)
+    # 4. Last resort: scan entire nearby grid area
+
+    # Phase 1: Small radius (0.05-0.15 degrees, ~3-10 miles)
+    small_offsets = [
+        # Nearby cardinal and diagonal directions
+        (0, 0.1), (0, -0.1), (0.05, 0), (-0.05, 0),
+        (0.05, 0.1), (-0.05, -0.1), (0.05, -0.1), (-0.05, 0.1),
+        (0, 0.15), (0, -0.15), (0.1, 0), (-0.1, 0),
     ]
-    
-    for dlat, dlon in reduced_offsets:
+
+    for dlat, dlon in small_offsets:
         try:
             lat = lat0 + dlat
             lon = (lon0_360 + dlon) % 360
-            
-            # Test if this point has valid data
-            test_var = "swell_2"  # Use swell_2 to test
             val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
-            
+
             if not np.isnan(val):
                 grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
                 grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
                 return grid_lat, grid_lon
-                
         except Exception:
             continue
-    
+
+    # Phase 2: Medium radius (0.2-0.4 degrees, ~12-25 miles)
+    # Prioritize offshore (west/more negative longitude for CA coast)
+    medium_offsets = [
+        (0, 0.2), (0, -0.2), (0, 0.3), (0, -0.3),
+        (0.15, 0.2), (-0.15, 0.2), (0.15, -0.2), (-0.15, -0.2),
+        (0.2, 0), (-0.2, 0), (0.2, 0.2), (-0.2, -0.2),
+        (0, 0.4), (0, -0.4), (0.2, 0.3), (-0.2, 0.3),
+    ]
+
+    for dlat, dlon in medium_offsets:
+        try:
+            lat = lat0 + dlat
+            lon = (lon0_360 + dlon) % 360
+            val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
+
+            if not np.isnan(val):
+                grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
+                grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
+                return grid_lat, grid_lon
+        except Exception:
+            continue
+
+    # Phase 3: Large radius (0.5-0.75 degrees, ~30-50 miles)
+    # For very inland bays or harbors (e.g., San Francisco Bay)
+    large_offsets = [
+        (0, 0.5), (0, -0.5), (0.3, 0.5), (-0.3, 0.5),
+        (0.3, -0.5), (-0.3, -0.5), (0.5, 0), (-0.5, 0),
+        (0, 0.75), (0, -0.75), (0.5, 0.5), (-0.5, -0.5),
+    ]
+
+    for dlat, dlon in large_offsets:
+        try:
+            lat = lat0 + dlat
+            lon = (lon0_360 + dlon) % 360
+            val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
+
+            if not np.isnan(val):
+                grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
+                grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
+                logger.debug(f"   Found valid point at large offset ({dlat:.2f}, {dlon:.2f}) for ({lat0:.3f}, {lon0:.3f})")
+                return grid_lat, grid_lon
+        except Exception:
+            continue
+
+    # Phase 4: LAST RESORT - Grid scan in 1-degree radius
+    # This ensures we ALWAYS find a valid point (even if far away)
+    logger.warning(f"   No valid point in standard search, scanning 1-degree grid for ({lat0:.3f}, {lon0:.3f})")
+
+    # Create a comprehensive grid search
+    for lat_offset in np.arange(-1.0, 1.1, 0.2):
+        for lon_offset in np.arange(-1.0, 1.1, 0.2):
+            try:
+                lat = lat0 + lat_offset
+                lon = (lon0_360 + lon_offset) % 360
+                val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
+
+                if not np.isnan(val):
+                    grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
+                    grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
+                    logger.warning(f"   Found valid point via grid scan at offset ({lat_offset:.2f}, {lon_offset:.2f})")
+                    return grid_lat, grid_lon
+            except Exception:
+                continue
+
+    # This should never happen, but if it does, return None
+    logger.error(f"   CRITICAL: Could not find ANY valid ocean point for ({lat0:.3f}, {lon0:.3f})")
     return None, None
 
 def load_noaa_dataset(url):
     """Load NOAA dataset with proper error handling and rate limiting."""
     logger.info("   Loading NOAA GFSwave dataset with rate limiting...")
-    
+
     # Enforce rate limiting before dataset open
     enforce_noaa_rate_limit()
-    
+
     try:
         # Load dataset with proper OpenDAP settings
         ds = xr.open_dataset(
@@ -624,8 +698,15 @@ def load_noaa_dataset(url):
         )
         logger.info(f"   NOAA dataset loaded: {len(ds.time)} time steps")
         logger.info(f"   Available variables: {list(ds.data_vars.keys())}")
+
+        # Check if wind gust (gustsfc) is available
+        if 'gustsfc' in ds.data_vars:
+            logger.info("   Wind gust (gustsfc) data available")
+        else:
+            logger.warning("   Wind gust (gustsfc) not available in this dataset")
+
         return ds
-        
+
     except Exception as e:
         logger.error(f"ERROR: Failed to load NOAA dataset from {url}: {e}")
         raise
@@ -690,22 +771,38 @@ def get_noaa_data_bulk_optimized(ds, beaches):
         beach_count = len(group_beaches)
         
         logger.info(f"   Loading location group {group_count}/{len(location_groups)}: {location_key} (serves {beach_count} beaches)...")
-        
-        # Use first beach as representative for grid point search
-        representative_beach = group_beaches[0]
-        
+
+        # IMPROVED: Select the beach most likely to be in open ocean (westernmost = most negative longitude)
+        # This increases chances of finding valid ocean data
+        representative_beach = min(group_beaches, key=lambda b: b["LONGITUDE"])
+
         # Enforce rate limiting before grid point search
         enforce_noaa_rate_limit()
-        
+
         # Find grid point for this location
         grid_lat, grid_lon = find_nearest_ocean_point(
-            ds, 
-            representative_beach["LATITUDE"], 
+            ds,
+            representative_beach["LATITUDE"],
             representative_beach["LONGITUDE"]
         )
-        
+
+        # IMPROVED: If representative beach fails, try each beach in the group individually
         if grid_lat is None or grid_lon is None:
-            logger.warning(f"   No valid ocean point for location {location_key}")
+            logger.warning(f"   Representative beach failed for location {location_key}, trying individual beaches...")
+            for idx, beach in enumerate(group_beaches):
+                enforce_noaa_rate_limit()
+                grid_lat, grid_lon = find_nearest_ocean_point(
+                    ds,
+                    beach["LATITUDE"],
+                    beach["LONGITUDE"]
+                )
+                if grid_lat is not None and grid_lon is not None:
+                    logger.info(f"   Found valid ocean point using beach {idx+1}/{beach_count} from group")
+                    representative_beach = beach
+                    break
+
+        if grid_lat is None or grid_lon is None:
+            logger.warning(f"   No valid ocean point for location {location_key} after trying all {beach_count} beaches")
             continue
         
         # Enforce rate limiting before bulk data extraction
@@ -885,6 +982,14 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
         wspd = ds["windsfc"].sel(lat=grid_lat, lon=grid_lon).values
         wdir = ds["wdirsfc"].sel(lat=grid_lat, lon=grid_lon).values
 
+        # Extract wind gust if available
+        wgust = None
+        if 'gustsfc' in ds.data_vars:
+            try:
+                wgust = ds["gustsfc"].sel(lat=grid_lat, lon=grid_lon).values
+            except Exception as e:
+                logger.debug(f"   Could not extract wind gust: {e}")
+
         # Slice with the time index mask so we only keep the next 7 days
         grid_data = {
             'time_vals': filtered_time_vals,
@@ -900,6 +1005,7 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
             'sig_wave_height': hsig[sel_idx],
             'wind_speed_mps': wspd[sel_idx],
             'wind_direction_deg': wdir[sel_idx],
+            'wind_gust_mps': wgust[sel_idx] if wgust is not None else None,
         }
         return grid_data
     except Exception as e:
@@ -1000,11 +1106,28 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         surf_min_ft, surf_max_ft = get_surf_height_range(sig_wave_height_m)
         surf_min_ft, surf_max_ft = normalize_surf_range(surf_min_ft, surf_max_ft)
 
-        # Wind speed: defer to Open-Meteo supplement (do not use NOAA here)
-        wind_speed_mph = None
+        # Wind speed: Use GFS wind data, NWS will supplement/override if available
+        wind_speed_mps = nearest_valid_value(grid_data['wind_speed_mps'], i)
+        wind_speed_mph = safe_float(mps_to_mph(wind_speed_mps)) if wind_speed_mps is not None else None
+
         wind_direction = nearest_valid_value(grid_data['wind_direction_deg'], i)
         wind_direction = safe_float(wind_direction) if wind_direction is not None else None
-        
+
+        # Wind gust: extract from NOAA GFSwave if available, otherwise estimate from wind speed
+        wind_gust_mph = None
+        if 'wind_gust_mps' in grid_data and grid_data['wind_gust_mps'] is not None:
+            wind_gust_mps = nearest_valid_value(grid_data['wind_gust_mps'], i)
+            if wind_gust_mps is not None:
+                wind_gust_mph = safe_float(mps_to_mph(wind_gust_mps))
+
+        # If no gust data available, estimate gust as 1.4x wind speed (typical gust factor)
+        if wind_gust_mph is None:
+            wind_speed_mps = nearest_valid_value(grid_data['wind_speed_mps'], i)
+            if wind_speed_mps is not None:
+                estimated_wind_mph = mps_to_mph(wind_speed_mps)
+                if estimated_wind_mph is not None and estimated_wind_mph > 0:
+                    wind_gust_mph = safe_float(estimated_wind_mph * 1.4)
+
         # Calculate wave energy using CDIP spectral data if available, otherwise fallback
         wave_energy_kj = None
         if cdip_data and 'wave_energy_density' in cdip_data and cdip_data['wave_energy_density'] is not None:
@@ -1075,6 +1198,8 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
         _set_if_value("wind_speed_mph", wind_speed_mph)
 
         _set_if_value("wind_direction_deg", wind_direction)
+
+        _set_if_value("wind_gust_mph", wind_gust_mph)
 
 
 
