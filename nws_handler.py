@@ -25,7 +25,7 @@ USER_AGENT = "SurfForecastApp/1.0 (surf@example.com)"  # Customize this
 NWS_BASE_URL = "https://api.weather.gov"
 
 # Max concurrent workers for parallel requests
-MAX_WORKERS = 20
+MAX_WORKERS = 50
 
 # Weather code mapping from NWS icon names to simple codes
 NWS_WEATHER_CODES = {
@@ -76,95 +76,49 @@ def create_session() -> requests.Session:
     return session
 
 
-def get_nws_gridpoint(lat: float, lon: float, timeout: int = 30, allow_fallback: bool = True, session: Optional[requests.Session] = None) -> Optional[Dict]:
+def get_nws_gridpoint(lat: float, lon: float, timeout: int = 10, allow_fallback: bool = False, session: Optional[requests.Session] = None) -> Optional[Dict]:
     """
     Get NWS grid point information for a location.
-    IMPROVED: For bays/harbors without coverage, tries nearby offshore points.
 
     Returns dict with:
         - gridId: str
         - gridX: int
         - gridY: int
         - forecastHourly: str (URL)
+
+    Returns None if location not covered by NWS.
     """
     # Use provided session or create a temporary one
     use_session = session if session else requests.Session()
     if not session:
         use_session.headers.update({"User-Agent": USER_AGENT})
 
-    # Try exact location first
+    # Get gridpoint for this location
     url = f"{NWS_BASE_URL}/points/{lat:.4f},{lon:.4f}"
 
     try:
         response = use_session.get(url, timeout=timeout)
+        response.raise_for_status()
+        data = response.json()
 
-        if response.status_code != 404:
-            response.raise_for_status()
-            data = response.json()
-
-            props = data.get("properties", {})
-            return {
-                "gridId": props.get("gridId"),
-                "gridX": props.get("gridX"),
-                "gridY": props.get("gridY"),
-                "forecastHourly": props.get("forecastHourly"),
-            }
+        props = data.get("properties", {})
+        return {
+            "gridId": props.get("gridId"),
+            "gridX": props.get("gridX"),
+            "gridY": props.get("gridY"),
+            "forecastHourly": props.get("forecastHourly"),
+            "forecastGridData": props.get("forecastGridData"),
+        }
 
     except requests.exceptions.Timeout:
         logger.debug(f"   NWS: Timeout getting gridpoint for {lat},{lon}")
-        if not allow_fallback:
-            return None
+        return None
     except requests.exceptions.RequestException as e:
         logger.debug(f"   NWS: Request failed for {lat},{lon}: {e}")
-        if not allow_fallback:
-            return None
-
-    # FALLBACK: Try nearby points for bays/harbors
-    if not allow_fallback:
-        logger.debug(f"   NWS: No coverage for location {lat},{lon}")
         return None
 
-    logger.debug(f"   NWS: Trying nearby points for {lat},{lon}")
 
-    # Try progressively further offshore (west for CA coast = more negative longitude)
-    fallback_offsets = [
-        (0, -0.05), (0, -0.1), (0, -0.15),  # Nearby offshore
-        (0.05, -0.1), (-0.05, -0.1),         # Diagonal offshore
-        (0, -0.2), (0, -0.25),               # Further offshore
-        (0.1, -0.2), (-0.1, -0.2),           # Diagonal further
-    ]
-
-    for dlat, dlon in fallback_offsets:
-        fallback_lat = lat + dlat
-        fallback_lon = lon + dlon
-        url = f"{NWS_BASE_URL}/points/{fallback_lat:.4f},{fallback_lon:.4f}"
-
-        try:
-            response = use_session.get(url, timeout=timeout)
-
-            if response.status_code == 404:
-                continue
-
-            response.raise_for_status()
-            data = response.json()
-
-            props = data.get("properties", {})
-            logger.debug(f"   NWS: Found coverage at offset ({dlat},{dlon}) for {lat},{lon}")
-            return {
-                "gridId": props.get("gridId"),
-                "gridX": props.get("gridX"),
-                "gridY": props.get("gridY"),
-                "forecastHourly": props.get("forecastHourly"),
-            }
-
-        except (requests.exceptions.Timeout, requests.exceptions.RequestException):
-            continue
-
-    logger.debug(f"   NWS: No coverage found even with fallback for {lat},{lon}")
-    return None
-
-
-def get_nws_hourly_forecast(forecast_url: str, timeout: int = 30, session: Optional[requests.Session] = None) -> List[Dict]:
+def get_nws_hourly_forecast(forecast_url: str, timeout: int = 10, session: Optional[requests.Session] = None) -> List[Dict]:
     """
     Fetch hourly forecast from NWS.
 
@@ -194,6 +148,49 @@ def get_nws_hourly_forecast(forecast_url: str, timeout: int = 30, session: Optio
     except requests.exceptions.RequestException as e:
         logger.debug(f"   NWS: Failed to fetch hourly forecast: {e}")
         return []
+
+
+def get_nws_pressure_data(grid_data_url: str, timeout: int = 10, session: Optional[requests.Session] = None) -> Dict:
+    """
+    Fetch pressure data from NWS grid data endpoint.
+
+    Returns dict mapping ISO timestamps to pressure values in inHg.
+    """
+    # Use provided session or create a temporary one
+    use_session = session if session else requests.Session()
+    if not session:
+        use_session.headers.update({"User-Agent": USER_AGENT})
+
+    try:
+        response = use_session.get(grid_data_url, timeout=timeout)
+        response.raise_for_status()
+        data = response.json()
+
+        props = data.get("properties", {})
+        pressure_data = props.get("pressure", {})
+
+        # Extract pressure values - NWS returns in Pascals
+        values = pressure_data.get("values", [])
+
+        # Convert to dict: timestamp -> pressure in inHg
+        pressure_map = {}
+        for item in values:
+            timestamp = item.get("validTime", "").split("/")[0]  # Get start time
+            pressure_pa = item.get("value")  # Pascals
+
+            if timestamp and pressure_pa is not None:
+                # Convert Pascals to inHg (1 Pa = 0.0002953 inHg)
+                pressure_inhg = pressure_pa * 0.0002953
+                pressure_map[timestamp] = pressure_inhg
+
+        return pressure_map
+
+    except requests.exceptions.Timeout:
+        logger.debug(f"   NWS: Timeout fetching grid pressure data")
+        return {}
+    except requests.exceptions.RequestException as e:
+        logger.debug(f"   NWS: Failed to fetch grid pressure data: {e}")
+        return {}
 
 
 def parse_wind_speed(wind_str: Optional[str]) -> Optional[float]:
@@ -267,10 +264,10 @@ def extract_weather_code(short_forecast: str) -> Optional[int]:
     return 2
 
 
-def fetch_beach_forecast(beach: Dict, session: requests.Session, gridpoint_cache: Dict, forecast_cache: Dict) -> Optional[List[Dict]]:
+def fetch_beach_forecast(beach: Dict, session: requests.Session, gridpoint_cache: Dict, forecast_cache: Dict, pressure_cache: Dict) -> Optional[tuple]:
     """
     Fetch forecast for a single beach using shared caches.
-    Returns list of periods or None if fetch failed.
+    Returns tuple of (periods, pressure_map) or None if fetch failed.
     """
     bid = beach["id"]
     lat = beach["LATITUDE"]
@@ -301,15 +298,25 @@ def fetch_beach_forecast(beach: Dict, session: requests.Session, gridpoint_cache
         logger.debug(f"   NWS: No periods returned for beach {beach.get('Name', bid)}")
         return None
 
+    # Step 3: Get pressure data from grid data endpoint
+    pressure_map = {}
+    if grid_info.get("forecastGridData"):
+        if cache_key in pressure_cache:
+            pressure_map = pressure_cache[cache_key]
+        else:
+            pressure_map = get_nws_pressure_data(grid_info["forecastGridData"], session=session)
+            pressure_cache[cache_key] = pressure_map
+
     # Cache the forecast for nearby beaches
-    forecast_cache[cache_key] = periods
-    return periods
+    result = (periods, pressure_map)
+    forecast_cache[cache_key] = result
+    return result
 
 
 def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -> List[Dict]:
     """
     Supplement missing fields using NOAA NWS API.
-    Only fills: temperature, weather, wind_speed_mph, wind_gust_mph
+    Only fills: temperature, weather, wind_speed_mph, wind_gust_mph, pressure_inhg
 
     Args:
         beaches: List of beach dicts with id, LATITUDE, LONGITUDE
@@ -323,7 +330,7 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
 
     # Build mapping of all timestamps by beach (fill everything, not just missing)
     needed_by_beach = {}
-    fields_to_fill = {"temperature", "weather", "wind_speed_mph", "wind_gust_mph"}
+    fields_to_fill = {"temperature", "weather", "wind_speed_mph", "wind_gust_mph", "pressure_inhg"}
 
     for rec in existing_records:
         bid = rec.get("beach_id")
@@ -355,6 +362,7 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
     from threading import Lock
     gridpoint_cache = {}
     forecast_cache = {}
+    pressure_cache = {}
     cache_lock = Lock()
 
     filled_count = 0
@@ -366,7 +374,7 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
     # Create a shared session with connection pooling
     session = create_session()
 
-    # Store results: beach_id -> periods
+    # Store results: beach_id -> (periods, pressure_map)
     beach_forecasts = {}
 
     # Process beaches in parallel using ThreadPoolExecutor
@@ -377,10 +385,10 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
         try:
             # Thread-safe cache access
             with cache_lock:
-                periods = fetch_beach_forecast(beach, session, gridpoint_cache, forecast_cache)
+                result = fetch_beach_forecast(beach, session, gridpoint_cache, forecast_cache, pressure_cache)
 
-            if periods:
-                return (beach["id"], periods, "success")
+            if result:
+                return (beach["id"], result, "success")
             else:
                 return (beach["id"], None, "no_coverage")
         except Exception as e:
@@ -399,10 +407,10 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
                 logger.info(f"   NWS progress: {completed}/{total_beaches} beaches")
 
             try:
-                beach_id, periods, status = future.result()
+                beach_id, result, status = future.result()
 
                 if status == "success":
-                    beach_forecasts[beach_id] = periods
+                    beach_forecasts[beach_id] = result
                     success_count += 1
                 elif status == "no_coverage":
                     no_coverage_count += 1
@@ -418,7 +426,7 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
     # Now process all fetched forecasts and update records
     pacific = pytz.timezone("America/Los_Angeles")
 
-    for beach_id, periods in beach_forecasts.items():
+    for beach_id, (periods, pressure_map) in beach_forecasts.items():
         if beach_id not in needed_by_beach:
             continue
 
@@ -481,6 +489,32 @@ def get_nws_supplement_data(beaches: List[Dict], existing_records: List[Dict]) -
                     current_wind_speed = rec.get("wind_speed_mph")
                     if current_wind_speed is not None and current_wind_speed > 0:
                         rec["wind_gust_mph"] = safe_float(current_wind_speed * 1.4)
+                        filled_count += 1
+
+                # Fill pressure data from grid data (if available)
+                if pressure_map:
+                    # Try to match the timestamp in pressure_map
+                    # Pressure timestamps are in UTC, so convert our local time to UTC
+                    period_utc = period_time.astimezone(pytz.UTC)
+
+                    # Try exact match first
+                    pressure_timestamp = period_utc.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+                    pressure_value = pressure_map.get(pressure_timestamp)
+
+                    # If no exact match, try to find closest timestamp within same hour
+                    if pressure_value is None:
+                        hour_start = period_utc.replace(minute=0, second=0, microsecond=0)
+                        for ts, val in pressure_map.items():
+                            try:
+                                ts_dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                                if ts_dt.replace(minute=0, second=0, microsecond=0) == hour_start:
+                                    pressure_value = val
+                                    break
+                            except:
+                                continue
+
+                    if pressure_value is not None:
+                        rec["pressure_inhg"] = safe_float(pressure_value)
                         filled_count += 1
 
             except Exception as e:

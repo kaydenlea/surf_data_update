@@ -52,6 +52,12 @@ def hpa_to_inhg(hpa):
         return None
     return hpa * 0.02953
 
+def pa_to_inhg(pa):
+    """Convert pascals (Pa) to inches of mercury (inHg)."""
+    if pa is None:
+        return None
+    return pa * 0.0002953
+
 def surf_energy_kj_per_m(height_m: float, period_s: float, direction_deg: float = None, beach_normal_deg: float = None) -> float:
     """
     Surf-Forecast style wave energy score (kJ per meter of crest per wave).

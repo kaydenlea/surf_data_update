@@ -3,7 +3,7 @@
 Main execution script for 100% NOAA-based Surf Database Update
 Uses only free, public domain government data sources:
   - NOAA GFSwave (primary wave/swell data)
-  - NOAA NWS (weather, temperature, wind, pressure)
+  - NOAA GFS Atmospheric (weather, temperature, wind, pressure)
   - NOAA CO-OPS (tides, water temperature)
   - USNO (sun/moon astronomical data)
 
@@ -28,7 +28,7 @@ from noaa_handler import (
     get_noaa_dataset_url, load_noaa_dataset, get_noaa_data_bulk_optimized,
     validate_noaa_dataset
 )
-from nws_handler import get_nws_supplement_data, test_nws_connection
+from gfs_atmospheric_handler import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
 from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
 from usno_handler import update_daily_conditions_usno, test_usno_connection
 
@@ -165,14 +165,16 @@ def update_forecast_data_noaa_stack(beaches):
     """
     Update forecast data using 100% NOAA/Government sources:
       1) NOAA GFSwave (primary: swell, surf, wind speed/dir)
-      2) NOAA NWS (supplement: temperature, weather, wind speed/gust, pressure)
+      2) NOAA GFS Atmospheric (supplement: temperature, weather, wind speed/gust/dir, pressure)
       3) NOAA CO-OPS (supplement: tides, water temperature)
     """
     log_step("Updating forecast data with 100% NOAA sources", 4)
+    step_start = time.time()
 
     try:
         # --- NOAA GFSWAVE PRIMARY ---
         logger.info("   Loading NOAA GFSwave dataset (rate-limited)…")
+        gfs_start = time.time()
         noaa_url = get_noaa_dataset_url()
         ds = load_noaa_dataset(noaa_url)
 
@@ -181,8 +183,10 @@ def update_forecast_data_noaa_stack(beaches):
 
         all_noaa_records = get_noaa_data_bulk_optimized(ds, beaches)
         ds.close()
+        gfs_time = time.time() - gfs_start
 
         logger.info(f"   NOAA GFSwave complete: {len(all_noaa_records)} hourly records")
+        logger.info(f"   >>> GFSwave processing took: {gfs_time:.2f} seconds ({gfs_time/60:.2f} minutes)")
 
         if all_noaa_records:
             sample_ts = all_noaa_records[0].get("timestamp")
@@ -192,17 +196,29 @@ def update_forecast_data_noaa_stack(beaches):
         all_noaa_records = _drop_records_before_today(all_noaa_records)
         all_noaa_records = _ensure_today_midnight_start(all_noaa_records, beaches)
 
-        # --- NOAA NWS SUPPLEMENT (Weather, Temp, Wind) ---
-        logger.info("   Enhancing with NOAA NWS data (weather/temp/wind)…")
-        nws_enhanced = get_nws_supplement_data(beaches, all_noaa_records)
+        # --- NOAA GFS ATMOSPHERIC SUPPLEMENT (Weather, Temp, Wind, Pressure) ---
+        logger.info("   Enhancing with NOAA GFS Atmospheric data (weather/temp/wind/pressure)…")
+        gfs_atmos_start = time.time()
+        gfs_atmos_enhanced = get_gfs_atmospheric_supplement_data(beaches, all_noaa_records)
+        gfs_atmos_time = time.time() - gfs_atmos_start
+        logger.info(f"   >>> GFS Atmospheric enhancement took: {gfs_atmos_time:.2f} seconds ({gfs_atmos_time/60:.2f} minutes)")
 
         # --- NOAA CO-OPS SUPPLEMENT (Tides, Water Temp) ---
         logger.info("   Enhancing with NOAA CO-OPS data (tides/water temp)…")
-        fully_enhanced = get_noaa_tides_supplement_data(beaches, nws_enhanced)
+        tides_start = time.time()
+        fully_enhanced = get_noaa_tides_supplement_data(beaches, gfs_atmos_enhanced)
+        tides_time = time.time() - tides_start
+        logger.info(f"   >>> CO-OPS enhancement took: {tides_time:.2f} seconds ({tides_time/60:.2f} minutes)")
 
         # --- UPSERT TO DATABASE ---
         logger.info("   Uploading enhanced records to database…")
+        db_start = time.time()
         total_inserted = upsert_forecast_data(fully_enhanced)
+        db_time = time.time() - db_start
+        logger.info(f"   >>> Database upsert took: {db_time:.2f} seconds ({db_time/60:.2f} minutes)")
+
+        step_time = time.time() - step_start
+        logger.info(f"   >>> TOTAL forecast update time: {step_time:.2f} seconds ({step_time/60:.2f} minutes)")
 
         log_step(
             f"NOAA stack forecast update completed: {len(beaches)} beaches, "
@@ -233,11 +249,11 @@ def run_system_checks():
     else:
         logger.error("[FAIL] Database connection failed")
 
-    if test_nws_connection():
-        logger.info("[OK] NOAA NWS API connection successful")
+    if test_gfs_atmospheric_connection():
+        logger.info("[OK] NOAA GFS Atmospheric dataset connection successful")
         checks_passed += 1
     else:
-        logger.error("[FAIL] NOAA NWS API connection failed")
+        logger.error("[FAIL] NOAA GFS Atmospheric dataset connection failed")
 
     if test_noaa_tides_connection():
         logger.info("[OK] NOAA CO-OPS API connection successful")
@@ -279,7 +295,7 @@ def print_startup_banner():
     logger.info("")
     logger.info("DATA SOURCES (All Public Domain - Free for Commercial Use):")
     logger.info("  - NOAA GFSwave - Wave/swell forecasts")
-    logger.info("  - NOAA NWS - Weather, temperature, wind, pressure")
+    logger.info("  - NOAA GFS Atmospheric - Weather, temperature, wind speed/gust/direction, pressure")
     logger.info("  - NOAA CO-OPS - Tides, water temperature")
     logger.info("  - USNO - Sun/moon rise/set, moon phase")
     logger.info("")
@@ -296,7 +312,7 @@ def print_completion_summary(start_time, beaches_count, counties_count, forecast
     logger.info("=" * 80)
 
     logger.info("EXECUTION SUMMARY:")
-    logger.info(f"   - Total execution time: {total_time:.1f} seconds")
+    logger.info(f"   - Total execution time: {total_time:.1f} seconds ({total_time/60:.2f} minutes)")
     logger.info(f"   - Beaches processed: {beaches_count:,}")
     logger.info(f"   - Counties processed: {counties_count:,}")
     logger.info(f"   - Forecast records: {forecast_records:,}")
@@ -314,7 +330,7 @@ def print_completion_summary(start_time, beaches_count, counties_count, forecast
     logger.info("=" * 80)
     logger.info("DATA SOURCES USED (100% Public Domain):")
     logger.info("   - NOAA GFSwave - Wave/swell/wind")
-    logger.info("   - NOAA NWS - Weather/temperature/wind/pressure")
+    logger.info("   - NOAA GFS Atmospheric - Weather/temperature/wind/pressure")
     logger.info("   - NOAA CO-OPS - Tides/water temperature")
     logger.info("   - USNO - Sun/moon astronomical data")
     logger.info("   - All data converted to imperial units")
@@ -338,11 +354,15 @@ def main():
 
         # Step 1: Cleanup old data
         log_step("Starting data cleanup", 1)
+        cleanup_start = time.time()
         if not cleanup_old_data():
             logger.warning("Cleanup had issues, continuing with upsert mode…")
+        cleanup_time = time.time() - cleanup_start
+        logger.info(f"   >>> Cleanup took: {cleanup_time:.2f} seconds")
 
         # Step 2: Fetch beaches and counties
         log_step("Fetching location data", 2)
+        fetch_start = time.time()
         beaches = fetch_all_beaches()
         if not beaches:
             logger.error("CRITICAL: No beaches found. Cannot proceed.")
@@ -352,8 +372,10 @@ def main():
         if not counties:
             logger.error("CRITICAL: No counties found. Cannot proceed.")
             return False
+        fetch_time = time.time() - fetch_start
 
         logger.info(f"Loaded {len(beaches)} beaches and {len(counties)} counties")
+        logger.info(f"   >>> Location fetch took: {fetch_time:.2f} seconds")
 
         # Step 3: Forecast update (100% NOAA stack)
         log_step("Processing forecast data (NOAA stack)", 3)
@@ -364,12 +386,18 @@ def main():
 
         # Step 4: Daily conditions (USNO)
         log_step("Processing daily conditions (USNO)", 4)
+        usno_start = time.time()
         daily_records = update_daily_conditions_usno(counties)
         daily_count = upsert_daily_conditions(daily_records)
+        usno_time = time.time() - usno_start
+        logger.info(f"   >>> USNO processing took: {usno_time:.2f} seconds")
 
         # Step 5: Final DB statistics
         log_step("Generating final statistics", 5)
+        stats_start = time.time()
         _ = get_database_stats()
+        stats_time = time.time() - stats_start
+        logger.info(f"   >>> Statistics generation took: {stats_time:.2f} seconds")
 
         print_completion_summary(
             start_time, len(beaches), len(counties),

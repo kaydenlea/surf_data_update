@@ -28,11 +28,12 @@ RETRY_DELAY = 65
 MAX_RETRIES = 3
 
 # NOAA / Open-Meteo rate limits
-NOAA_REQUEST_DELAY = 0.2
-NOAA_BATCH_DELAY = 1.0
+# Increased delays to avoid NOAA rate limiting (they have strict abuse detection)
+NOAA_REQUEST_DELAY = 2.0  # Increased from 0.2 to 2.0 seconds between requests
+NOAA_BATCH_DELAY = 5.0    # Increased from 0.5 to 5.0 seconds between location batches
 NOAA_MAX_CONCURRENT = 1
 NOAA_RETRY_DELAY = 600
-NOAA_DATASET_TEST_DELAY = 1.0
+NOAA_DATASET_TEST_DELAY = 3.0  # Increased from 1.0 to 3.0 seconds
 
 OPENMETEO_REQUEST_DELAY = 1.0
 OPENMETEO_BATCH_DELAY = 2.0
