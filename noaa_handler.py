@@ -14,8 +14,8 @@ from datetime import datetime, timezone, timedelta
 import pytz
 
 from config import (
-    logger, NOAA_BASE_URLS, NOAA_VARS, NOAA_DATASET_TEST_DELAY, 
-    NOAA_BATCH_DELAY, NOAA_RETRY_DELAY
+    logger, NOAA_BASE_URLS, NOAA_VARS, NOAA_DATASET_TEST_DELAY,
+    NOAA_OCEAN_REQUEST_DELAY, NOAA_OCEAN_BATCH_DELAY, NOAA_RETRY_DELAY
 )
 from utils import (
     enforce_noaa_rate_limit, safe_float, meters_to_feet, mps_to_mph,
@@ -432,7 +432,7 @@ def test_noaa_url(url):
         logger.info(f"      Testing: {url}")
         
         # Enforce rate limiting BEFORE each request
-        enforce_noaa_rate_limit()
+        enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
         
         try:
             # Try to open dataset with proper OpenDAP backend specification
@@ -686,7 +686,7 @@ def load_noaa_dataset(url):
     logger.info("   Loading NOAA GFSwave dataset with rate limiting...")
 
     # Enforce rate limiting before dataset open
-    enforce_noaa_rate_limit()
+    enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
 
     try:
         # Load dataset with proper OpenDAP settings
@@ -777,7 +777,7 @@ def get_noaa_data_bulk_optimized(ds, beaches):
         representative_beach = min(group_beaches, key=lambda b: b["LONGITUDE"])
 
         # Enforce rate limiting before grid point search
-        enforce_noaa_rate_limit()
+        enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
 
         # Find grid point for this location
         grid_lat, grid_lon = find_nearest_ocean_point(
@@ -790,7 +790,7 @@ def get_noaa_data_bulk_optimized(ds, beaches):
         if grid_lat is None or grid_lon is None:
             logger.warning(f"   Representative beach failed for location {location_key}, trying individual beaches...")
             for idx, beach in enumerate(group_beaches):
-                enforce_noaa_rate_limit()
+                enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
                 grid_lat, grid_lon = find_nearest_ocean_point(
                     ds,
                     beach["LATITUDE"],
@@ -806,7 +806,7 @@ def get_noaa_data_bulk_optimized(ds, beaches):
             continue
         
         # Enforce rate limiting before bulk data extraction
-        enforce_noaa_rate_limit()
+        enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
         
         try:
             # BULK EXTRACT all variables for this grid point at once (SLICED to 7-day window)
@@ -824,8 +824,8 @@ def get_noaa_data_bulk_optimized(ds, beaches):
         
         # Add delay between location groups to be extra conservative
         if group_count < len(location_groups):
-            logger.info(f"   Rate limiting: waiting {NOAA_BATCH_DELAY}s before next location...")
-            time.sleep(NOAA_BATCH_DELAY)
+            logger.info(f"   Rate limiting: waiting {NOAA_OCEAN_BATCH_DELAY}s before next location...")
+            time.sleep(NOAA_OCEAN_BATCH_DELAY)
     
     # Step 3: Process all beaches using cached grid data
     logger.info("   Processing all beaches using cached and enhanced grid data...")

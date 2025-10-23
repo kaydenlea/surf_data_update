@@ -13,7 +13,9 @@ import logging
 logger = logging.getLogger("surf_update")
 
 from config import (
-    NOAA_REQUEST_DELAY, 
+    NOAA_REQUEST_DELAY,
+    NOAA_OCEAN_REQUEST_DELAY,
+    NOAA_ATMOSPHERIC_REQUEST_DELAY,
     OPENMETEO_REQUEST_DELAY,
     OPENMETEO_RETRY_DELAY,
     OPENMETEO_MAX_RETRIES,
@@ -136,19 +138,28 @@ def calculate_wave_energy_kj(wave_height_ft, wave_period_s, direction_deg: float
         return None
 
 # === RATE LIMITING FUNCTIONS ===
-def enforce_noaa_rate_limit():
-    """Enforce NOAA rate limiting with thread safety."""
+def enforce_noaa_rate_limit(delay=None):
+    """
+    Enforce NOAA rate limiting with thread safety.
+
+    Args:
+        delay: Optional override for rate limit delay. If not specified, uses NOAA_REQUEST_DELAY.
+               Use NOAA_OCEAN_REQUEST_DELAY for ocean data or NOAA_ATMOSPHERIC_REQUEST_DELAY for atmospheric data.
+    """
+    if delay is None:
+        delay = NOAA_REQUEST_DELAY
+
     last_request_time, request_lock = get_noaa_rate_limit_globals()
-    
+
     with request_lock:
         current_time = time.time()
         time_since_last = current_time - last_request_time
-        
-        if time_since_last < NOAA_REQUEST_DELAY:
-            sleep_time = NOAA_REQUEST_DELAY - time_since_last
+
+        if time_since_last < delay:
+            sleep_time = delay - time_since_last
             logger.debug(f"      Rate limiting: sleeping {sleep_time:.1f}s")
             time.sleep(sleep_time)
-        
+
         set_noaa_last_request_time(time.time())
 
 def api_request_with_retry(api_func, *args, max_retries=OPENMETEO_MAX_RETRIES, **kwargs):

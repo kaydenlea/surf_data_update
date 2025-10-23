@@ -13,7 +13,7 @@ from datetime import datetime, timezone, timedelta
 import pytz
 from typing import List, Dict, Optional
 
-from config import logger, NOAA_BATCH_DELAY
+from config import logger, NOAA_ATMOSPHERIC_REQUEST_DELAY, NOAA_ATMOSPHERIC_BATCH_DELAY
 from utils import (
     enforce_noaa_rate_limit, safe_float, safe_int, celsius_to_fahrenheit,
     mps_to_mph, pa_to_inhg
@@ -120,30 +120,41 @@ def get_gfs_atmospheric_dataset_url() -> Optional[str]:
 
     # GFS runs: 00z, 06z, 12z, 18z
     # Try most recent run first, then fall back
+    # Note: GFS runs take ~4 hours to complete, so latest run may not be available yet
     possible_hours = [18, 12, 6, 0]
     current_hour = now_utc.hour
 
-    # Find most recent run
-    recent_runs = [h for h in possible_hours if h <= current_hour]
+    # Find most recent run that should be available (subtract 4 hours for processing time)
+    effective_hour = (current_hour - 4) % 24
+    recent_runs = [h for h in possible_hours if h <= effective_hour]
+
     if not recent_runs:
         # Use previous day's last run
         run_date = (now_utc - timedelta(days=1)).date()
         run_hour = 18
     else:
-        run_date = now_utc.date()
+        # If we're past midnight but before first run completes, use yesterday
+        if current_hour < 4:
+            run_date = (now_utc - timedelta(days=1)).date()
+        else:
+            run_date = now_utc.date()
         run_hour = recent_runs[0]
 
-    # Try current day, then previous day
+    logger.info(f"   Starting search from {run_date} {run_hour:02d}z (UTC now: {now_utc.strftime('%Y-%m-%d %H:%M')})")
+
+    # Try current run date, then progressively older dates
     for days_back in range(3):
         test_date = run_date - timedelta(days=days_back)
         date_str = test_date.strftime("%Y%m%d")
 
         for base_url in GFS_ATMOSPHERIC_BASE_URLS:
-            for hour in [run_hour, 12, 6, 0, 18]:
+            # Try the calculated run hour first, then all other hours
+            hours_to_try = [run_hour] + [h for h in [18, 12, 6, 0] if h != run_hour]
+            for hour in hours_to_try:
                 url = f"{base_url}/gfs{date_str}/gfs_0p25_{hour:02d}z"
 
                 try:
-                    enforce_noaa_rate_limit()
+                    enforce_noaa_rate_limit(NOAA_ATMOSPHERIC_REQUEST_DELAY)
                     logger.debug(f"   Testing GFS Atmospheric URL: {url}")
 
                     ds = xr.open_dataset(url, engine="netcdf4")
@@ -175,7 +186,7 @@ def load_gfs_atmospheric_dataset(url: str) -> Optional[xr.Dataset]:
     """
     logger.info("   Loading GFS Atmospheric dataset with rate limiting...")
 
-    enforce_noaa_rate_limit()
+    enforce_noaa_rate_limit(NOAA_ATMOSPHERIC_REQUEST_DELAY)
 
     try:
         ds = xr.open_dataset(url, engine="netcdf4")
@@ -256,21 +267,31 @@ def extract_gfs_atmospheric_point(
         "precip_rate": [],
     }
 
-    for time_idx in time_indices:
-        try:
+    # OPTIMIZED: Extract ALL variables for ALL time indices in ONE call
+    try:
+        # Extract all data at once (single network request for all variables)
+        temp_k_arr = ds["tmp2m"][time_indices, lat_idx, lon_idx].values if "tmp2m" in ds.variables else None
+        u_wind_arr = ds["ugrd10m"][time_indices, lat_idx, lon_idx].values if "ugrd10m" in ds.variables else None
+        v_wind_arr = ds["vgrd10m"][time_indices, lat_idx, lon_idx].values if "vgrd10m" in ds.variables else None
+        gust_arr = ds["gustsfc"][time_indices, lat_idx, lon_idx].values if "gustsfc" in ds.variables else None
+        pressure_arr = ds["pressfc"][time_indices, lat_idx, lon_idx].values if "pressfc" in ds.variables else None
+        cloud_arr = ds["tcdcclm"][time_indices, lat_idx, lon_idx].values if "tcdcclm" in ds.variables else None
+        precip_arr = ds["pratesfc"][time_indices, lat_idx, lon_idx].values if "pratesfc" in ds.variables else None
+
+        # Now process the arrays in memory (no more network calls)
+        for i in range(len(time_indices)):
             # Temperature (convert Kelvin to Fahrenheit)
-            if "tmp2m" in ds.variables:
-                temp_k = float(ds["tmp2m"][time_idx, lat_idx, lon_idx].values)
-                temp_c = temp_k - 273.15
+            if temp_k_arr is not None:
+                temp_c = temp_k_arr[i] - 273.15
                 temp_f = celsius_to_fahrenheit(temp_c)
                 result["temperature"].append(temp_f)
             else:
                 result["temperature"].append(None)
 
             # Wind components
-            if "ugrd10m" in ds.variables and "vgrd10m" in ds.variables:
-                u_wind = float(ds["ugrd10m"][time_idx, lat_idx, lon_idx].values)
-                v_wind = float(ds["vgrd10m"][time_idx, lat_idx, lon_idx].values)
+            if u_wind_arr is not None and v_wind_arr is not None:
+                u_wind = float(u_wind_arr[i])
+                v_wind = float(v_wind_arr[i])
 
                 # Calculate wind speed and direction
                 wind_speed_ms = np.sqrt(u_wind**2 + v_wind**2)
@@ -285,8 +306,8 @@ def extract_gfs_atmospheric_point(
                 result["wind_direction"].append(None)
 
             # Wind gust (if available)
-            if "gustsfc" in ds.variables:
-                gust_ms = float(ds["gustsfc"][time_idx, lat_idx, lon_idx].values)
+            if gust_arr is not None:
+                gust_ms = float(gust_arr[i])
                 gust_mph = mps_to_mph(gust_ms)
                 result["wind_gust"].append(gust_mph)
             else:
@@ -297,31 +318,32 @@ def extract_gfs_atmospheric_point(
                     result["wind_gust"].append(None)
 
             # Surface pressure (convert Pa to inHg)
-            if "pressfc" in ds.variables:
-                pressure_pa = float(ds["pressfc"][time_idx, lat_idx, lon_idx].values)
+            if pressure_arr is not None:
+                pressure_pa = float(pressure_arr[i])
                 pressure_inhg = pa_to_inhg(pressure_pa)
                 result["pressure"].append(pressure_inhg)
             else:
                 result["pressure"].append(None)
 
             # Cloud cover
-            if "tcdcclm" in ds.variables:
-                cloud_pct = float(ds["tcdcclm"][time_idx, lat_idx, lon_idx].values)
+            if cloud_arr is not None:
+                cloud_pct = float(cloud_arr[i])
                 result["cloud_cover"].append(cloud_pct)
             else:
                 result["cloud_cover"].append(None)
 
             # Precipitation rate (convert kg/m²/s to mm/hr)
-            # 1 kg/m²/s = 3600 mm/hr (since 1 kg/m² = 1 mm of water)
-            if "pratesfc" in ds.variables:
-                precip_kgm2s = float(ds["pratesfc"][time_idx, lat_idx, lon_idx].values)
+            if precip_arr is not None:
+                precip_kgm2s = float(precip_arr[i])
                 precip_mmhr = precip_kgm2s * 3600  # Convert to mm/hr
                 result["precip_rate"].append(precip_mmhr)
             else:
                 result["precip_rate"].append(None)
 
-        except Exception as e:
-            logger.debug(f"   Error extracting data for time index {time_idx}: {e}")
+    except Exception as e:
+        logger.error(f"   Error extracting atmospheric data: {e}")
+        # Return empty results on error
+        for _ in time_indices:
             result["temperature"].append(None)
             result["wind_speed"].append(None)
             result["wind_direction"].append(None)
@@ -402,6 +424,8 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
             continue
 
         # Round to 0.25 degrees (GFS grid resolution)
+        # This creates ~83 location groups for 1336 beaches
+        # Each location group will have ~16 beaches on average
         lat_key = round(beach["LATITUDE"] * 4) / 4
         lon_key = round(beach["LONGITUDE"] * 4) / 4
         cache_key = f"{lat_key},{lon_key}"
@@ -415,6 +439,11 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
 
     for cache_key, group_beaches in location_groups.items():
         processed_locations += 1
+
+        # Rate limit BEFORE processing EVERY location (including first) to avoid hitting NOAA limits
+        # NOAA is extremely strict - we must delay even before the first request
+        logger.info(f"   GFS Atmospheric: waiting {NOAA_ATMOSPHERIC_BATCH_DELAY}s before location {processed_locations}/{total_locations}...")
+        time.sleep(NOAA_ATMOSPHERIC_BATCH_DELAY)
 
         if processed_locations % 10 == 0:
             logger.info(f"   GFS Atmospheric: {processed_locations}/{total_locations} locations processed")
@@ -456,7 +485,7 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
         time_indices = list(set(timestamp_to_index.values()))
 
         try:
-            enforce_noaa_rate_limit()
+            enforce_noaa_rate_limit(NOAA_ATMOSPHERIC_REQUEST_DELAY)
             atmospheric_data = extract_gfs_atmospheric_point(ds, lat, lon, time_indices)
         except Exception as e:
             logger.debug(f"   Error extracting atmospheric data for {cache_key}: {e}")
@@ -530,9 +559,8 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                     rec["pressure_inhg"] = safe_float(data["pressure"])
                     filled_count += 1
 
-        # Rate limiting between location groups
-        if processed_locations < total_locations:
-            time.sleep(NOAA_BATCH_DELAY)
+        # Note: Rate limiting now happens at the START of each loop iteration (line 420-422)
+        # This ensures we never exceed NOAA's rate limits
 
     ds.close()
 

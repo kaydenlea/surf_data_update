@@ -28,9 +28,16 @@ RETRY_DELAY = 65
 MAX_RETRIES = 3
 
 # NOAA / Open-Meteo rate limits
-# Increased delays to avoid NOAA rate limiting (they have strict abuse detection)
-NOAA_REQUEST_DELAY = 2.0  # Increased from 0.2 to 2.0 seconds between requests
-NOAA_BATCH_DELAY = 5.0    # Increased from 0.5 to 5.0 seconds between location batches
+# Separate rate limits for ocean (GFSwave) vs atmospheric (GFS) data
+# Using same delays for both - smaller location groups (0.125° grid) spreads requests out
+NOAA_OCEAN_REQUEST_DELAY = 0.2      # GFSwave ocean data: 0.2 seconds per request
+NOAA_ATMOSPHERIC_REQUEST_DELAY = 0.2  # GFS atmospheric data: 0.2 seconds per request (same as ocean)
+NOAA_REQUEST_DELAY = 2.0  # Default fallback (kept for backward compatibility)
+
+NOAA_OCEAN_BATCH_DELAY = 0.2      # GFSwave ocean data: 0.2 seconds per batch
+NOAA_ATMOSPHERIC_BATCH_DELAY = 1.0  # GFS atmospheric data: 1 second per batch (slower than ocean to avoid rate limits)
+NOAA_BATCH_DELAY = 5.0    # Default fallback (kept for backward compatibility)
+
 NOAA_MAX_CONCURRENT = 1
 NOAA_RETRY_DELAY = 600
 NOAA_DATASET_TEST_DELAY = 3.0  # Increased from 1.0 to 3.0 seconds

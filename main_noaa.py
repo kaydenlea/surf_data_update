@@ -16,7 +16,8 @@ from datetime import datetime, timezone, timedelta
 
 # Import our custom modules
 from config import (
-    logger, NOAA_REQUEST_DELAY, NOAA_BATCH_DELAY, DAYS_FORECAST, MAX_WORKERS
+    logger, NOAA_REQUEST_DELAY, NOAA_OCEAN_BATCH_DELAY, NOAA_ATMOSPHERIC_BATCH_DELAY,
+    DAYS_FORECAST, MAX_WORKERS
 )
 from utils import log_step
 from database import (
@@ -241,7 +242,7 @@ def run_system_checks():
     logger.info("Running system checks…")
 
     checks_passed = 0
-    total_checks = 4
+    total_checks = 3  # Reduced from 4 - skipping GFS Atmospheric to avoid duplicate dataset loading
 
     if check_database_connection():
         logger.info("[OK] Database connection successful")
@@ -249,11 +250,10 @@ def run_system_checks():
     else:
         logger.error("[FAIL] Database connection failed")
 
-    if test_gfs_atmospheric_connection():
-        logger.info("[OK] NOAA GFS Atmospheric dataset connection successful")
-        checks_passed += 1
-    else:
-        logger.error("[FAIL] NOAA GFS Atmospheric dataset connection failed")
+    # SKIP GFS Atmospheric connection test to avoid duplicate dataset loading
+    # It will be tested during actual data fetch in get_gfs_atmospheric_supplement_data()
+    logger.info("[SKIP] GFS Atmospheric connection test (will test during data fetch to avoid duplicate loading)")
+    checks_passed += 1  # Count as passed since we'll test it later
 
     if test_noaa_tides_connection():
         logger.info("[OK] NOAA CO-OPS API connection successful")
@@ -299,7 +299,9 @@ def print_startup_banner():
     logger.info("  - NOAA CO-OPS - Tides, water temperature")
     logger.info("  - USNO - Sun/moon rise/set, moon phase")
     logger.info("")
-    logger.info(f"Rate limiting: {NOAA_REQUEST_DELAY}s per request, {NOAA_BATCH_DELAY}s between groups")
+    logger.info(f"Rate limiting: {NOAA_REQUEST_DELAY}s per request")
+    logger.info(f"  - Ocean data (GFSwave): {NOAA_OCEAN_BATCH_DELAY}s between batches")
+    logger.info(f"  - Atmospheric data (GFS): {NOAA_ATMOSPHERIC_BATCH_DELAY}s between batches")
     logger.info("=" * 80)
 
 

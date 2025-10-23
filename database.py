@@ -561,3 +561,47 @@ def get_database_stats():
         logger.info(f"   {table}: {count:,} records")
     
     return stats
+
+def fetch_existing_forecast_records(page_size: int = 1000):
+    """
+    Fetch all existing forecast records from the database.
+    Used by step2_supplement_data.py to enhance wave data with atmospheric/tides.
+    
+    Returns:
+        List of forecast record dicts with beach_id, timestamp, and all existing fields
+    """
+    logger.info("Fetching existing forecast records from database...")
+    
+    all_rows = []
+    start = 0
+    while True:
+        try:
+            end_idx = start + page_size - 1
+            resp = (
+                supabase
+                .table("forecast_data")
+                .select("*", count="exact")
+                .range(start, end_idx)
+                .execute()
+            )
+            rows = resp.data or []
+            all_rows.extend(rows)
+            
+            logger.info(f"   Fetched {len(rows)} forecast records (batch {start//page_size + 1})")
+            
+            if len(rows) < page_size:
+                break
+            
+            start += page_size
+        except Exception as e:
+            logger.error(f"ERROR: Failed to fetch forecast records: {e}")
+            break
+    
+    # Filter valid records (must have beach_id and timestamp)
+    valid_rows = []
+    for row in all_rows:
+        if row.get("beach_id") and row.get("timestamp"):
+            valid_rows.append(row)
+    
+    logger.info(f"OK: Found {len(valid_rows)} valid forecast records")
+    return valid_rows
