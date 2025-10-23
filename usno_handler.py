@@ -20,7 +20,7 @@ from utils import chunk_iter
 USNO_BASE_URL = "https://aa.usno.navy.mil/api"
 
 
-def get_sun_moon_data(lat: float, lon: float, date_str: str) -> Optional[Dict]:
+def get_sun_moon_data(lat: float, lon: float, date_str: str, max_retries: int = 3) -> Optional[Dict]:
     """
     Fetch sun/moon data for a specific location and date from USNO.
 
@@ -28,6 +28,7 @@ def get_sun_moon_data(lat: float, lon: float, date_str: str) -> Optional[Dict]:
         lat: Latitude
         lon: Longitude
         date_str: Date in YYYY-MM-DD format
+        max_retries: Maximum number of retry attempts (default: 3)
 
     Returns:
         Dict with sunrise, sunset, moonrise, moonset, moon_phase
@@ -40,58 +41,71 @@ def get_sun_moon_data(lat: float, lon: float, date_str: str) -> Optional[Dict]:
         "tz": -8  # Pacific Standard Time offset (will adjust for PDT automatically)
     }
 
-    try:
-        response = requests.get(url, params=params, timeout=15)
-        response.raise_for_status()
-        data = response.json()
+    retry_delay = 2.0  # Start with 2 seconds
 
-        if "error" in data:
-            logger.warning(f"   USNO: API error for {lat},{lon} on {date_str}: {data.get('error')}")
-            return None
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, timeout=20)
+            response.raise_for_status()
+            data = response.json()
 
-        # Extract data
-        properties = data.get("properties", {})
-        sun_data = properties.get("data", {}).get("sundata", [])
-        moon_data = properties.get("data", {}).get("moondata", [])
+            if "error" in data:
+                logger.warning(f"   USNO: API error for {lat},{lon} on {date_str}: {data.get('error')}")
+                return None
 
-        # Find sunrise and sunset
-        sunrise = None
-        sunset = None
-        for entry in sun_data:
-            phen = entry.get("phen", "").lower()
-            time_val = entry.get("time", "")
+            # Extract data
+            properties = data.get("properties", {})
+            sun_data = properties.get("data", {}).get("sundata", [])
+            moon_data = properties.get("data", {}).get("moondata", [])
 
-            if "rise" in phen:
-                sunrise = time_val
-            elif "set" in phen:
-                sunset = time_val
+            # Find sunrise and sunset
+            sunrise = None
+            sunset = None
+            for entry in sun_data:
+                phen = entry.get("phen", "").lower()
+                time_val = entry.get("time", "")
 
-        # Find moonrise, moonset
-        moonrise = None
-        moonset = None
-        for entry in moon_data:
-            phen = entry.get("phen", "").lower()
-            time_val = entry.get("time", "")
+                if "rise" in phen:
+                    sunrise = time_val
+                elif "set" in phen:
+                    sunset = time_val
 
-            if "rise" in phen:
-                moonrise = time_val
-            elif "set" in phen:
-                moonset = time_val
+            # Find moonrise, moonset
+            moonrise = None
+            moonset = None
+            for entry in moon_data:
+                phen = entry.get("phen", "").lower()
+                time_val = entry.get("time", "")
 
-        # Get moon phase
-        moon_phase = properties.get("curphase", "")
+                if "rise" in phen:
+                    moonrise = time_val
+                elif "set" in phen:
+                    moonset = time_val
 
-        return {
-            "sunrise": sunrise,
-            "sunset": sunset,
-            "moonrise": moonrise,
-            "moonset": moonset,
-            "moon_phase_name": moon_phase,
-        }
+            # Get moon phase
+            moon_phase = properties.get("curphase", "")
 
-    except requests.exceptions.RequestException as e:
-        logger.error(f"   USNO: Failed to fetch data for {lat},{lon}: {e}")
-        return None
+            return {
+                "sunrise": sunrise,
+                "sunset": sunset,
+                "moonrise": moonrise,
+                "moonset": moonset,
+                "moon_phase_name": moon_phase,
+            }
+
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                # Only log warning on first failure, reduce noise
+                if attempt == 0:
+                    logger.warning(f"   USNO: Connection error for {lat},{lon} (attempt {attempt+1}/{max_retries}), retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff: 2s, 4s, 8s
+            else:
+                # Final attempt failed
+                logger.error(f"   USNO: Failed to fetch data for {lat},{lon}: {e}")
+                return None
+
+    return None
 
 
 def convert_moon_phase_to_value(phase_name: str) -> Optional[float]:
@@ -184,8 +198,11 @@ def update_daily_conditions_usno(counties: List[Dict]) -> List[Dict]:
         while current_date <= end_date:
             date_str = current_date.strftime("%Y-%m-%d")
 
-            # Fetch data for this day (no rate limiting - USNO is generous)
+            # Fetch data for this day
             data = get_sun_moon_data(lat, lon, date_str)
+
+            # Small delay between requests to be respectful to USNO API
+            time.sleep(0.5)
 
             if data:
                 # Convert moon phase name to numeric value

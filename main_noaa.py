@@ -5,7 +5,7 @@ Uses only free, public domain government data sources:
   - NOAA GFSwave (primary wave/swell data)
   - NOAA GFS Atmospheric (weather, temperature, wind, pressure)
   - NOAA CO-OPS (tides, water temperature)
-  - USNO (sun/moon astronomical data)
+  - Astral library (sun/moon astronomical calculations using NOAA algorithms)
 
 NO commercial APIs required - all data is public domain and free for commercial use.
 """
@@ -31,7 +31,7 @@ from noaa_handler import (
 )
 from gfs_atmospheric_handler import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
 from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
-from usno_handler import update_daily_conditions_usno, test_usno_connection
+from astral_handler import update_daily_conditions_astral, test_astral_calculation
 
 # Keep Open-Meteo as optional fallback (not deleted, just not used by default)
 try:
@@ -261,11 +261,11 @@ def run_system_checks():
     else:
         logger.error("[FAIL] NOAA CO-OPS API connection failed")
 
-    if test_usno_connection():
-        logger.info("[OK] USNO API connection successful")
+    if test_astral_calculation():
+        logger.info("[OK] Astral astronomical calculations working")
         checks_passed += 1
     else:
-        logger.error("[FAIL] USNO API connection failed")
+        logger.error("[FAIL] Astral astronomical calculations failed")
 
     # Optional: Check Open-Meteo if available
     if OPENMETEO_AVAILABLE:
@@ -297,7 +297,7 @@ def print_startup_banner():
     logger.info("  - NOAA GFSwave - Wave/swell forecasts")
     logger.info("  - NOAA GFS Atmospheric - Weather, temperature, wind speed/gust/direction, pressure")
     logger.info("  - NOAA CO-OPS - Tides, water temperature")
-    logger.info("  - USNO - Sun/moon rise/set, moon phase")
+    logger.info("  - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)")
     logger.info("")
     logger.info(f"Rate limiting: {NOAA_REQUEST_DELAY}s per request")
     logger.info(f"  - Ocean data (GFSwave): {NOAA_OCEAN_BATCH_DELAY}s between batches")
@@ -334,7 +334,7 @@ def print_completion_summary(start_time, beaches_count, counties_count, forecast
     logger.info("   - NOAA GFSwave - Wave/swell/wind")
     logger.info("   - NOAA GFS Atmospheric - Weather/temperature/wind/pressure")
     logger.info("   - NOAA CO-OPS - Tides/water temperature")
-    logger.info("   - USNO - Sun/moon astronomical data")
+    logger.info("   - Astral library - Sun/moon astronomical data (NOAA algorithms)")
     logger.info("   - All data converted to imperial units")
     logger.info("=" * 80)
 
@@ -386,13 +386,13 @@ def main():
             logger.error("CRITICAL: No forecast data was processed successfully")
             return False
 
-        # Step 4: Daily conditions (USNO)
-        log_step("Processing daily conditions (USNO)", 4)
-        usno_start = time.time()
-        daily_records = update_daily_conditions_usno(counties)
+        # Step 4: Daily conditions (Astral - local calculations)
+        log_step("Processing daily conditions (Astral)", 4)
+        astral_start = time.time()
+        daily_records = update_daily_conditions_astral(counties)
         daily_count = upsert_daily_conditions(daily_records)
-        usno_time = time.time() - usno_start
-        logger.info(f"   >>> USNO processing took: {usno_time:.2f} seconds")
+        astral_time = time.time() - astral_start
+        logger.info(f"   >>> Astral processing took: {astral_time:.2f} seconds")
 
         # Step 5: Final DB statistics
         log_step("Generating final statistics", 5)

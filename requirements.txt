@@ -9,3 +9,4 @@ numpy>=1.24.0
 urllib3>=2.0.0
 xarray>=2023.6.0
 netcdf4>=1.6.0
+astral>=3.0  # For astronomical calculations (sunrise, sunset, moon phase)

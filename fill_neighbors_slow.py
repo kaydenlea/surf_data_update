@@ -149,29 +149,47 @@ def main():
         if field == 'surf_height_min_ft':
             select_fields += ',surf_height_max_ft'
 
-        # Retry logic for initial null record fetch
+        # Fetch ALL nulls using pagination (Supabase defaults to 1000 record limit)
+        print(f"  Fetching all null records for {field}...")
+        nulls = []
+        page_size = 1000
+        page = 0
         max_retries = 3
-        retry_delay = 1.0
-        null_records = None
 
-        for attempt in range(max_retries):
-            try:
-                null_records = supabase.table('forecast_data').select(
-                    select_fields
-                ).is_(field, 'null').execute()
-                break  # Success
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    print(f"\n  ⚠️ Database read error (attempt {attempt+1}/{max_retries}): {str(e)[:100]}")
-                    print(f"  Retrying in {retry_delay}s...")
-                    time.sleep(retry_delay)
-                    retry_delay *= 2
-                else:
-                    print(f"\n  ❌ Failed to fetch null records after {max_retries} attempts: {str(e)[:100]}")
-                    raise  # Re-raise after all retries exhausted
+        while True:
+            start = page * page_size
+            end = start + page_size - 1
+            retry_delay = 1.0
 
-        nulls = null_records.data or []
-        print(f"  Found {len(nulls)} nulls")
+            # Retry logic for each page fetch
+            page_data = None
+            for attempt in range(max_retries):
+                try:
+                    null_records = supabase.table('forecast_data').select(
+                        select_fields
+                    ).is_(field, 'null').range(start, end).execute()
+                    page_data = null_records.data or []
+                    break  # Success
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        print(f"\n  ⚠️ Database read error (attempt {attempt+1}/{max_retries}): {str(e)[:100]}")
+                        print(f"  Retrying in {retry_delay}s...")
+                        time.sleep(retry_delay)
+                        retry_delay *= 2
+                    else:
+                        print(f"\n  ❌ Failed to fetch null records after {max_retries} attempts: {str(e)[:100]}")
+                        raise  # Re-raise after all retries exhausted
+
+            nulls.extend(page_data)
+
+            # If we got less than page_size records, we've reached the end
+            if len(page_data) < page_size:
+                break
+
+            page += 1
+            print(f"    Fetched page {page} ({len(nulls)} nulls so far)...", end='\r')
+
+        print(f"  Found {len(nulls)} nulls                           ")
 
         if not nulls:
             continue
