@@ -149,9 +149,26 @@ def main():
         if field == 'surf_height_min_ft':
             select_fields += ',surf_height_max_ft'
 
-        null_records = supabase.table('forecast_data').select(
-            select_fields
-        ).is_(field, 'null').execute()
+        # Retry logic for initial null record fetch
+        max_retries = 3
+        retry_delay = 1.0
+        null_records = None
+
+        for attempt in range(max_retries):
+            try:
+                null_records = supabase.table('forecast_data').select(
+                    select_fields
+                ).is_(field, 'null').execute()
+                break  # Success
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    print(f"\n  ⚠️ Database read error (attempt {attempt+1}/{max_retries}): {str(e)[:100]}")
+                    print(f"  Retrying in {retry_delay}s...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    print(f"\n  ❌ Failed to fetch null records after {max_retries} attempts: {str(e)[:100]}")
+                    raise  # Re-raise after all retries exhausted
 
         nulls = null_records.data or []
         print(f"  Found {len(nulls)} nulls")
@@ -178,9 +195,27 @@ def main():
             while True:
                 start = page * page_size
                 end = start + page_size - 1
-                resp = supabase.table('forecast_data').select(
-                    f'beach_id,{field}'
-                ).eq('timestamp', ts_key).range(start, end).execute()
+
+                # Retry logic for database reads
+                max_retries = 3
+                retry_delay = 1.0
+                resp = None
+
+                for attempt in range(max_retries):
+                    try:
+                        resp = supabase.table('forecast_data').select(
+                            f'beach_id,{field}'
+                        ).eq('timestamp', ts_key).range(start, end).execute()
+                        break  # Success
+                    except Exception as e:
+                        if attempt < max_retries - 1:
+                            print(f"\n    ⚠️ Database read error (attempt {attempt+1}/{max_retries}): {str(e)[:100]}")
+                            print(f"    Retrying in {retry_delay}s...")
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                        else:
+                            print(f"\n    ❌ Failed to read data after {max_retries} attempts: {str(e)[:100]}")
+                            raise  # Re-raise after all retries exhausted
 
                 batch = resp.data or []
                 all_at_ts.extend(batch)
@@ -201,13 +236,30 @@ def main():
                 )
 
                 if filled_value is not None:
-                    # Write immediately to database
-                    supabase.table('forecast_data').update({
-                        field: filled_value
-                    }).eq('id', record_id).execute()
+                    # Write immediately to database with retry logic
+                    max_retries = 3
+                    retry_delay = 1.0
 
-                    field_filled += 1
-                    total_filled += 1
+                    for attempt in range(max_retries):
+                        try:
+                            supabase.table('forecast_data').update({
+                                field: filled_value
+                            }).eq('id', record_id).execute()
+                            break  # Success - exit retry loop
+                        except Exception as e:
+                            if attempt < max_retries - 1:
+                                print(f"\n    ⚠️ Database write error (attempt {attempt+1}/{max_retries}): {str(e)[:100]}")
+                                print(f"    Retrying in {retry_delay}s...")
+                                time.sleep(retry_delay)
+                                retry_delay *= 2  # Exponential backoff
+                            else:
+                                print(f"\n    ❌ Failed to write record {record_id} after {max_retries} attempts: {str(e)[:100]}")
+                                print(f"    Skipping this record and continuing...")
+                                filled_value = None  # Mark as failed so we don't count it
+
+                    if filled_value is not None:
+                        field_filled += 1
+                        total_filled += 1
 
                     # Add this newly filled value to the donor pool
                     all_at_ts.append({'beach_id': beach_id, field: filled_value})
