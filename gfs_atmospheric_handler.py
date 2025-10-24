@@ -392,9 +392,22 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
     else:
         time_vals_full = time_vals_full.tz_convert("UTC")
 
+    # Log first few GFS times to verify they're in UTC
+    # logger.info(f"   GFS dataset time range: {time_vals_full[0]} to {time_vals_full[-1]} (UTC)")
+    # logger.info(f"   First 5 GFS times: {time_vals_full[:5].tolist()}")
+
+    # Store GFS data boundaries for filtering
+    gfs_start_time = time_vals_full[0]
+    gfs_end_time = time_vals_full[-1]
+    # logger.info(f"   GFS data available from {gfs_start_time} to {gfs_end_time}")
+
     # Build mapping of timestamps by beach
     pacific = pytz.timezone("America/Los_Angeles")
     needed_by_beach = {}
+
+    # Filter records to only those within GFS data range
+    skipped_before_range = 0
+    skipped_after_range = 0
 
     for rec in existing_records:
         bid = rec.get("beach_id")
@@ -402,9 +415,35 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
         if not bid or not ts_iso:
             continue
 
+        # Parse timestamp and check if it's within GFS range
+        try:
+            ts_dt = datetime.fromisoformat(ts_iso)
+            if ts_dt.tzinfo is None:
+                ts_dt = pacific.localize(ts_dt)
+            ts_utc = pd.Timestamp(ts_dt).tz_convert("UTC")
+
+            # Skip timestamps outside GFS data range
+            if ts_utc < gfs_start_time:
+                skipped_before_range += 1
+                continue
+            if ts_utc > gfs_end_time:
+                skipped_after_range += 1
+                continue
+
+        except Exception as e:
+            logger.debug(f"   Error parsing timestamp {ts_iso}: {e}")
+            continue
+
         if bid not in needed_by_beach:
             needed_by_beach[bid] = set()
         needed_by_beach[bid].add(ts_iso)
+
+    # if skipped_before_range > 0 or skipped_after_range > 0:
+    #     logger.info(
+    #         f"   Filtered timestamps outside GFS range:\n"
+    #         f"      Before GFS start ({gfs_start_time}): {skipped_before_range}\n"
+    #         f"      After GFS end ({gfs_end_time}): {skipped_after_range}"
+    #     )
 
     if not needed_by_beach:
         logger.info("   GFS Atmospheric: no records to process")
@@ -459,17 +498,57 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
             all_timestamps_needed.update(needed_by_beach[beach["id"]])
 
         # Map timestamps to GFS time indices
+        # Note: Timestamps from database are already aligned to 3-hour Pacific intervals
+        # but may be stored in UTC format
         timestamp_to_index = {}
+        sample_logged = False  # Only log first few samples to avoid log spam
         for ts_iso in all_timestamps_needed:
             try:
                 ts_dt = datetime.fromisoformat(ts_iso)
+                original_tz = ts_dt.tzinfo
+
+                # If timestamp has no timezone, assume Pacific
                 if ts_dt.tzinfo is None:
                     ts_dt = pacific.localize(ts_dt)
-                ts_utc = ts_dt.astimezone(pytz.UTC)
+
+                # Convert to UTC for matching GFS data
+                # Timestamps are already aligned by noaa_handler.py, just need to match them
+                ts_utc = pd.Timestamp(ts_dt).tz_convert("UTC") if ts_dt.tzinfo else pd.Timestamp(ts_dt).tz_localize("UTC")
 
                 # Find closest GFS time index
                 time_diffs = np.abs(time_vals_full - ts_utc)
                 closest_idx = time_diffs.argmin()
+
+                # Debug logging for timestamp mapping (sample only to avoid spam)
+                # if not sample_logged:
+                #     gfs_time_at_idx = time_vals_full[closest_idx]
+                #     time_diff_hours = time_diffs[closest_idx] / pd.Timedelta(hours=1)
+                #     pacific_time = ts_utc.tz_convert("America/Los_Angeles")
+                #     logger.info(
+                #         f"   SAMPLE timestamp mapping:\n"
+                #         f"      Database timestamp: {ts_iso}\n"
+                #         f"      Parsed as: {ts_dt} (tz: {original_tz})\n"
+                #         f"      As UTC: {ts_utc}\n"
+                #         f"      As Pacific: {pacific_time}\n"
+                #         f"      Matched GFS time (UTC): {gfs_time_at_idx}\n"
+                #         f"      Time difference: {time_diff_hours:.2f} hours"
+                #     )
+                #     sample_logged = True
+
+                # Warn if time difference is large (but only if within GFS range)
+                # gfs_time_at_idx = time_vals_full[closest_idx]
+                # time_diff_hours = time_diffs[closest_idx] / pd.Timedelta(hours=1)
+
+                # Only warn if timestamp is within GFS range but still far from nearest point
+                # (timestamps outside range are expected to have large offsets)
+                # if time_diff_hours > 1.5 and ts_utc >= gfs_start_time and ts_utc <= gfs_end_time:
+                #     logger.warning(
+                #         f"   Unexpected time offset (within GFS range):\n"
+                #         f"      Database timestamp: {ts_iso}\n"
+                #         f"      As UTC: {ts_utc}\n"
+                #         f"      Matched GFS time: {gfs_time_at_idx}\n"
+                #         f"      Difference: {time_diff_hours:.2f} hours"
+                #     )
 
                 # Only use if within 3 hours
                 if time_diffs[closest_idx] <= pd.Timedelta(hours=3):
@@ -505,15 +584,21 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
             }
 
         # Update records for all beaches in this group
+        skipped_no_timestamp_match = 0
+        skipped_no_data = 0
+        skipped_no_record = 0
+
         for beach in group_beaches:
             bid = beach["id"]
 
             for ts_iso in needed_by_beach[bid]:
                 if ts_iso not in timestamp_to_index:
+                    skipped_no_timestamp_match += 1
                     continue
 
                 time_idx = timestamp_to_index[ts_iso]
                 if time_idx not in index_to_data:
+                    skipped_no_data += 1
                     continue
 
                 data = index_to_data[time_idx]
@@ -521,6 +606,7 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                 rec_idx = key_to_index.get(key)
 
                 if rec_idx is None:
+                    skipped_no_record += 1
                     continue
 
                 rec = updated_records[rec_idx]
@@ -559,7 +645,16 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                     rec["pressure_inhg"] = safe_float(data["pressure"])
                     filled_count += 1
 
-        # Note: Rate limiting now happens at the START of each loop iteration (line 420-422)
+        # Log skip reasons for this location group
+        # if skipped_no_timestamp_match > 0 or skipped_no_data > 0 or skipped_no_record > 0:
+        #     logger.debug(
+        #         f"   Location {cache_key} skipped records:\n"
+        #         f"      No timestamp match: {skipped_no_timestamp_match}\n"
+        #         f"      No data at index: {skipped_no_data}\n"
+        #         f"      Record not found: {skipped_no_record}"
+        #     )
+
+        # Note: Rate limiting now happens at the START of each loop iteration
         # This ensures we never exceed NOAA's rate limits
 
     ds.close()

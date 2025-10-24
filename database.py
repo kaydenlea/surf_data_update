@@ -68,7 +68,7 @@ def cleanup_old_data(batch_size: int = 100):
 def fetch_all_beaches(page_size: int = 1000):
     """Fetch all beaches with valid coordinates."""
     log_step("Fetching beach data", 2)
-    
+
     all_rows = []
     start = 0
     while True:
@@ -77,30 +77,36 @@ def fetch_all_beaches(page_size: int = 1000):
             resp = (
                 supabase
                 .table("beaches")
-                .select("id,Name,LATITUDE,LONGITUDE", count="exact")
+                .select("id,Name,LATITUDE,LONGITUDE,COUNTY", count="exact")
                 .range(start, end_idx)
                 .execute()
             )
             rows = resp.data or []
             all_rows.extend(rows)
-            
+
             logger.info(f"   Fetched {len(rows)} beaches (batch {start//page_size + 1})")
-            
+
             if len(rows) < page_size:
                 break
             start += page_size
-            
+
         except Exception as e:
             logger.error(f"ERROR: Error fetching beaches: {e}")
             break
-    
+
     # Filter for valid coordinates
     valid_beaches = [
-        {"id": b["id"], "Name": b["Name"], "LATITUDE": b["LATITUDE"], "LONGITUDE": b["LONGITUDE"]}
+        {
+            "id": b["id"],
+            "Name": b["Name"],
+            "LATITUDE": b["LATITUDE"],
+            "LONGITUDE": b["LONGITUDE"],
+            "COUNTY": b.get("COUNTY", "Unknown")
+        }
         for b in all_rows
         if valid_coord(b.get("LATITUDE")) and valid_coord(b.get("LONGITUDE"))
     ]
-    
+
     log_step(f"Found {len(valid_beaches)} beaches with valid coordinates")
     return valid_beaches
 
@@ -459,6 +465,79 @@ def delete_tide_data_before(cutoff, table_name="beach_tides_hourly"):
     except Exception as e:
         logger.error(f"ERROR: Failed to delete outdated tide data before {cutoff}: {e}")
         return False
+
+def upsert_county_tide_data(records, table_name="county_tides_15min"):
+    """Upsert county-based tide records to database in chunks."""
+    if not records:
+        logger.warning(f"   No records to upsert to {table_name}")
+        return 0
+
+    prepared = _prepare_records_for_upsert(records, {"county", "timestamp"})
+    if not prepared:
+        logger.warning(f"   No county tide records had non-null values to upsert into {table_name}")
+        return 0
+
+    logger.info(f"   Uploading {len(prepared)} county tide records to {table_name}...")
+    total_inserted = 0
+
+    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
+        try:
+            supabase.table(table_name).upsert(
+                chunk,
+                on_conflict="county,timestamp"
+            ).execute()
+            total_inserted += len(chunk)
+            logger.debug(f"   Upserted chunk of {len(chunk)} county tide records")
+        except Exception as e:
+            logger.error(f"ERROR: Error upserting {table_name} chunk: {e}")
+
+    logger.info(f"   Successfully upserted {total_inserted} county tide records to {table_name}")
+    return total_inserted
+
+
+def delete_all_county_tide_data(table_name="county_tides_15min"):
+    """Delete all existing county tide records."""
+    try:
+        supabase.table(table_name).delete().neq("county", None).execute()
+        logger.info(f"   Deleted all rows from {table_name}")
+        return True
+    except Exception as e:
+        logger.error(f"ERROR: Failed to delete existing county tide data from {table_name}: {e}")
+        return False
+
+
+def delete_county_tide_data_before(cutoff, table_name="county_tides_15min"):
+    """Delete county tide records older than the given cutoff."""
+    try:
+        pacific = pytz.timezone('America/Los_Angeles')
+        if isinstance(cutoff, str):
+            cleaned = cutoff.strip()
+            cleaned = cleaned.replace('Z', '+00:00') if cleaned.endswith('Z') else cleaned
+            cutoff_dt = datetime.fromisoformat(cleaned)
+        else:
+            cutoff_dt = cutoff
+
+        if cutoff_dt.tzinfo is None:
+            cutoff_dt = pacific.localize(cutoff_dt)
+        else:
+            cutoff_dt = cutoff_dt.astimezone(pacific)
+
+        cutoff_dt = pacific.normalize(cutoff_dt)
+        cutoff_iso = cutoff_dt.isoformat()
+
+        resp = supabase.table(table_name).delete().lt("timestamp", cutoff_iso).execute()
+        deleted = len(resp.data) if hasattr(resp, 'data') and resp.data is not None else 0
+
+        if deleted:
+            logger.info(f"   Deleted {deleted} county tide rows before {cutoff_iso}")
+        else:
+            logger.info(f"   No county tide rows older than {cutoff_iso} found to delete")
+
+        return True
+    except Exception as e:
+        logger.error(f"ERROR: Failed to delete outdated county tide data before {cutoff}: {e}")
+        return False
+
 
 def get_beach_by_id(beach_id):
     """Get a specific beach by ID."""
