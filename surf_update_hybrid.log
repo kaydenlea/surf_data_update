@@ -2742,3 +2742,1200 @@
 2025-10-23 23:57:05,744 - INFO - Script interrupted by user (Ctrl+C)
 2025-10-23 23:57:05,829 - INFO - [FAIL] Step 2 completed with errors
 2025-10-23 23:57:05,830 - INFO - Exiting with code: 1
+2025-10-25 14:27:08,227 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:27:08,228 - INFO -    NWS supplement: processing 2 beaches...
+2025-10-25 14:27:08,228 - INFO -    NWS: Fetching forecasts for 2 beaches using 50 workers...
+2025-10-25 14:27:15,073 - INFO -    NWS progress: 2/2 beaches
+2025-10-25 14:27:15,074 - INFO -    NWS: Completed fetching. Processing 2 beach forecasts...
+2025-10-25 14:27:15,083 - INFO -    NWS supplement: filled 0 field values
+2025-10-25 14:27:15,083 - INFO -    NWS stats: 2 beaches with data, 0 no coverage, 0 timeouts
+2025-10-25 14:27:15,083 - INFO -    NWS cache: 2 unique gridpoints, 2 unique forecasts
+2025-10-25 14:27:15,083 - INFO -    NWS supplement: completed in 6.86 seconds (0.11 minutes)
+2025-10-25 14:27:45,589 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:27:45,590 - INFO -    NWS supplement: processing 1 beaches...
+2025-10-25 14:27:45,590 - INFO -    NWS: Fetching forecasts for 1 beaches using 50 workers...
+2025-10-25 14:27:45,857 - INFO -    NWS progress: 1/1 beaches
+2025-10-25 14:27:45,857 - INFO -    NWS: Completed fetching. Processing 1 beach forecasts...
+2025-10-25 14:27:45,859 - INFO -    NWS supplement: filled 60 field values
+2025-10-25 14:27:45,859 - INFO -    NWS stats: 1 beaches with data, 0 no coverage, 0 timeouts
+2025-10-25 14:27:45,859 - INFO -    NWS cache: 1 unique gridpoints, 1 unique forecasts
+2025-10-25 14:27:45,860 - INFO -    NWS supplement: completed in 0.27 seconds (0.00 minutes)
+2025-10-25 14:31:14,257 - INFO - ================================================================================
+2025-10-25 14:31:14,257 - INFO - STEP 2: SUPPLEMENTAL DATA UPDATE (ATMOSPHERIC/TIDES/ASTRONOMICAL)
+2025-10-25 14:31:14,257 - INFO - ================================================================================
+2025-10-25 14:31:14,257 - INFO - Start time (PST/PDT): 2025-10-25 14:31:14 PDT
+2025-10-25 14:31:14,257 - INFO - Forecast days: 7
+2025-10-25 14:31:14,257 - INFO - 
+2025-10-25 14:31:14,257 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-10-25 14:31:14,257 - INFO -   - NOAA NWS - Weather, temperature, wind, pressure
+2025-10-25 14:31:14,257 - INFO -   - NOAA CO-OPS - Tides, water temperature
+2025-10-25 14:31:14,257 - INFO -   - USNO - Sun/moon rise/set, moon phase
+2025-10-25 14:31:14,258 - INFO - 
+2025-10-25 14:31:14,258 - INFO - FIELDS POPULATED:
+2025-10-25 14:31:14,258 - INFO -   - Temperature (°F)
+2025-10-25 14:31:14,258 - INFO -   - Weather code (WMO)
+2025-10-25 14:31:14,258 - INFO -   - Wind speed/direction/gust (enhanced)
+2025-10-25 14:31:14,258 - INFO -   - Pressure (inHg)
+2025-10-25 14:31:14,258 - INFO -   - Tide level (ft)
+2025-10-25 14:31:14,258 - INFO -   - Water temperature (°F)
+2025-10-25 14:31:14,258 - INFO -   - Sunrise/sunset times
+2025-10-25 14:31:14,258 - INFO -   - Moonrise/moonset times
+2025-10-25 14:31:14,258 - INFO -   - Moon phase
+2025-10-25 14:31:14,258 - INFO - 
+2025-10-25 14:31:14,258 - INFO - Rate limiting (Atmospheric): 0.2s per request, 0.2s between batches
+2025-10-25 14:31:14,258 - INFO - 
+2025-10-25 14:31:14,258 - INFO - NOTE: This script enhances data created by step1_wave_data.py
+2025-10-25 14:31:14,258 - INFO -       Run step1_wave_data.py FIRST if you haven't already!
+2025-10-25 14:31:14,258 - INFO - ================================================================================
+2025-10-25 14:31:14,258 - INFO - Running system checks…
+2025-10-25 14:31:15,274 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-10-25 14:31:15,285 - INFO - Database connection successful
+2025-10-25 14:31:15,285 - INFO - [OK] Database connection successful
+2025-10-25 14:31:15,285 - INFO - Testing NWS API connection...
+2025-10-25 14:31:16,456 - INFO - NWS API connection successful
+2025-10-25 14:31:16,456 - INFO - [OK] NWS API connection successful
+2025-10-25 14:31:16,456 - INFO - Testing NOAA CO-OPS API connection...
+2025-10-25 14:31:16,937 - INFO - NOAA CO-OPS API connection successful
+2025-10-25 14:31:16,937 - INFO - [OK] NOAA CO-OPS API connection successful
+2025-10-25 14:31:16,938 - INFO - Testing USNO API connection...
+2025-10-25 14:31:18,342 - INFO - USNO API connection successful
+2025-10-25 14:31:18,342 - INFO - [OK] USNO API connection successful
+2025-10-25 14:31:18,342 - INFO - System checks: 4/4 passed
+2025-10-25 14:31:18,342 - INFO - STEP 1: Fetching location data
+2025-10-25 14:31:18,343 - INFO - STEP 2: Fetching beach data
+2025-10-25 14:31:18,689 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:18,717 - INFO -    Fetched 1000 beaches (batch 1)
+2025-10-25 14:31:18,881 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:18,887 - INFO -    Fetched 336 beaches (batch 2)
+2025-10-25 14:31:18,891 - INFO - OK: Found 1336 beaches with valid coordinates
+2025-10-25 14:31:18,891 - INFO - STEP 3: Calculating county centroids
+2025-10-25 14:31:19,044 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:19,180 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:19,188 - INFO - OK: Calculated centroids for 15 counties
+2025-10-25 14:31:19,189 - INFO - Loaded 1336 beaches and 15 counties
+2025-10-25 14:31:19,189 - INFO -    >>> Location fetch took: 0.85 seconds
+2025-10-25 14:31:19,189 - INFO - STEP 2: Processing supplemental data
+2025-10-25 14:31:19,189 - INFO - STEP 1: Step 2: Updating SUPPLEMENTAL DATA
+2025-10-25 14:31:19,189 - INFO -    Fetching existing forecast records from database…
+2025-10-25 14:31:19,190 - INFO - Fetching existing forecast records from database...
+2025-10-25 14:31:22,042 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:22,119 - INFO -    Fetched 1000 forecast records (batch 1)
+2025-10-25 14:31:22,809 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:22,843 - INFO -    Fetched 1000 forecast records (batch 2)
+2025-10-25 14:31:23,257 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=2000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:23,291 - INFO -    Fetched 1000 forecast records (batch 3)
+2025-10-25 14:31:23,772 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=3000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:23,806 - INFO -    Fetched 1000 forecast records (batch 4)
+2025-10-25 14:31:24,186 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=4000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:24,220 - INFO -    Fetched 1000 forecast records (batch 5)
+2025-10-25 14:31:24,393 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=5000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:24,432 - INFO -    Fetched 1000 forecast records (batch 6)
+2025-10-25 14:31:24,792 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=6000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:24,824 - INFO -    Fetched 1000 forecast records (batch 7)
+2025-10-25 14:31:25,204 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=7000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:25,237 - INFO -    Fetched 1000 forecast records (batch 8)
+2025-10-25 14:31:25,446 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=8000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:25,482 - INFO -    Fetched 1000 forecast records (batch 9)
+2025-10-25 14:31:25,686 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=9000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:25,719 - INFO -    Fetched 1000 forecast records (batch 10)
+2025-10-25 14:31:25,861 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=10000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:25,893 - INFO -    Fetched 1000 forecast records (batch 11)
+2025-10-25 14:31:26,088 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=11000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:26,120 - INFO -    Fetched 1000 forecast records (batch 12)
+2025-10-25 14:31:26,350 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=12000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:26,381 - INFO -    Fetched 1000 forecast records (batch 13)
+2025-10-25 14:31:26,511 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=13000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:26,544 - INFO -    Fetched 1000 forecast records (batch 14)
+2025-10-25 14:31:26,751 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=14000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:26,781 - INFO -    Fetched 1000 forecast records (batch 15)
+2025-10-25 14:31:26,915 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=15000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:26,962 - INFO -    Fetched 1000 forecast records (batch 16)
+2025-10-25 14:31:27,133 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=16000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:27,166 - INFO -    Fetched 1000 forecast records (batch 17)
+2025-10-25 14:31:27,299 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=17000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:27,350 - INFO -    Fetched 1000 forecast records (batch 18)
+2025-10-25 14:31:27,763 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=18000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:27,794 - INFO -    Fetched 1000 forecast records (batch 19)
+2025-10-25 14:31:27,946 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=19000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:27,986 - INFO -    Fetched 1000 forecast records (batch 20)
+2025-10-25 14:31:28,125 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=20000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:28,158 - INFO -    Fetched 1000 forecast records (batch 21)
+2025-10-25 14:31:28,304 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=21000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:28,338 - INFO -    Fetched 1000 forecast records (batch 22)
+2025-10-25 14:31:28,499 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=22000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:28,610 - INFO -    Fetched 1000 forecast records (batch 23)
+2025-10-25 14:31:28,753 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=23000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:28,784 - INFO -    Fetched 1000 forecast records (batch 24)
+2025-10-25 14:31:28,921 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=24000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:28,955 - INFO -    Fetched 1000 forecast records (batch 25)
+2025-10-25 14:31:29,113 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=25000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:29,145 - INFO -    Fetched 1000 forecast records (batch 26)
+2025-10-25 14:31:29,294 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=26000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:29,326 - INFO -    Fetched 1000 forecast records (batch 27)
+2025-10-25 14:31:29,469 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=27000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:29,500 - INFO -    Fetched 1000 forecast records (batch 28)
+2025-10-25 14:31:29,649 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=28000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:29,683 - INFO -    Fetched 1000 forecast records (batch 29)
+2025-10-25 14:31:29,832 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=29000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:29,867 - INFO -    Fetched 1000 forecast records (batch 30)
+2025-10-25 14:31:30,002 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=30000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,060 - INFO -    Fetched 1000 forecast records (batch 31)
+2025-10-25 14:31:30,206 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=31000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,249 - INFO -    Fetched 1000 forecast records (batch 32)
+2025-10-25 14:31:30,382 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=32000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,413 - INFO -    Fetched 1000 forecast records (batch 33)
+2025-10-25 14:31:30,566 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=33000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,598 - INFO -    Fetched 1000 forecast records (batch 34)
+2025-10-25 14:31:30,743 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=34000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,774 - INFO -    Fetched 1000 forecast records (batch 35)
+2025-10-25 14:31:30,909 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=35000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:30,938 - INFO -    Fetched 1000 forecast records (batch 36)
+2025-10-25 14:31:31,075 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=36000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:31,105 - INFO -    Fetched 1000 forecast records (batch 37)
+2025-10-25 14:31:31,258 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=37000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:31,288 - INFO -    Fetched 1000 forecast records (batch 38)
+2025-10-25 14:31:31,429 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=38000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:31,458 - INFO -    Fetched 1000 forecast records (batch 39)
+2025-10-25 14:31:31,709 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=39000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:31,740 - INFO -    Fetched 1000 forecast records (batch 40)
+2025-10-25 14:31:31,925 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=40000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:31,959 - INFO -    Fetched 1000 forecast records (batch 41)
+2025-10-25 14:31:32,121 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=41000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:32,160 - INFO -    Fetched 1000 forecast records (batch 42)
+2025-10-25 14:31:32,341 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=42000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:32,393 - INFO -    Fetched 1000 forecast records (batch 43)
+2025-10-25 14:31:32,641 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=43000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:32,687 - INFO -    Fetched 1000 forecast records (batch 44)
+2025-10-25 14:31:32,870 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=44000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:32,909 - INFO -    Fetched 1000 forecast records (batch 45)
+2025-10-25 14:31:33,107 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=45000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:33,138 - INFO -    Fetched 1000 forecast records (batch 46)
+2025-10-25 14:31:33,320 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=46000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:33,351 - INFO -    Fetched 1000 forecast records (batch 47)
+2025-10-25 14:31:33,543 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=47000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:33,584 - INFO -    Fetched 1000 forecast records (batch 48)
+2025-10-25 14:31:33,809 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=48000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:33,841 - INFO -    Fetched 1000 forecast records (batch 49)
+2025-10-25 14:31:34,038 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=49000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:34,069 - INFO -    Fetched 1000 forecast records (batch 50)
+2025-10-25 14:31:34,266 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=50000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:34,298 - INFO -    Fetched 1000 forecast records (batch 51)
+2025-10-25 14:31:34,492 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=51000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:34,523 - INFO -    Fetched 1000 forecast records (batch 52)
+2025-10-25 14:31:34,694 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=52000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:34,728 - INFO -    Fetched 1000 forecast records (batch 53)
+2025-10-25 14:31:34,982 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=53000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:35,015 - INFO -    Fetched 1000 forecast records (batch 54)
+2025-10-25 14:31:35,206 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=54000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:35,238 - INFO -    Fetched 1000 forecast records (batch 55)
+2025-10-25 14:31:35,425 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=55000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:35,456 - INFO -    Fetched 1000 forecast records (batch 56)
+2025-10-25 14:31:35,651 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=56000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:35,681 - INFO -    Fetched 1000 forecast records (batch 57)
+2025-10-25 14:31:35,875 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=57000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:35,921 - INFO -    Fetched 1000 forecast records (batch 58)
+2025-10-25 14:31:36,084 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=58000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:36,117 - INFO -    Fetched 1000 forecast records (batch 59)
+2025-10-25 14:31:36,615 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=59000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:36,662 - INFO -    Fetched 1000 forecast records (batch 60)
+2025-10-25 14:31:36,860 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=60000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:36,899 - INFO -    Fetched 1000 forecast records (batch 61)
+2025-10-25 14:31:37,140 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=61000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:37,170 - INFO -    Fetched 1000 forecast records (batch 62)
+2025-10-25 14:31:37,361 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=62000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:37,419 - INFO -    Fetched 1000 forecast records (batch 63)
+2025-10-25 14:31:37,637 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=63000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:37,669 - INFO -    Fetched 1000 forecast records (batch 64)
+2025-10-25 14:31:37,904 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=64000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:37,937 - INFO -    Fetched 1000 forecast records (batch 65)
+2025-10-25 14:31:38,132 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=65000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:38,165 - INFO -    Fetched 1000 forecast records (batch 66)
+2025-10-25 14:31:38,416 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=66000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:38,450 - INFO -    Fetched 1000 forecast records (batch 67)
+2025-10-25 14:31:38,635 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=67000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:38,667 - INFO -    Fetched 1000 forecast records (batch 68)
+2025-10-25 14:31:38,869 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=68000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:38,910 - INFO -    Fetched 1000 forecast records (batch 69)
+2025-10-25 14:31:39,105 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=69000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:39,146 - INFO -    Fetched 1000 forecast records (batch 70)
+2025-10-25 14:31:39,408 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=70000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:39,447 - INFO -    Fetched 1000 forecast records (batch 71)
+2025-10-25 14:31:39,672 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=71000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:39,702 - INFO -    Fetched 1000 forecast records (batch 72)
+2025-10-25 14:31:40,562 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=72000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:40,595 - INFO -    Fetched 1000 forecast records (batch 73)
+2025-10-25 14:31:40,794 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=73000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:40,829 - INFO -    Fetched 1000 forecast records (batch 74)
+2025-10-25 14:31:41,062 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=74000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:41,098 - INFO -    Fetched 1000 forecast records (batch 75)
+2025-10-25 14:31:41,293 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=75000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:41,322 - INFO -    Fetched 1000 forecast records (batch 76)
+2025-10-25 14:31:41,481 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=76000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:31:41,484 - INFO -    Fetched 152 forecast records (batch 77)
+2025-10-25 14:31:41,560 - INFO - OK: Found 76152 valid forecast records
+2025-10-25 14:31:41,561 - INFO -    Found 76152 existing forecast records
+2025-10-25 14:31:41,561 - INFO -    >>> Record fetch took: 22.37 seconds (0.37 minutes)
+2025-10-25 14:31:41,561 - INFO -    Enhancing with NOAA NWS data (weather/temp/wind/pressure)…
+2025-10-25 14:31:41,561 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:31:41,634 - INFO -    NWS supplement: processing 1336 beaches...
+2025-10-25 14:31:41,634 - INFO -    NWS: Fetching forecasts for 1336 beaches using 50 workers...
+2025-10-25 14:32:47,655 - INFO - Script interrupted by user (Ctrl+C)
+2025-10-25 14:32:47,829 - INFO - [FAIL] Step 2 completed with errors
+2025-10-25 14:32:47,829 - INFO - Exiting with code: 1
+2025-10-25 14:32:48,780 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/EKA/69,152/forecast/hourly
+2025-10-25 14:33:48,904 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:33:48,905 - INFO -    NWS supplement: processing 10 beaches...
+2025-10-25 14:33:48,905 - INFO -    NWS: Fetching forecasts for 10 beaches using 50 workers...
+2025-10-25 14:33:59,903 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/MTR/82,106/forecast/hourly
+2025-10-25 14:34:44,605 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/SGX/54,20/forecast/hourly
+2025-10-25 14:34:47,983 - INFO -    NWS progress: 10/10 beaches
+2025-10-25 14:34:47,989 - INFO -    NWS: Completed fetching. Processing 10 beach forecasts...
+2025-10-25 14:34:48,029 - INFO -    NWS supplement: filled 397 field values
+2025-10-25 14:34:48,029 - INFO -    NWS stats: 10 beaches with data, 0 no coverage, 0 timeouts
+2025-10-25 14:34:48,029 - INFO -    NWS grouping: 10 unique coord groups, 10 unique grid cells
+2025-10-25 14:34:48,029 - INFO -    NWS efficiency: 1.0 beaches per grid cell, 0.0% API call reduction
+2025-10-25 14:34:48,029 - INFO -    NWS supplement: completed in 59.12 seconds (0.99 minutes)
+2025-10-25 14:35:08,588 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:35:08,589 - INFO -    NWS supplement: processing 9 beaches...
+2025-10-25 14:35:08,589 - INFO -    NWS: Fetching forecasts for 9 beaches using 50 workers...
+2025-10-25 14:35:10,229 - INFO -    NWS progress: 9/9 beaches
+2025-10-25 14:35:10,230 - INFO -    NWS: Completed fetching. Processing 9 beach forecasts...
+2025-10-25 14:35:10,261 - INFO -    NWS supplement: filled 216 field values
+2025-10-25 14:35:10,261 - INFO -    NWS stats: 9 beaches with data, 0 no coverage, 0 timeouts
+2025-10-25 14:35:10,261 - INFO -    NWS grouping: 2 unique coord groups, 2 unique grid cells
+2025-10-25 14:35:10,261 - INFO -    NWS efficiency: 4.5 beaches per grid cell, 77.8% API call reduction
+2025-10-25 14:35:10,261 - INFO -    NWS supplement: completed in 1.67 seconds (0.03 minutes)
+2025-10-25 14:35:42,320 - INFO - ================================================================================
+2025-10-25 14:35:42,320 - INFO - STEP 2: SUPPLEMENTAL DATA UPDATE (ATMOSPHERIC/TIDES/ASTRONOMICAL)
+2025-10-25 14:35:42,320 - INFO - ================================================================================
+2025-10-25 14:35:42,320 - INFO - Start time (PST/PDT): 2025-10-25 14:35:42 PDT
+2025-10-25 14:35:42,320 - INFO - Forecast days: 7
+2025-10-25 14:35:42,320 - INFO - 
+2025-10-25 14:35:42,320 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-10-25 14:35:42,320 - INFO -   - NOAA NWS - Weather, temperature, wind, pressure
+2025-10-25 14:35:42,320 - INFO -   - NOAA CO-OPS - Tides, water temperature
+2025-10-25 14:35:42,320 - INFO -   - USNO - Sun/moon rise/set, moon phase
+2025-10-25 14:35:42,320 - INFO - 
+2025-10-25 14:35:42,320 - INFO - FIELDS POPULATED:
+2025-10-25 14:35:42,320 - INFO -   - Temperature (°F)
+2025-10-25 14:35:42,320 - INFO -   - Weather code (WMO)
+2025-10-25 14:35:42,320 - INFO -   - Wind speed/direction/gust (enhanced)
+2025-10-25 14:35:42,320 - INFO -   - Pressure (inHg)
+2025-10-25 14:35:42,320 - INFO -   - Tide level (ft)
+2025-10-25 14:35:42,320 - INFO -   - Water temperature (°F)
+2025-10-25 14:35:42,320 - INFO -   - Sunrise/sunset times
+2025-10-25 14:35:42,320 - INFO -   - Moonrise/moonset times
+2025-10-25 14:35:42,320 - INFO -   - Moon phase
+2025-10-25 14:35:42,320 - INFO - 
+2025-10-25 14:35:42,320 - INFO - Rate limiting (Atmospheric): 0.2s per request, 0.2s between batches
+2025-10-25 14:35:42,320 - INFO - 
+2025-10-25 14:35:42,321 - INFO - NOTE: This script enhances data created by step1_wave_data.py
+2025-10-25 14:35:42,321 - INFO -       Run step1_wave_data.py FIRST if you haven't already!
+2025-10-25 14:35:42,321 - INFO - ================================================================================
+2025-10-25 14:35:42,321 - INFO - Running system checks…
+2025-10-25 14:35:43,117 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-10-25 14:35:43,130 - INFO - Database connection successful
+2025-10-25 14:35:43,131 - INFO - [OK] Database connection successful
+2025-10-25 14:35:43,131 - INFO - Testing NWS API connection...
+2025-10-25 14:35:43,430 - INFO - NWS API connection successful
+2025-10-25 14:35:43,430 - INFO - [OK] NWS API connection successful
+2025-10-25 14:35:43,431 - INFO - Testing NOAA CO-OPS API connection...
+2025-10-25 14:35:44,010 - INFO - NOAA CO-OPS API connection successful
+2025-10-25 14:35:44,010 - INFO - [OK] NOAA CO-OPS API connection successful
+2025-10-25 14:35:44,010 - INFO - Testing USNO API connection...
+2025-10-25 14:35:44,770 - INFO - USNO API connection successful
+2025-10-25 14:35:44,771 - INFO - [OK] USNO API connection successful
+2025-10-25 14:35:44,771 - INFO - System checks: 4/4 passed
+2025-10-25 14:35:44,771 - INFO - STEP 1: Fetching location data
+2025-10-25 14:35:44,771 - INFO - STEP 2: Fetching beach data
+2025-10-25 14:35:45,062 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:45,140 - INFO -    Fetched 1000 beaches (batch 1)
+2025-10-25 14:35:45,296 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:45,301 - INFO -    Fetched 336 beaches (batch 2)
+2025-10-25 14:35:45,305 - INFO - OK: Found 1336 beaches with valid coordinates
+2025-10-25 14:35:45,305 - INFO - STEP 3: Calculating county centroids
+2025-10-25 14:35:45,455 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:45,574 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:45,588 - INFO - OK: Calculated centroids for 15 counties
+2025-10-25 14:35:45,589 - INFO - Loaded 1336 beaches and 15 counties
+2025-10-25 14:35:45,589 - INFO -    >>> Location fetch took: 0.82 seconds
+2025-10-25 14:35:45,589 - INFO - STEP 2: Processing supplemental data
+2025-10-25 14:35:45,589 - INFO - STEP 1: Step 2: Updating SUPPLEMENTAL DATA
+2025-10-25 14:35:45,589 - INFO -    Fetching existing forecast records from database…
+2025-10-25 14:35:45,589 - INFO - Fetching existing forecast records from database...
+2025-10-25 14:35:46,455 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:46,694 - INFO -    Fetched 1000 forecast records (batch 1)
+2025-10-25 14:35:47,158 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:47,191 - INFO -    Fetched 1000 forecast records (batch 2)
+2025-10-25 14:35:47,554 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=2000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:47,588 - INFO -    Fetched 1000 forecast records (batch 3)
+2025-10-25 14:35:47,974 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=3000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:48,005 - INFO -    Fetched 1000 forecast records (batch 4)
+2025-10-25 14:35:48,245 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=4000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:48,277 - INFO -    Fetched 1000 forecast records (batch 5)
+2025-10-25 14:35:48,545 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=5000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:48,577 - INFO -    Fetched 1000 forecast records (batch 6)
+2025-10-25 14:35:48,823 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=6000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:48,858 - INFO -    Fetched 1000 forecast records (batch 7)
+2025-10-25 14:35:49,202 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=7000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:49,235 - INFO -    Fetched 1000 forecast records (batch 8)
+2025-10-25 14:35:49,510 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=8000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:49,542 - INFO -    Fetched 1000 forecast records (batch 9)
+2025-10-25 14:35:49,698 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=9000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:49,732 - INFO -    Fetched 1000 forecast records (batch 10)
+2025-10-25 14:35:49,880 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=10000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:49,912 - INFO -    Fetched 1000 forecast records (batch 11)
+2025-10-25 14:35:50,069 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=11000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:50,103 - INFO -    Fetched 1000 forecast records (batch 12)
+2025-10-25 14:35:50,275 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=12000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:50,304 - INFO -    Fetched 1000 forecast records (batch 13)
+2025-10-25 14:35:50,561 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=13000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:50,592 - INFO -    Fetched 1000 forecast records (batch 14)
+2025-10-25 14:35:50,781 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=14000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:50,814 - INFO -    Fetched 1000 forecast records (batch 15)
+2025-10-25 14:35:50,996 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=15000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,028 - INFO -    Fetched 1000 forecast records (batch 16)
+2025-10-25 14:35:51,192 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=16000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,229 - INFO -    Fetched 1000 forecast records (batch 17)
+2025-10-25 14:35:51,382 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=17000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,417 - INFO -    Fetched 1000 forecast records (batch 18)
+2025-10-25 14:35:51,566 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=18000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,599 - INFO -    Fetched 1000 forecast records (batch 19)
+2025-10-25 14:35:51,740 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=19000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,772 - INFO -    Fetched 1000 forecast records (batch 20)
+2025-10-25 14:35:51,917 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=20000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:51,953 - INFO -    Fetched 1000 forecast records (batch 21)
+2025-10-25 14:35:52,098 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=21000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,129 - INFO -    Fetched 1000 forecast records (batch 22)
+2025-10-25 14:35:52,277 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=22000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,307 - INFO -    Fetched 1000 forecast records (batch 23)
+2025-10-25 14:35:52,443 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=23000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,465 - INFO -    Fetched 1000 forecast records (batch 24)
+2025-10-25 14:35:52,615 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=24000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,646 - INFO -    Fetched 1000 forecast records (batch 25)
+2025-10-25 14:35:52,794 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=25000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,827 - INFO -    Fetched 1000 forecast records (batch 26)
+2025-10-25 14:35:52,969 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=26000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:52,999 - INFO -    Fetched 1000 forecast records (batch 27)
+2025-10-25 14:35:53,159 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=27000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:53,188 - INFO -    Fetched 1000 forecast records (batch 28)
+2025-10-25 14:35:53,330 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=28000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:53,359 - INFO -    Fetched 1000 forecast records (batch 29)
+2025-10-25 14:35:53,519 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=29000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:53,549 - INFO -    Fetched 1000 forecast records (batch 30)
+2025-10-25 14:35:53,721 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=30000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:53,752 - INFO -    Fetched 1000 forecast records (batch 31)
+2025-10-25 14:35:53,915 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=31000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:53,950 - INFO -    Fetched 1000 forecast records (batch 32)
+2025-10-25 14:35:54,103 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=32000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:54,134 - INFO -    Fetched 1000 forecast records (batch 33)
+2025-10-25 14:35:54,267 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=33000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:54,331 - INFO -    Fetched 1000 forecast records (batch 34)
+2025-10-25 14:35:54,496 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=34000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:54,525 - INFO -    Fetched 1000 forecast records (batch 35)
+2025-10-25 14:35:54,678 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=35000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:54,708 - INFO -    Fetched 1000 forecast records (batch 36)
+2025-10-25 14:35:54,843 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=36000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:54,873 - INFO -    Fetched 1000 forecast records (batch 37)
+2025-10-25 14:35:55,058 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=37000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:55,096 - INFO -    Fetched 1000 forecast records (batch 38)
+2025-10-25 14:35:55,245 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=38000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:55,265 - INFO -    Fetched 1000 forecast records (batch 39)
+2025-10-25 14:35:55,454 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=39000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:55,486 - INFO -    Fetched 1000 forecast records (batch 40)
+2025-10-25 14:35:55,657 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=40000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:55,690 - INFO -    Fetched 1000 forecast records (batch 41)
+2025-10-25 14:35:55,863 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=41000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:55,895 - INFO -    Fetched 1000 forecast records (batch 42)
+2025-10-25 14:35:56,072 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=42000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:56,122 - INFO -    Fetched 1000 forecast records (batch 43)
+2025-10-25 14:35:56,293 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=43000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:56,325 - INFO -    Fetched 1000 forecast records (batch 44)
+2025-10-25 14:35:56,502 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=44000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:56,533 - INFO -    Fetched 1000 forecast records (batch 45)
+2025-10-25 14:35:56,703 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=45000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:56,734 - INFO -    Fetched 1000 forecast records (batch 46)
+2025-10-25 14:35:56,894 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=46000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:56,921 - INFO -    Fetched 1000 forecast records (batch 47)
+2025-10-25 14:35:57,147 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=47000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:57,173 - INFO -    Fetched 1000 forecast records (batch 48)
+2025-10-25 14:35:57,397 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=48000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:57,428 - INFO -    Fetched 1000 forecast records (batch 49)
+2025-10-25 14:35:57,607 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=49000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:57,638 - INFO -    Fetched 1000 forecast records (batch 50)
+2025-10-25 14:35:57,809 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=50000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:57,855 - INFO -    Fetched 1000 forecast records (batch 51)
+2025-10-25 14:35:58,056 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=51000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:58,083 - INFO -    Fetched 1000 forecast records (batch 52)
+2025-10-25 14:35:58,250 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=52000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:58,281 - INFO -    Fetched 1000 forecast records (batch 53)
+2025-10-25 14:35:58,470 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=53000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:58,500 - INFO -    Fetched 1000 forecast records (batch 54)
+2025-10-25 14:35:58,672 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=54000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:58,703 - INFO -    Fetched 1000 forecast records (batch 55)
+2025-10-25 14:35:58,920 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=55000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:58,953 - INFO -    Fetched 1000 forecast records (batch 56)
+2025-10-25 14:35:59,141 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=56000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:59,171 - INFO -    Fetched 1000 forecast records (batch 57)
+2025-10-25 14:35:59,358 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=57000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:59,388 - INFO -    Fetched 1000 forecast records (batch 58)
+2025-10-25 14:35:59,555 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=58000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:59,587 - INFO -    Fetched 1000 forecast records (batch 59)
+2025-10-25 14:35:59,759 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=59000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:35:59,790 - INFO -    Fetched 1000 forecast records (batch 60)
+2025-10-25 14:35:59,969 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=60000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:00,011 - INFO -    Fetched 1000 forecast records (batch 61)
+2025-10-25 14:36:00,184 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=61000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:00,217 - INFO -    Fetched 1000 forecast records (batch 62)
+2025-10-25 14:36:00,396 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=62000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:00,426 - INFO -    Fetched 1000 forecast records (batch 63)
+2025-10-25 14:36:00,586 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=63000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:00,631 - INFO -    Fetched 1000 forecast records (batch 64)
+2025-10-25 14:36:00,810 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=64000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:00,856 - INFO -    Fetched 1000 forecast records (batch 65)
+2025-10-25 14:36:01,048 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=65000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:01,113 - INFO -    Fetched 1000 forecast records (batch 66)
+2025-10-25 14:36:01,295 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=66000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:01,324 - INFO -    Fetched 1000 forecast records (batch 67)
+2025-10-25 14:36:01,512 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=67000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:01,532 - INFO -    Fetched 1000 forecast records (batch 68)
+2025-10-25 14:36:01,702 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=68000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:01,734 - INFO -    Fetched 1000 forecast records (batch 69)
+2025-10-25 14:36:01,937 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=69000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:01,955 - INFO -    Fetched 1000 forecast records (batch 70)
+2025-10-25 14:36:02,138 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=70000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:02,172 - INFO -    Fetched 1000 forecast records (batch 71)
+2025-10-25 14:36:02,466 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=71000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:02,494 - INFO -    Fetched 1000 forecast records (batch 72)
+2025-10-25 14:36:02,668 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=72000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:02,702 - INFO -    Fetched 1000 forecast records (batch 73)
+2025-10-25 14:36:02,903 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=73000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:02,931 - INFO -    Fetched 1000 forecast records (batch 74)
+2025-10-25 14:36:03,091 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=74000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:03,114 - INFO -    Fetched 1000 forecast records (batch 75)
+2025-10-25 14:36:03,278 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=75000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:03,304 - INFO -    Fetched 1000 forecast records (batch 76)
+2025-10-25 14:36:03,461 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=76000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:36:03,465 - INFO -    Fetched 152 forecast records (batch 77)
+2025-10-25 14:36:03,607 - INFO - OK: Found 76152 valid forecast records
+2025-10-25 14:36:03,609 - INFO -    Found 76152 existing forecast records
+2025-10-25 14:36:03,609 - INFO -    >>> Record fetch took: 18.02 seconds (0.30 minutes)
+2025-10-25 14:36:03,609 - INFO -    Enhancing with NOAA NWS data (weather/temp/wind/pressure)…
+2025-10-25 14:36:03,609 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:36:03,712 - INFO -    NWS supplement: processing 1336 beaches...
+2025-10-25 14:36:03,714 - INFO -    NWS: Fetching forecasts for 1336 beaches using 50 workers...
+2025-10-25 14:36:18,092 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/EKA/70,151
+2025-10-25 14:37:23,018 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/LOX/115,66/forecast/hourly
+2025-10-25 14:37:58,544 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/EKA/69,126/forecast/hourly
+2025-10-25 14:38:19,899 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/EKA/68,125/forecast/hourly
+2025-10-25 14:38:49,628 - INFO - Testing NWS API connection...
+2025-10-25 14:38:49,925 - INFO - NWS API connection successful
+2025-10-25 14:39:11,860 - WARNING - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='api.weather.gov', port=443): Read timed out. (read timeout=10)")': /gridpoints/EKA/60,106/forecast/hourly
+2025-10-25 14:39:21,271 - INFO - Script interrupted by user (Ctrl+C)
+2025-10-25 14:39:21,441 - INFO - [FAIL] Step 2 completed with errors
+2025-10-25 14:39:21,442 - INFO - Exiting with code: 1
+2025-10-25 14:43:16,989 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:43:16,989 - INFO -    NWS supplement: processing 30 beaches...
+2025-10-25 14:43:16,989 - INFO -    NWS: Pre-grouping beaches by location to minimize API calls...
+2025-10-25 14:43:16,990 - INFO -    NWS: Grouped 30 beaches into 20 location groups
+2025-10-25 14:43:16,991 - INFO -    NWS: Fetching forecasts for 20 location groups (representing 30 beaches) using 50 workers...
+2025-10-25 14:43:16,991 - INFO -    NWS: Expected API call reduction: 33.3%
+2025-10-25 14:44:00,260 - INFO -    NWS progress: 10/20 location groups
+2025-10-25 14:44:32,851 - INFO -    NWS progress: 20/20 location groups
+2025-10-25 14:44:32,854 - INFO -    NWS: Completed fetching 20 location groups
+2025-10-25 14:44:32,854 - INFO -    NWS: Sharing forecast data across 30 beaches...
+2025-10-25 14:44:32,854 - INFO -    NWS: Successfully mapped forecasts to 30 beaches
+2025-10-25 14:44:32,924 - INFO -    NWS supplement: filled 720 field values
+2025-10-25 14:44:32,925 - INFO -    NWS stats: 30 beaches with data, 0 no coverage, 0 timeouts
+2025-10-25 14:44:32,925 - INFO -    NWS location grouping: 30 beaches → 20 location groups (1.5 beaches/group)
+2025-10-25 14:44:32,925 - INFO -    NWS grid consolidation: 20 location groups → 20 unique NWS grids (1.0 groups/grid)
+2025-10-25 14:44:32,925 - INFO -    NWS total efficiency: 30 beaches served by 20 API calls = 33.3% reduction
+2025-10-25 14:44:32,925 - INFO -    NWS supplement: completed in 75.94 seconds (1.27 minutes)
+2025-10-25 14:45:17,633 - INFO - ================================================================================
+2025-10-25 14:45:17,633 - INFO - STEP 2: SUPPLEMENTAL DATA UPDATE (ATMOSPHERIC/TIDES/ASTRONOMICAL)
+2025-10-25 14:45:17,633 - INFO - ================================================================================
+2025-10-25 14:45:17,633 - INFO - Start time (PST/PDT): 2025-10-25 14:45:17 PDT
+2025-10-25 14:45:17,633 - INFO - Forecast days: 7
+2025-10-25 14:45:17,633 - INFO - 
+2025-10-25 14:45:17,633 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-10-25 14:45:17,633 - INFO -   - NOAA NWS - Weather, temperature, wind, pressure
+2025-10-25 14:45:17,633 - INFO -   - NOAA CO-OPS - Tides, water temperature
+2025-10-25 14:45:17,633 - INFO -   - USNO - Sun/moon rise/set, moon phase
+2025-10-25 14:45:17,633 - INFO - 
+2025-10-25 14:45:17,633 - INFO - FIELDS POPULATED:
+2025-10-25 14:45:17,633 - INFO -   - Temperature (°F)
+2025-10-25 14:45:17,633 - INFO -   - Weather code (WMO)
+2025-10-25 14:45:17,633 - INFO -   - Wind speed/direction/gust (enhanced)
+2025-10-25 14:45:17,634 - INFO -   - Pressure (inHg)
+2025-10-25 14:45:17,634 - INFO -   - Tide level (ft)
+2025-10-25 14:45:17,634 - INFO -   - Water temperature (°F)
+2025-10-25 14:45:17,634 - INFO -   - Sunrise/sunset times
+2025-10-25 14:45:17,634 - INFO -   - Moonrise/moonset times
+2025-10-25 14:45:17,634 - INFO -   - Moon phase
+2025-10-25 14:45:17,634 - INFO - 
+2025-10-25 14:45:17,634 - INFO - Rate limiting (Atmospheric): 0.2s per request, 0.2s between batches
+2025-10-25 14:45:17,634 - INFO - 
+2025-10-25 14:45:17,634 - INFO - NOTE: This script enhances data created by step1_wave_data.py
+2025-10-25 14:45:17,634 - INFO -       Run step1_wave_data.py FIRST if you haven't already!
+2025-10-25 14:45:17,634 - INFO - ================================================================================
+2025-10-25 14:45:17,634 - INFO - Running system checks…
+2025-10-25 14:45:18,403 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-10-25 14:45:18,411 - INFO - Database connection successful
+2025-10-25 14:45:18,411 - INFO - [OK] Database connection successful
+2025-10-25 14:45:18,411 - INFO - Testing NWS API connection...
+2025-10-25 14:45:18,622 - INFO - NWS API connection successful
+2025-10-25 14:45:18,622 - INFO - [OK] NWS API connection successful
+2025-10-25 14:45:18,622 - INFO - Testing NOAA CO-OPS API connection...
+2025-10-25 14:45:19,125 - INFO - NOAA CO-OPS API connection successful
+2025-10-25 14:45:19,126 - INFO - [OK] NOAA CO-OPS API connection successful
+2025-10-25 14:45:19,126 - INFO - Testing USNO API connection...
+2025-10-25 14:45:19,920 - INFO - USNO API connection successful
+2025-10-25 14:45:19,921 - INFO - [OK] USNO API connection successful
+2025-10-25 14:45:19,921 - INFO - System checks: 4/4 passed
+2025-10-25 14:45:19,921 - INFO - STEP 1: Fetching location data
+2025-10-25 14:45:19,921 - INFO - STEP 2: Fetching beach data
+2025-10-25 14:45:20,305 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:20,323 - INFO -    Fetched 1000 beaches (batch 1)
+2025-10-25 14:45:20,515 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:20,520 - INFO -    Fetched 336 beaches (batch 2)
+2025-10-25 14:45:20,524 - INFO - OK: Found 1336 beaches with valid coordinates
+2025-10-25 14:45:20,524 - INFO - STEP 3: Calculating county centroids
+2025-10-25 14:45:20,691 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:20,831 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:20,836 - INFO - OK: Calculated centroids for 15 counties
+2025-10-25 14:45:20,836 - INFO - Loaded 1336 beaches and 15 counties
+2025-10-25 14:45:20,837 - INFO -    >>> Location fetch took: 0.91 seconds
+2025-10-25 14:45:20,837 - INFO - STEP 2: Processing supplemental data
+2025-10-25 14:45:20,837 - INFO - STEP 1: Step 2: Updating SUPPLEMENTAL DATA
+2025-10-25 14:45:20,837 - INFO -    Fetching existing forecast records from database…
+2025-10-25 14:45:20,837 - INFO - Fetching existing forecast records from database...
+2025-10-25 14:45:21,733 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:21,796 - INFO -    Fetched 1000 forecast records (batch 1)
+2025-10-25 14:45:22,365 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:22,398 - INFO -    Fetched 1000 forecast records (batch 2)
+2025-10-25 14:45:22,743 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=2000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:22,775 - INFO -    Fetched 1000 forecast records (batch 3)
+2025-10-25 14:45:23,089 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=3000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:23,125 - INFO -    Fetched 1000 forecast records (batch 4)
+2025-10-25 14:45:23,497 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=4000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:23,529 - INFO -    Fetched 1000 forecast records (batch 5)
+2025-10-25 14:45:23,827 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=5000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:23,867 - INFO -    Fetched 1000 forecast records (batch 6)
+2025-10-25 14:45:24,217 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=6000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:24,250 - INFO -    Fetched 1000 forecast records (batch 7)
+2025-10-25 14:45:24,609 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=7000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:24,646 - INFO -    Fetched 1000 forecast records (batch 8)
+2025-10-25 14:45:24,871 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=8000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:24,908 - INFO -    Fetched 1000 forecast records (batch 9)
+2025-10-25 14:45:25,234 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=9000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:25,267 - INFO -    Fetched 1000 forecast records (batch 10)
+2025-10-25 14:45:25,432 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=10000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:25,475 - INFO -    Fetched 1000 forecast records (batch 11)
+2025-10-25 14:45:25,941 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=11000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:25,978 - INFO -    Fetched 1000 forecast records (batch 12)
+2025-10-25 14:45:26,120 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=12000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:26,152 - INFO -    Fetched 1000 forecast records (batch 13)
+2025-10-25 14:45:26,293 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=13000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:26,324 - INFO -    Fetched 1000 forecast records (batch 14)
+2025-10-25 14:45:26,535 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=14000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:26,567 - INFO -    Fetched 1000 forecast records (batch 15)
+2025-10-25 14:45:26,724 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=15000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:26,756 - INFO -    Fetched 1000 forecast records (batch 16)
+2025-10-25 14:45:26,910 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=16000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:26,942 - INFO -    Fetched 1000 forecast records (batch 17)
+2025-10-25 14:45:27,116 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=17000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:27,148 - INFO -    Fetched 1000 forecast records (batch 18)
+2025-10-25 14:45:27,291 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=18000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:27,327 - INFO -    Fetched 1000 forecast records (batch 19)
+2025-10-25 14:45:27,462 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=19000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:27,496 - INFO -    Fetched 1000 forecast records (batch 20)
+2025-10-25 14:45:27,637 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=20000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:27,669 - INFO -    Fetched 1000 forecast records (batch 21)
+2025-10-25 14:45:27,810 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=21000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:27,862 - INFO -    Fetched 1000 forecast records (batch 22)
+2025-10-25 14:45:27,997 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=22000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,027 - INFO -    Fetched 1000 forecast records (batch 23)
+2025-10-25 14:45:28,162 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=23000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,192 - INFO -    Fetched 1000 forecast records (batch 24)
+2025-10-25 14:45:28,334 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=24000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,364 - INFO -    Fetched 1000 forecast records (batch 25)
+2025-10-25 14:45:28,520 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=25000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,550 - INFO -    Fetched 1000 forecast records (batch 26)
+2025-10-25 14:45:28,687 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=26000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,716 - INFO -    Fetched 1000 forecast records (batch 27)
+2025-10-25 14:45:28,859 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=27000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:28,886 - INFO -    Fetched 1000 forecast records (batch 28)
+2025-10-25 14:45:29,084 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=28000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:29,116 - INFO -    Fetched 1000 forecast records (batch 29)
+2025-10-25 14:45:29,258 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=29000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:29,289 - INFO -    Fetched 1000 forecast records (batch 30)
+2025-10-25 14:45:29,633 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=30000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:29,665 - INFO -    Fetched 1000 forecast records (batch 31)
+2025-10-25 14:45:29,799 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=31000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:29,834 - INFO -    Fetched 1000 forecast records (batch 32)
+2025-10-25 14:45:29,982 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=32000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,012 - INFO -    Fetched 1000 forecast records (batch 33)
+2025-10-25 14:45:30,147 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=33000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,179 - INFO -    Fetched 1000 forecast records (batch 34)
+2025-10-25 14:45:30,342 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=34000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,373 - INFO -    Fetched 1000 forecast records (batch 35)
+2025-10-25 14:45:30,507 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=35000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,537 - INFO -    Fetched 1000 forecast records (batch 36)
+2025-10-25 14:45:30,673 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=36000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,694 - INFO -    Fetched 1000 forecast records (batch 37)
+2025-10-25 14:45:30,838 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=37000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:30,869 - INFO -    Fetched 1000 forecast records (batch 38)
+2025-10-25 14:45:31,073 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=38000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:31,103 - INFO -    Fetched 1000 forecast records (batch 39)
+2025-10-25 14:45:31,281 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=39000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:31,312 - INFO -    Fetched 1000 forecast records (batch 40)
+2025-10-25 14:45:31,486 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=40000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:31,518 - INFO -    Fetched 1000 forecast records (batch 41)
+2025-10-25 14:45:31,675 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=41000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:31,707 - INFO -    Fetched 1000 forecast records (batch 42)
+2025-10-25 14:45:31,872 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=42000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:31,923 - INFO -    Fetched 1000 forecast records (batch 43)
+2025-10-25 14:45:32,122 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=43000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:32,154 - INFO -    Fetched 1000 forecast records (batch 44)
+2025-10-25 14:45:32,325 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=44000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:32,354 - INFO -    Fetched 1000 forecast records (batch 45)
+2025-10-25 14:45:32,531 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=45000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:32,567 - INFO -    Fetched 1000 forecast records (batch 46)
+2025-10-25 14:45:32,722 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=46000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:32,754 - INFO -    Fetched 1000 forecast records (batch 47)
+2025-10-25 14:45:32,916 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=47000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:32,948 - INFO -    Fetched 1000 forecast records (batch 48)
+2025-10-25 14:45:33,114 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=48000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:33,145 - INFO -    Fetched 1000 forecast records (batch 49)
+2025-10-25 14:45:33,299 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=49000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:33,331 - INFO -    Fetched 1000 forecast records (batch 50)
+2025-10-25 14:45:33,477 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=50000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:33,508 - INFO -    Fetched 1000 forecast records (batch 51)
+2025-10-25 14:45:33,655 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=51000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:33,688 - INFO -    Fetched 1000 forecast records (batch 52)
+2025-10-25 14:45:33,857 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=52000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:33,887 - INFO -    Fetched 1000 forecast records (batch 53)
+2025-10-25 14:45:34,062 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=53000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:34,095 - INFO -    Fetched 1000 forecast records (batch 54)
+2025-10-25 14:45:34,270 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=54000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:34,306 - INFO -    Fetched 1000 forecast records (batch 55)
+2025-10-25 14:45:34,548 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=55000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:34,580 - INFO -    Fetched 1000 forecast records (batch 56)
+2025-10-25 14:45:34,967 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=56000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:34,999 - INFO -    Fetched 1000 forecast records (batch 57)
+2025-10-25 14:45:35,275 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=57000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:35,307 - INFO -    Fetched 1000 forecast records (batch 58)
+2025-10-25 14:45:35,500 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=58000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:35,531 - INFO -    Fetched 1000 forecast records (batch 59)
+2025-10-25 14:45:35,731 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=59000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:35,763 - INFO -    Fetched 1000 forecast records (batch 60)
+2025-10-25 14:45:35,957 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=60000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:35,988 - INFO -    Fetched 1000 forecast records (batch 61)
+2025-10-25 14:45:36,239 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=61000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:36,270 - INFO -    Fetched 1000 forecast records (batch 62)
+2025-10-25 14:45:36,819 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=62000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:36,849 - INFO -    Fetched 1000 forecast records (batch 63)
+2025-10-25 14:45:37,018 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=63000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:37,050 - INFO -    Fetched 1000 forecast records (batch 64)
+2025-10-25 14:45:37,232 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=64000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:37,263 - INFO -    Fetched 1000 forecast records (batch 65)
+2025-10-25 14:45:37,439 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=65000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:37,471 - INFO -    Fetched 1000 forecast records (batch 66)
+2025-10-25 14:45:37,660 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=66000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:37,691 - INFO -    Fetched 1000 forecast records (batch 67)
+2025-10-25 14:45:37,866 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=67000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:37,898 - INFO -    Fetched 1000 forecast records (batch 68)
+2025-10-25 14:45:38,051 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=68000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:38,087 - INFO -    Fetched 1000 forecast records (batch 69)
+2025-10-25 14:45:38,245 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=69000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:38,278 - INFO -    Fetched 1000 forecast records (batch 70)
+2025-10-25 14:45:38,452 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=70000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:38,483 - INFO -    Fetched 1000 forecast records (batch 71)
+2025-10-25 14:45:38,664 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=71000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:38,695 - INFO -    Fetched 1000 forecast records (batch 72)
+2025-10-25 14:45:38,855 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=72000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:38,893 - INFO -    Fetched 1000 forecast records (batch 73)
+2025-10-25 14:45:39,060 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=73000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:39,095 - INFO -    Fetched 1000 forecast records (batch 74)
+2025-10-25 14:45:39,263 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=74000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:39,295 - INFO -    Fetched 1000 forecast records (batch 75)
+2025-10-25 14:45:39,458 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=75000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:39,503 - INFO -    Fetched 1000 forecast records (batch 76)
+2025-10-25 14:45:39,632 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=76000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 14:45:39,641 - INFO -    Fetched 152 forecast records (batch 77)
+2025-10-25 14:45:39,704 - INFO - OK: Found 76152 valid forecast records
+2025-10-25 14:45:39,704 - INFO -    Found 76152 existing forecast records
+2025-10-25 14:45:39,704 - INFO -    >>> Record fetch took: 18.87 seconds (0.31 minutes)
+2025-10-25 14:45:39,704 - INFO -    Enhancing with NOAA NWS data (weather/temp/wind/pressure)…
+2025-10-25 14:45:39,705 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 14:45:39,782 - INFO -    NWS supplement: processing 1336 beaches...
+2025-10-25 14:45:39,782 - INFO -    NWS: Pre-grouping beaches by location to minimize API calls...
+2025-10-25 14:45:39,783 - INFO -    NWS: Grouped 1336 beaches into 189 location groups
+2025-10-25 14:45:39,784 - INFO -    NWS: Fetching forecasts for 189 location groups (representing 1336 beaches) using 50 workers...
+2025-10-25 14:45:39,785 - INFO -    NWS: Expected API call reduction: 85.9%
+2025-10-25 14:46:05,513 - INFO -    NWS progress: 10/189 location groups
+2025-10-25 14:46:15,034 - INFO -    NWS progress: 20/189 location groups
+2025-10-25 14:47:39,393 - INFO -    NWS progress: 30/189 location groups
+2025-10-25 14:48:23,321 - INFO -    NWS progress: 40/189 location groups
+2025-10-25 14:48:49,234 - INFO -    NWS progress: 50/189 location groups
+2025-10-25 14:49:36,732 - INFO -    NWS progress: 60/189 location groups
+2025-10-25 14:50:37,226 - INFO -    NWS progress: 70/189 location groups
+2025-10-25 14:51:33,082 - INFO -    NWS progress: 80/189 location groups
+2025-10-25 14:52:12,600 - INFO -    NWS progress: 90/189 location groups
+2025-10-25 14:52:53,499 - INFO -    NWS progress: 100/189 location groups
+2025-10-25 14:53:39,240 - INFO -    NWS progress: 110/189 location groups
+2025-10-25 14:54:32,411 - INFO -    NWS progress: 120/189 location groups
+2025-10-25 14:55:18,487 - INFO -    NWS progress: 130/189 location groups
+2025-10-25 14:56:18,747 - INFO -    NWS progress: 140/189 location groups
+2025-10-25 14:57:10,842 - INFO -    NWS progress: 150/189 location groups
+2025-10-25 14:58:19,257 - INFO -    NWS progress: 160/189 location groups
+2025-10-25 14:59:14,708 - INFO -    NWS progress: 170/189 location groups
+2025-10-25 15:00:43,259 - INFO -    NWS progress: 180/189 location groups
+2025-10-25 15:01:52,753 - INFO -    NWS progress: 189/189 location groups
+2025-10-25 15:01:52,846 - INFO -    NWS: Completed fetching 188 location groups
+2025-10-25 15:01:52,847 - INFO -    NWS: Sharing forecast data across 1336 beaches...
+2025-10-25 15:01:52,919 - INFO -    NWS: Successfully mapped forecasts to 1335 beaches
+2025-10-25 15:01:55,299 - INFO -    NWS supplement: filled 0 field values
+2025-10-25 15:01:55,300 - INFO -    NWS stats: 1335 beaches with data, 1 no coverage, 0 timeouts
+2025-10-25 15:01:55,300 - INFO -    NWS location grouping: 1336 beaches → 189 location groups (7.1 beaches/group)
+2025-10-25 15:01:55,300 - INFO -    NWS grid consolidation: 189 location groups → 181 unique NWS grids (1.0 groups/grid)
+2025-10-25 15:01:55,300 - INFO -    NWS total efficiency: 1336 beaches served by 181 API calls = 86.5% reduction
+2025-10-25 15:01:55,300 - INFO -    NWS supplement: completed in 975.59 seconds (16.26 minutes)
+2025-10-25 15:01:55,690 - INFO -    >>> NWS enhancement took: 975.99 seconds (16.27 minutes)
+2025-10-25 15:01:55,691 - INFO -    Enhancing with NOAA CO-OPS data (tides/water temp)…
+2025-10-25 15:01:55,691 - INFO -    NOAA Tides supplement: fetching tide predictions...
+2025-10-25 15:01:56,411 - INFO -    NOAA Tides: fetching data from 20251025 to 20251102
+2025-10-25 15:01:56,412 - INFO -    NOAA Tides supplement: processing 1336 beaches...
+2025-10-25 15:01:56,428 - INFO -    NOAA Tides: using 14 tide stations
+2025-10-25 15:02:08,118 - INFO -    NOAA Tides supplement: filled 0 field values
+2025-10-25 15:02:08,183 - INFO -    >>> CO-OPS enhancement took: 12.49 seconds (0.21 minutes)
+2025-10-25 15:02:08,184 - INFO -    Uploading enhanced forecast records to database…
+2025-10-25 15:02:09,009 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CLATITUDE%2CLONGITUDE "HTTP/2 200 OK"
+2025-10-25 15:02:11,397 - INFO -    Uploading 76152 records to forecast_data...
+2025-10-25 15:02:16,538 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:19,456 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:21,335 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:23,139 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:25,193 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:27,290 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:29,186 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:33,384 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:35,651 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:40,240 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:44,228 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:47,463 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:50,599 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:54,165 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:56,523 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:02:59,289 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:01,541 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:03,994 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:06,353 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:10,102 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:13,950 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:16,862 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:20,291 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:23,657 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:26,877 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:29,184 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22secondary_swell_period_s%22%2C%22primary_swell_period_s%22%2C%22wind_direction_deg%22%2C%22primary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22wind_gust_mph%22%2C%22created_at%22%2C%22beach_id%22%2C%22tertiary_swell_direction%22%2C%22secondary_swell_direction%22%2C%22surf_height_min_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22temperature%22%2C%22water_temp_f%22%2C%22timestamp%22%2C%22wave_energy_kj%22%2C%22weather%22%2C%22tide_level_ft%22%2C%22tertiary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22 "HTTP/2 200 OK"
+2025-10-25 15:03:29,228 - INFO -    Successfully upserted 76152 records to forecast_data
+2025-10-25 15:03:29,613 - INFO -    >>> Forecast database upsert took: 81.43 seconds (1.36 minutes)
+2025-10-25 15:03:29,613 - INFO -    Processing USNO daily conditions (sun/moon)…
+2025-10-25 15:03:29,613 - INFO -    USNO: fetching daily sun/moon data...
+2025-10-25 15:03:29,623 - INFO -    USNO: processing San Luis Obispo (1/15)
+2025-10-25 15:03:38,611 - INFO -    USNO: processing Los Angeles (2/15)
+2025-10-25 15:03:47,624 - INFO -    USNO: processing San Diego (3/15)
+2025-10-25 15:03:57,600 - INFO -    USNO: processing Humboldt (4/15)
+2025-10-25 15:04:10,019 - INFO -    USNO: processing Del Norte (5/15)
+2025-10-25 15:04:24,738 - INFO -    USNO: processing Ventura (6/15)
+2025-10-25 15:04:46,290 - INFO -    USNO: processing Mendocino (7/15)
+2025-10-25 15:04:59,861 - INFO -    USNO: processing Sonoma (8/15)
+2025-10-25 15:05:12,659 - INFO -    USNO: processing Marin (9/15)
+2025-10-25 15:05:51,913 - INFO -    USNO: processing San Francisco (10/15)
+2025-10-25 15:06:17,011 - INFO -    USNO: processing San Mateo (11/15)
+2025-10-25 15:06:36,497 - INFO -    USNO: processing Santa Cruz (12/15)
+2025-10-25 15:07:25,660 - INFO -    USNO: processing Monterey (13/15)
+2025-10-25 15:07:49,643 - INFO -    USNO: processing Santa Barbara (14/15)
+2025-10-25 15:08:06,807 - INFO -    USNO: processing Orange (15/15)
+2025-10-25 15:08:27,414 - INFO -    USNO: fetched 105 daily records
+2025-10-25 15:08:27,486 - INFO -    Uploading 105 daily records to daily_county_conditions...
+2025-10-25 15:08:34,024 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?on_conflict=county%2Cdate&columns=%22county%22%2C%22sunset%22%2C%22date%22%2C%22sunrise%22 "HTTP/2 200 OK"
+2025-10-25 15:08:34,291 - INFO -    Successfully upserted 105 daily records to daily_county_conditions
+2025-10-25 15:08:34,299 - INFO -    >>> USNO processing took: 304.69 seconds (5.08 minutes)
+2025-10-25 15:08:34,301 - INFO -    >>> TOTAL supplement update time: 1393.46 seconds (23.22 minutes)
+2025-10-25 15:08:34,302 - INFO - OK: Supplement update completed: 1336 beaches, 76152 forecast records, 105 daily records
+2025-10-25 15:08:40,104 - INFO - STEP 3: Generating final statistics
+2025-10-25 15:08:43,260 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=%2A "HTTP/2 206 Partial Content"
+2025-10-25 15:08:45,063 - INFO -    beaches: 1336 records
+2025-10-25 15:08:46,358 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A "HTTP/2 206 Partial Content"
+2025-10-25 15:08:47,194 - INFO -    forecast_data: 76152 records
+2025-10-25 15:08:48,024 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?select=%2A "HTTP/2 200 OK"
+2025-10-25 15:08:48,026 - INFO -    daily_county_conditions: 105 records
+2025-10-25 15:08:48,026 - INFO - Database statistics:
+2025-10-25 15:08:48,056 - INFO -    beaches: 1,336 records
+2025-10-25 15:08:48,056 - INFO -    forecast_data: 76,152 records
+2025-10-25 15:08:48,056 - INFO -    daily_county_conditions: 105 records
+2025-10-25 15:08:48,056 - INFO -    >>> Statistics generation took: 7.95 seconds
+2025-10-25 15:08:48,058 - INFO - ================================================================================
+2025-10-25 15:08:48,059 - INFO - STEP 2: SUPPLEMENT UPDATE COMPLETED!
+2025-10-25 15:08:48,059 - INFO - ================================================================================
+2025-10-25 15:08:48,059 - INFO - EXECUTION SUMMARY:
+2025-10-25 15:08:48,059 - INFO -    - Total execution time: 1410.5 seconds (23.51 minutes)
+2025-10-25 15:08:48,059 - INFO -    - Beaches processed: 1,336
+2025-10-25 15:08:48,059 - INFO -    - Counties processed: 15
+2025-10-25 15:08:48,060 - INFO -    - Forecast records enhanced: 76,152
+2025-10-25 15:08:48,060 - INFO -    - Daily condition records: 105
+2025-10-25 15:08:48,060 - INFO -    - Total records: 76,257
+2025-10-25 15:08:48,060 - INFO -    - Processing rate: 54.1 records/second
+2025-10-25 15:08:48,060 - INFO - ================================================================================
+2025-10-25 15:08:48,060 - INFO - COMPLETE DATABASE UPDATE:
+2025-10-25 15:08:48,060 - INFO -    ✓ Step 1: Wave data (NOAA GFSwave)
+2025-10-25 15:08:48,062 - INFO -    ✓ Step 2: Supplemental data (Atmospheric/Tides/Astronomical)
+2025-10-25 15:08:48,069 - INFO -    All forecast data is now complete!
+2025-10-25 15:08:48,069 - INFO - ================================================================================
+2025-10-25 15:08:48,079 - INFO - [OK] Step 2 completed successfully - supplemental data added
+2025-10-25 15:08:48,080 - INFO - Exiting with code: 0
+2025-10-25 16:08:08,278 - INFO - ================================================================================
+2025-10-25 16:08:08,278 - INFO - STEP 2: SUPPLEMENTAL DATA UPDATE (ATMOSPHERIC/TIDES/ASTRONOMICAL)
+2025-10-25 16:08:08,278 - INFO - ================================================================================
+2025-10-25 16:08:08,278 - INFO - Start time (PST/PDT): 2025-10-25 16:08:08 PDT
+2025-10-25 16:08:08,278 - INFO - Forecast days: 7
+2025-10-25 16:08:08,278 - INFO - 
+2025-10-25 16:08:08,278 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-10-25 16:08:08,278 - INFO -   - NOAA NWS - Weather, temperature, wind, pressure
+2025-10-25 16:08:08,278 - INFO -   - NOAA CO-OPS - Tides, water temperature
+2025-10-25 16:08:08,278 - INFO -   - USNO - Sun/moon rise/set, moon phase
+2025-10-25 16:08:08,278 - INFO - 
+2025-10-25 16:08:08,278 - INFO - FIELDS POPULATED:
+2025-10-25 16:08:08,278 - INFO -   - Temperature (°F)
+2025-10-25 16:08:08,279 - INFO -   - Weather code (WMO)
+2025-10-25 16:08:08,279 - INFO -   - Wind speed/direction/gust (enhanced)
+2025-10-25 16:08:08,279 - INFO -   - Pressure (inHg)
+2025-10-25 16:08:08,279 - INFO -   - Tide level (ft)
+2025-10-25 16:08:08,279 - INFO -   - Water temperature (°F)
+2025-10-25 16:08:08,279 - INFO -   - Sunrise/sunset times
+2025-10-25 16:08:08,279 - INFO -   - Moonrise/moonset times
+2025-10-25 16:08:08,279 - INFO -   - Moon phase
+2025-10-25 16:08:08,279 - INFO - 
+2025-10-25 16:08:08,279 - INFO - Rate limiting (Atmospheric): 0.2s per request, 0.2s between batches
+2025-10-25 16:08:08,279 - INFO - 
+2025-10-25 16:08:08,279 - INFO - NOTE: This script enhances data created by step1_wave_data.py
+2025-10-25 16:08:08,279 - INFO -       Run step1_wave_data.py FIRST if you haven't already!
+2025-10-25 16:08:08,279 - INFO - ================================================================================
+2025-10-25 16:08:08,279 - INFO - Running system checks…
+2025-10-25 16:08:08,518 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-10-25 16:08:08,525 - INFO - Database connection successful
+2025-10-25 16:08:08,526 - INFO - [OK] Database connection successful
+2025-10-25 16:08:08,526 - INFO - Testing NWS API connection...
+2025-10-25 16:08:08,767 - INFO - NWS API connection successful
+2025-10-25 16:08:08,768 - INFO - [OK] NWS API connection successful
+2025-10-25 16:08:08,768 - INFO - Testing NOAA CO-OPS API connection...
+2025-10-25 16:08:09,175 - INFO - NOAA CO-OPS API connection successful
+2025-10-25 16:08:09,176 - INFO - [OK] NOAA CO-OPS API connection successful
+2025-10-25 16:08:09,176 - INFO - Testing USNO API connection...
+2025-10-25 16:08:09,952 - INFO - USNO API connection successful
+2025-10-25 16:08:09,952 - INFO - [OK] USNO API connection successful
+2025-10-25 16:08:09,952 - INFO - System checks: 4/4 passed
+2025-10-25 16:08:09,952 - INFO - STEP 1: Fetching location data
+2025-10-25 16:08:09,952 - INFO - STEP 2: Fetching beach data
+2025-10-25 16:08:10,086 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:10,135 - INFO -    Fetched 1000 beaches (batch 1)
+2025-10-25 16:08:10,235 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:10,239 - INFO -    Fetched 336 beaches (batch 2)
+2025-10-25 16:08:10,243 - INFO - OK: Found 1336 beaches with valid coordinates
+2025-10-25 16:08:10,244 - INFO - STEP 3: Calculating county centroids
+2025-10-25 16:08:10,330 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:10,403 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:10,409 - INFO - OK: Calculated centroids for 15 counties
+2025-10-25 16:08:10,410 - INFO - Loaded 1336 beaches and 15 counties
+2025-10-25 16:08:10,410 - INFO -    >>> Location fetch took: 0.46 seconds
+2025-10-25 16:08:10,411 - INFO - STEP 2: Processing supplemental data
+2025-10-25 16:08:10,411 - INFO - STEP 1: Step 2: Updating SUPPLEMENTAL DATA
+2025-10-25 16:08:10,411 - INFO -    Fetching existing forecast records from database…
+2025-10-25 16:08:10,411 - INFO - Fetching existing forecast records from database...
+2025-10-25 16:08:11,241 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:11,296 - INFO -    Fetched 1000 forecast records (batch 1)
+2025-10-25 16:08:11,486 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:11,528 - INFO -    Fetched 1000 forecast records (batch 2)
+2025-10-25 16:08:11,743 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=2000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:11,783 - INFO -    Fetched 1000 forecast records (batch 3)
+2025-10-25 16:08:12,166 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=3000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:12,198 - INFO -    Fetched 1000 forecast records (batch 4)
+2025-10-25 16:08:12,578 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=4000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:12,607 - INFO -    Fetched 1000 forecast records (batch 5)
+2025-10-25 16:08:12,773 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=5000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:12,817 - INFO -    Fetched 1000 forecast records (batch 6)
+2025-10-25 16:08:12,957 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=6000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:12,994 - INFO -    Fetched 1000 forecast records (batch 7)
+2025-10-25 16:08:13,398 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=7000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:13,428 - INFO -    Fetched 1000 forecast records (batch 8)
+2025-10-25 16:08:13,590 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=8000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:13,619 - INFO -    Fetched 1000 forecast records (batch 9)
+2025-10-25 16:08:13,830 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=9000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:13,867 - INFO -    Fetched 1000 forecast records (batch 10)
+2025-10-25 16:08:13,989 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=10000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,020 - INFO -    Fetched 1000 forecast records (batch 11)
+2025-10-25 16:08:14,163 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=11000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,196 - INFO -    Fetched 1000 forecast records (batch 12)
+2025-10-25 16:08:14,323 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=12000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,355 - INFO -    Fetched 1000 forecast records (batch 13)
+2025-10-25 16:08:14,488 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=13000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,527 - INFO -    Fetched 1000 forecast records (batch 14)
+2025-10-25 16:08:14,667 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=14000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,703 - INFO -    Fetched 1000 forecast records (batch 15)
+2025-10-25 16:08:14,842 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=15000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:14,874 - INFO -    Fetched 1000 forecast records (batch 16)
+2025-10-25 16:08:15,009 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=16000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,040 - INFO -    Fetched 1000 forecast records (batch 17)
+2025-10-25 16:08:15,189 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=17000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,236 - INFO -    Fetched 1000 forecast records (batch 18)
+2025-10-25 16:08:15,360 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=18000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,390 - INFO -    Fetched 1000 forecast records (batch 19)
+2025-10-25 16:08:15,519 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=19000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,540 - INFO -    Fetched 1000 forecast records (batch 20)
+2025-10-25 16:08:15,657 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=20000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,686 - INFO -    Fetched 1000 forecast records (batch 21)
+2025-10-25 16:08:15,815 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=21000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:15,847 - INFO -    Fetched 1000 forecast records (batch 22)
+2025-10-25 16:08:16,155 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=22000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:16,188 - INFO -    Fetched 1000 forecast records (batch 23)
+2025-10-25 16:08:16,313 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=23000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:16,351 - INFO -    Fetched 1000 forecast records (batch 24)
+2025-10-25 16:08:16,478 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=24000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:16,508 - INFO -    Fetched 1000 forecast records (batch 25)
+2025-10-25 16:08:16,632 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=25000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:16,666 - INFO -    Fetched 1000 forecast records (batch 26)
+2025-10-25 16:08:16,797 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=26000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:16,831 - INFO -    Fetched 1000 forecast records (batch 27)
+2025-10-25 16:08:17,030 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=27000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:17,067 - INFO -    Fetched 1000 forecast records (batch 28)
+2025-10-25 16:08:17,492 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=28000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:17,523 - INFO -    Fetched 1000 forecast records (batch 29)
+2025-10-25 16:08:17,695 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=29000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:17,726 - INFO -    Fetched 1000 forecast records (batch 30)
+2025-10-25 16:08:17,852 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=30000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:17,889 - INFO -    Fetched 1000 forecast records (batch 31)
+2025-10-25 16:08:18,021 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=31000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,054 - INFO -    Fetched 1000 forecast records (batch 32)
+2025-10-25 16:08:18,184 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=32000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,215 - INFO -    Fetched 1000 forecast records (batch 33)
+2025-10-25 16:08:18,339 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=33000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,379 - INFO -    Fetched 1000 forecast records (batch 34)
+2025-10-25 16:08:18,516 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=34000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,547 - INFO -    Fetched 1000 forecast records (batch 35)
+2025-10-25 16:08:18,739 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=35000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,794 - INFO -    Fetched 1000 forecast records (batch 36)
+2025-10-25 16:08:18,940 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=36000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:18,978 - INFO -    Fetched 1000 forecast records (batch 37)
+2025-10-25 16:08:19,117 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=37000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:19,158 - INFO -    Fetched 1000 forecast records (batch 38)
+2025-10-25 16:08:19,286 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=38000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:19,318 - INFO -    Fetched 1000 forecast records (batch 39)
+2025-10-25 16:08:19,466 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=39000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:19,502 - INFO -    Fetched 1000 forecast records (batch 40)
+2025-10-25 16:08:19,639 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=40000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:19,672 - INFO -    Fetched 1000 forecast records (batch 41)
+2025-10-25 16:08:19,810 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=41000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:19,842 - INFO -    Fetched 1000 forecast records (batch 42)
+2025-10-25 16:08:19,987 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=42000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:20,037 - INFO -    Fetched 1000 forecast records (batch 43)
+2025-10-25 16:08:20,179 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=43000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:20,210 - INFO -    Fetched 1000 forecast records (batch 44)
+2025-10-25 16:08:20,360 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=44000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:20,457 - INFO -    Fetched 1000 forecast records (batch 45)
+2025-10-25 16:08:20,603 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=45000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:20,635 - INFO -    Fetched 1000 forecast records (batch 46)
+2025-10-25 16:08:20,787 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=46000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:20,819 - INFO -    Fetched 1000 forecast records (batch 47)
+2025-10-25 16:08:20,976 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=47000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,009 - INFO -    Fetched 1000 forecast records (batch 48)
+2025-10-25 16:08:21,150 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=48000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,197 - INFO -    Fetched 1000 forecast records (batch 49)
+2025-10-25 16:08:21,343 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=49000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,376 - INFO -    Fetched 1000 forecast records (batch 50)
+2025-10-25 16:08:21,532 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=50000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,565 - INFO -    Fetched 1000 forecast records (batch 51)
+2025-10-25 16:08:21,724 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=51000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,754 - INFO -    Fetched 1000 forecast records (batch 52)
+2025-10-25 16:08:21,906 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=52000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:21,937 - INFO -    Fetched 1000 forecast records (batch 53)
+2025-10-25 16:08:22,064 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=53000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:22,094 - INFO -    Fetched 1000 forecast records (batch 54)
+2025-10-25 16:08:22,235 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=54000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:22,267 - INFO -    Fetched 1000 forecast records (batch 55)
+2025-10-25 16:08:22,404 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=55000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:22,434 - INFO -    Fetched 1000 forecast records (batch 56)
+2025-10-25 16:08:22,566 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=56000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:22,597 - INFO -    Fetched 1000 forecast records (batch 57)
+2025-10-25 16:08:22,769 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=57000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:22,805 - INFO -    Fetched 1000 forecast records (batch 58)
+2025-10-25 16:08:22,973 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=58000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:23,002 - INFO -    Fetched 1000 forecast records (batch 59)
+2025-10-25 16:08:23,185 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=59000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:23,220 - INFO -    Fetched 1000 forecast records (batch 60)
+2025-10-25 16:08:23,401 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=60000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:23,435 - INFO -    Fetched 1000 forecast records (batch 61)
+2025-10-25 16:08:23,613 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=61000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:23,645 - INFO -    Fetched 1000 forecast records (batch 62)
+2025-10-25 16:08:23,815 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=62000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:23,846 - INFO -    Fetched 1000 forecast records (batch 63)
+2025-10-25 16:08:24,031 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=63000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:24,072 - INFO -    Fetched 1000 forecast records (batch 64)
+2025-10-25 16:08:24,254 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=64000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:24,287 - INFO -    Fetched 1000 forecast records (batch 65)
+2025-10-25 16:08:24,468 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=65000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:24,511 - INFO -    Fetched 1000 forecast records (batch 66)
+2025-10-25 16:08:24,717 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=66000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:24,762 - INFO -    Fetched 1000 forecast records (batch 67)
+2025-10-25 16:08:24,963 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=67000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:24,996 - INFO -    Fetched 1000 forecast records (batch 68)
+2025-10-25 16:08:25,178 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=68000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:25,215 - INFO -    Fetched 1000 forecast records (batch 69)
+2025-10-25 16:08:25,387 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=69000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:25,424 - INFO -    Fetched 1000 forecast records (batch 70)
+2025-10-25 16:08:25,593 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=70000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:25,623 - INFO -    Fetched 1000 forecast records (batch 71)
+2025-10-25 16:08:25,808 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=71000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:25,839 - INFO -    Fetched 1000 forecast records (batch 72)
+2025-10-25 16:08:26,028 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=72000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:26,060 - INFO -    Fetched 1000 forecast records (batch 73)
+2025-10-25 16:08:26,232 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=73000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:26,264 - INFO -    Fetched 1000 forecast records (batch 74)
+2025-10-25 16:08:26,431 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=74000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:26,463 - INFO -    Fetched 1000 forecast records (batch 75)
+2025-10-25 16:08:26,651 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=75000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:26,692 - INFO -    Fetched 1000 forecast records (batch 76)
+2025-10-25 16:08:26,812 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A&offset=76000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-25 16:08:26,819 - INFO -    Fetched 152 forecast records (batch 77)
+2025-10-25 16:08:26,861 - INFO - OK: Found 76152 valid forecast records
+2025-10-25 16:08:26,862 - INFO -    Found 76152 existing forecast records
+2025-10-25 16:08:26,862 - INFO -    >>> Record fetch took: 16.45 seconds (0.27 minutes)
+2025-10-25 16:08:26,862 - INFO -    Enhancing with NOAA NWS data (weather/temp/wind/pressure)…
+2025-10-25 16:08:26,862 - INFO -    NWS supplement: fetching weather forecasts...
+2025-10-25 16:08:27,431 - INFO -    NWS supplement: processing 1336 beaches...
+2025-10-25 16:08:27,431 - INFO -    NWS: Pre-grouping beaches by location to minimize API calls...
+2025-10-25 16:08:27,432 - INFO -    NWS: Grouped 1336 beaches into 189 location groups
+2025-10-25 16:08:27,433 - INFO -    NWS: Fetching forecasts for 189 location groups (representing 1336 beaches) using 50 workers...
+2025-10-25 16:08:27,433 - INFO -    NWS: Expected API call reduction: 85.9%
+2025-10-25 16:08:36,036 - INFO -    NWS progress: 10/189 location groups
+2025-10-25 16:08:53,341 - INFO -    NWS progress: 20/189 location groups
+2025-10-25 16:08:59,623 - INFO -    NWS progress: 30/189 location groups
+2025-10-25 16:09:05,345 - INFO -    NWS progress: 40/189 location groups
+2025-10-25 16:09:37,235 - INFO -    NWS progress: 50/189 location groups
+2025-10-25 16:09:46,621 - INFO -    NWS progress: 60/189 location groups
+2025-10-25 16:09:53,787 - INFO -    NWS progress: 70/189 location groups
+2025-10-25 16:10:00,209 - INFO -    NWS progress: 80/189 location groups
+2025-10-25 16:10:17,357 - INFO -    NWS progress: 90/189 location groups
+2025-10-25 16:10:22,634 - INFO -    NWS progress: 100/189 location groups
+2025-10-25 16:10:29,190 - INFO -    NWS progress: 110/189 location groups
+2025-10-25 16:10:49,385 - INFO -    NWS progress: 120/189 location groups
+2025-10-25 16:11:04,254 - INFO -    NWS progress: 130/189 location groups
+2025-10-25 16:11:22,130 - INFO -    NWS progress: 140/189 location groups
+2025-10-25 16:11:33,039 - INFO -    NWS progress: 150/189 location groups
+2025-10-25 16:11:47,356 - INFO -    NWS progress: 160/189 location groups
+2025-10-25 16:12:10,414 - INFO -    NWS progress: 170/189 location groups
+2025-10-25 16:12:24,520 - INFO -    NWS progress: 180/189 location groups
+2025-10-25 16:12:31,644 - INFO -    NWS progress: 189/189 location groups
+2025-10-25 16:12:31,648 - INFO -    NWS: Completed fetching 188 location groups
+2025-10-25 16:12:31,648 - INFO -    NWS: Sharing forecast data across 1336 beaches...
+2025-10-25 16:12:31,649 - INFO -    NWS: Successfully mapped forecasts to 1335 beaches
+2025-10-25 16:12:34,767 - INFO -    NWS supplement: filled 817656 field values
+2025-10-25 16:12:34,767 - INFO -    NWS stats: 1335 beaches with data, 1 no coverage, 0 timeouts
+2025-10-25 16:12:34,767 - INFO -    NWS location grouping: 1336 beaches → 189 location groups (7.1 beaches/group)
+2025-10-25 16:12:34,767 - INFO -    NWS grid consolidation: 189 location groups → 181 unique NWS grids (1.0 groups/grid)
+2025-10-25 16:12:34,767 - INFO -    NWS total efficiency: 1336 beaches served by 181 API calls = 86.5% reduction
+2025-10-25 16:12:34,767 - INFO -    NWS supplement: completed in 247.90 seconds (4.13 minutes)
+2025-10-25 16:12:34,782 - INFO -    >>> NWS enhancement took: 247.92 seconds (4.13 minutes)
+2025-10-25 16:12:34,783 - INFO -    Enhancing with NOAA CO-OPS data (tides/water temp)…
+2025-10-25 16:12:34,783 - INFO -    NOAA Tides supplement: fetching tide predictions...
+2025-10-25 16:12:34,851 - INFO -    NOAA Tides: fetching data from 20251025 to 20251102
+2025-10-25 16:12:34,852 - INFO -    NOAA Tides supplement: processing 1336 beaches...
+2025-10-25 16:12:34,860 - INFO -    NOAA Tides: using 14 tide stations
+2025-10-25 16:12:46,104 - INFO -    NOAA Tides supplement: filled 0 field values
+2025-10-25 16:12:46,110 - INFO -    >>> CO-OPS enhancement took: 11.33 seconds (0.19 minutes)
+2025-10-25 16:12:46,111 - INFO -    Uploading enhanced forecast records to database…
+2025-10-25 16:12:46,258 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CLATITUDE%2CLONGITUDE "HTTP/2 200 OK"
+2025-10-25 16:12:47,806 - INFO -    Uploading 76152 records to forecast_data...
+2025-10-25 16:12:52,334 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:12:54,894 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:12:57,148 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:12:59,627 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:01,555 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:03,808 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:06,779 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:09,743 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:12,713 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:25,409 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:32,988 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:36,267 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:39,155 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:41,083 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:43,874 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:47,448 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:50,396 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:52,136 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:54,072 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:57,464 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:13:59,872 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:02,581 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:06,306 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:09,020 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:10,570 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:11,495 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?on_conflict=beach_id%2Ctimestamp&columns=%22id%22%2C%22primary_swell_period_s%22%2C%22surf_height_max_ft%22%2C%22tertiary_swell_period_s%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22wind_gust_mph%22%2C%22weather%22%2C%22tertiary_swell_height_ft%22%2C%22pressure_inhg%22%2C%22tertiary_swell_direction%22%2C%22primary_swell_height_ft%22%2C%22temperature%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22%2C%22wind_speed_mph%22%2C%22beach_id%22%2C%22secondary_swell_period_s%22%2C%22surf_height_min_ft%22%2C%22timestamp%22%2C%22primary_swell_direction%22%2C%22secondary_swell_height_ft%22%2C%22created_at%22%2C%22tide_level_ft%22 "HTTP/2 200 OK"
+2025-10-25 16:14:11,529 - INFO -    Successfully upserted 76152 records to forecast_data
+2025-10-25 16:14:11,612 - INFO -    >>> Forecast database upsert took: 85.50 seconds (1.43 minutes)
+2025-10-25 16:14:11,612 - INFO -    Processing USNO daily conditions (sun/moon)…
+2025-10-25 16:14:11,612 - INFO -    USNO: fetching daily sun/moon data...
+2025-10-25 16:14:11,612 - INFO -    USNO: processing San Luis Obispo (1/15)
+2025-10-25 16:14:20,334 - INFO -    USNO: processing Los Angeles (2/15)
+2025-10-25 16:14:29,680 - INFO -    USNO: processing San Diego (3/15)
+2025-10-25 16:14:38,657 - INFO -    USNO: processing Humboldt (4/15)
+2025-10-25 16:14:47,294 - INFO -    USNO: processing Del Norte (5/15)
+2025-10-25 16:14:56,207 - INFO -    USNO: processing Ventura (6/15)
+2025-10-25 16:15:05,388 - INFO -    USNO: processing Mendocino (7/15)
+2025-10-25 16:15:14,361 - INFO -    USNO: processing Sonoma (8/15)
+2025-10-25 16:15:23,049 - INFO -    USNO: processing Marin (9/15)
+2025-10-25 16:15:33,548 - INFO -    USNO: processing San Francisco (10/15)
+2025-10-25 16:15:42,227 - INFO -    USNO: processing San Mateo (11/15)
+2025-10-25 16:15:51,154 - INFO -    USNO: processing Santa Cruz (12/15)
+2025-10-25 16:16:00,137 - INFO -    USNO: processing Monterey (13/15)
+2025-10-25 16:16:10,036 - INFO -    USNO: processing Santa Barbara (14/15)
+2025-10-25 16:16:18,557 - INFO -    USNO: processing Orange (15/15)
+2025-10-25 16:16:28,099 - INFO -    USNO: fetched 105 daily records
+2025-10-25 16:16:28,101 - INFO -    Uploading 105 daily records to daily_county_conditions...
+2025-10-25 16:16:29,330 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?on_conflict=county%2Cdate&columns=%22date%22%2C%22sunset%22%2C%22county%22%2C%22sunrise%22 "HTTP/2 200 OK"
+2025-10-25 16:16:29,336 - INFO -    Successfully upserted 105 daily records to daily_county_conditions
+2025-10-25 16:16:29,337 - INFO -    >>> USNO processing took: 137.72 seconds (2.30 minutes)
+2025-10-25 16:16:29,337 - INFO -    >>> TOTAL supplement update time: 498.93 seconds (8.32 minutes)
+2025-10-25 16:16:29,337 - INFO - OK: Supplement update completed: 1336 beaches, 76152 forecast records, 105 daily records
+2025-10-25 16:16:29,478 - INFO - STEP 3: Generating final statistics
+2025-10-25 16:16:29,842 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=%2A "HTTP/2 206 Partial Content"
+2025-10-25 16:16:29,884 - INFO -    beaches: 1336 records
+2025-10-25 16:16:30,251 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A "HTTP/2 206 Partial Content"
+2025-10-25 16:16:30,288 - INFO -    forecast_data: 76152 records
+2025-10-25 16:16:30,467 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?select=%2A "HTTP/2 200 OK"
+2025-10-25 16:16:30,471 - INFO -    daily_county_conditions: 105 records
+2025-10-25 16:16:30,471 - INFO - Database statistics:
+2025-10-25 16:16:30,472 - INFO -    beaches: 1,336 records
+2025-10-25 16:16:30,472 - INFO -    forecast_data: 76,152 records
+2025-10-25 16:16:30,472 - INFO -    daily_county_conditions: 105 records
+2025-10-25 16:16:30,472 - INFO -    >>> Statistics generation took: 0.99 seconds
+2025-10-25 16:16:30,472 - INFO - ================================================================================
+2025-10-25 16:16:30,472 - INFO - STEP 2: SUPPLEMENT UPDATE COMPLETED!
+2025-10-25 16:16:30,472 - INFO - ================================================================================
+2025-10-25 16:16:30,473 - INFO - EXECUTION SUMMARY:
+2025-10-25 16:16:30,473 - INFO -    - Total execution time: 502.2 seconds (8.37 minutes)
+2025-10-25 16:16:30,473 - INFO -    - Beaches processed: 1,336
+2025-10-25 16:16:30,473 - INFO -    - Counties processed: 15
+2025-10-25 16:16:30,473 - INFO -    - Forecast records enhanced: 76,152
+2025-10-25 16:16:30,473 - INFO -    - Daily condition records: 105
+2025-10-25 16:16:30,473 - INFO -    - Total records: 76,257
+2025-10-25 16:16:30,474 - INFO -    - Processing rate: 151.8 records/second
+2025-10-25 16:16:30,474 - INFO - ================================================================================
+2025-10-25 16:16:30,474 - INFO - COMPLETE DATABASE UPDATE:
+2025-10-25 16:16:30,474 - INFO -    ✓ Step 1: Wave data (NOAA GFSwave)
+2025-10-25 16:16:30,474 - INFO -    ✓ Step 2: Supplemental data (Atmospheric/Tides/Astronomical)
+2025-10-25 16:16:30,474 - INFO -    All forecast data is now complete!
+2025-10-25 16:16:30,474 - INFO - ================================================================================
+2025-10-25 16:16:30,475 - INFO - [OK] Step 2 completed successfully - supplemental data added
+2025-10-25 16:16:30,475 - INFO - Exiting with code: 0

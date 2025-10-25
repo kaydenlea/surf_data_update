@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step 2: Supplemental Data Update (Atmospheric, Tides, Astronomical)
+Step 2: Supplemental Data Update (Weather, Tides, Astronomical)
 Enhances existing wave data with weather, tides, and sun/moon information
 This is the slower script - runs in ~15-20 minutes due to rate limiting
 
@@ -24,7 +24,7 @@ from database import (
     check_database_connection, get_database_stats,
     fetch_existing_forecast_records
 )
-from gfs_atmospheric_handler import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
+from nws_handler import get_nws_supplement_data, test_nws_connection
 from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
 from usno_handler import update_daily_conditions_usno, test_usno_connection
 
@@ -36,7 +36,7 @@ from usno_handler import update_daily_conditions_usno, test_usno_connection
 def update_supplement_data(beaches, counties):
     """
     Enhance existing forecast data with supplemental information:
-      1) NOAA GFS Atmospheric (temperature, weather, wind, pressure)
+      1) NOAA NWS (temperature, weather, wind, pressure)
       2) NOAA CO-OPS (tides, water temperature)
       3) USNO (sun/moon astronomical data)
     """
@@ -58,17 +58,17 @@ def update_supplement_data(beaches, counties):
         logger.info(f"   Found {len(existing_records)} existing forecast records")
         logger.info(f"   >>> Record fetch took: {fetch_time:.2f} seconds ({fetch_time/60:.2f} minutes)")
 
-        # --- NOAA GFS ATMOSPHERIC SUPPLEMENT (Weather, Temp, Wind, Pressure) ---
-        logger.info("   Enhancing with NOAA GFS Atmospheric data (weather/temp/wind/pressure)…")
-        gfs_atmos_start = time.time()
-        gfs_atmos_enhanced = get_gfs_atmospheric_supplement_data(beaches, existing_records)
-        gfs_atmos_time = time.time() - gfs_atmos_start
-        logger.info(f"   >>> GFS Atmospheric enhancement took: {gfs_atmos_time:.2f} seconds ({gfs_atmos_time/60:.2f} minutes)")
+        # --- NOAA NWS SUPPLEMENT (Weather, Temp, Wind, Pressure) ---
+        logger.info("   Enhancing with NOAA NWS data (weather/temp/wind/pressure)…")
+        nws_start = time.time()
+        nws_enhanced = get_nws_supplement_data(beaches, existing_records)
+        nws_time = time.time() - nws_start
+        logger.info(f"   >>> NWS enhancement took: {nws_time:.2f} seconds ({nws_time/60:.2f} minutes)")
 
         # --- NOAA CO-OPS SUPPLEMENT (Tides, Water Temp) ---
         logger.info("   Enhancing with NOAA CO-OPS data (tides/water temp)…")
         tides_start = time.time()
-        fully_enhanced = get_noaa_tides_supplement_data(beaches, gfs_atmos_enhanced)
+        fully_enhanced = get_noaa_tides_supplement_data(beaches, nws_enhanced)
         tides_time = time.time() - tides_start
         logger.info(f"   >>> CO-OPS enhancement took: {tides_time:.2f} seconds ({tides_time/60:.2f} minutes)")
 
@@ -111,7 +111,7 @@ def run_system_checks():
     logger.info("Running system checks…")
 
     checks_passed = 0
-    total_checks = 3  # Reduced from 4 - skipping GFS Atmospheric to avoid duplicate dataset loading
+    total_checks = 4
 
     if check_database_connection():
         logger.info("[OK] Database connection successful")
@@ -119,10 +119,11 @@ def run_system_checks():
     else:
         logger.error("[FAIL] Database connection failed")
 
-    # SKIP GFS Atmospheric connection test to avoid duplicate dataset loading
-    # It will be tested during actual data fetch in get_gfs_atmospheric_supplement_data()
-    logger.info("[SKIP] GFS Atmospheric connection test (will test during data fetch to avoid duplicate loading)")
-    checks_passed += 1  # Count as passed since we'll test it later
+    if test_nws_connection():
+        logger.info("[OK] NWS API connection successful")
+        checks_passed += 1
+    else:
+        logger.error("[FAIL] NWS API connection failed")
 
     if test_noaa_tides_connection():
         logger.info("[OK] NOAA CO-OPS API connection successful")
@@ -137,7 +138,7 @@ def run_system_checks():
         logger.error("[FAIL] USNO API connection failed")
 
     logger.info(f"System checks: {checks_passed}/{total_checks} passed")
-    return checks_passed >= 2  # Need at least DB + 1 supplemental API
+    return checks_passed >= 3  # Need at least DB + 2 supplemental APIs
 
 
 # --------------------------------------------------------------------------------------
@@ -157,7 +158,7 @@ def print_startup_banner():
     logger.info(f"Forecast days: {DAYS_FORECAST}")
     logger.info("")
     logger.info("DATA SOURCES (All Public Domain - Free for Commercial Use):")
-    logger.info("  - NOAA GFS Atmospheric - Weather, temperature, wind, pressure")
+    logger.info("  - NOAA NWS - Weather, temperature, wind, pressure")
     logger.info("  - NOAA CO-OPS - Tides, water temperature")
     logger.info("  - USNO - Sun/moon rise/set, moon phase")
     logger.info("")

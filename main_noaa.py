@@ -3,7 +3,7 @@
 Main execution script for 100% NOAA-based Surf Database Update
 Uses only free, public domain government data sources:
   - NOAA GFSwave (primary wave/swell data)
-  - NOAA GFS Atmospheric (weather, temperature, wind, pressure)
+  - NOAA NWS (weather, temperature, wind, pressure)
   - NOAA CO-OPS (tides, water temperature)
   - Astral library (sun/moon astronomical calculations using NOAA algorithms)
 
@@ -29,7 +29,7 @@ from noaa_handler import (
     get_noaa_dataset_url, load_noaa_dataset, get_noaa_data_bulk_optimized,
     validate_noaa_dataset
 )
-from gfs_atmospheric_handler import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
+from nws_handler import get_nws_supplement_data, test_nws_connection
 from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
 from astral_handler import update_daily_conditions_astral, test_astral_calculation
 
@@ -166,7 +166,7 @@ def update_forecast_data_noaa_stack(beaches):
     """
     Update forecast data using 100% NOAA/Government sources:
       1) NOAA GFSwave (primary: swell, surf, wind speed/dir)
-      2) NOAA GFS Atmospheric (supplement: temperature, weather, wind speed/gust/dir, pressure)
+      2) NOAA NWS (supplement: temperature, weather, wind speed/gust/dir, pressure)
       3) NOAA CO-OPS (supplement: tides, water temperature)
     """
     log_step("Updating forecast data with 100% NOAA sources", 4)
@@ -197,17 +197,17 @@ def update_forecast_data_noaa_stack(beaches):
         all_noaa_records = _drop_records_before_today(all_noaa_records)
         all_noaa_records = _ensure_today_midnight_start(all_noaa_records, beaches)
 
-        # --- NOAA GFS ATMOSPHERIC SUPPLEMENT (Weather, Temp, Wind, Pressure) ---
-        logger.info("   Enhancing with NOAA GFS Atmospheric data (weather/temp/wind/pressure)…")
-        gfs_atmos_start = time.time()
-        gfs_atmos_enhanced = get_gfs_atmospheric_supplement_data(beaches, all_noaa_records)
-        gfs_atmos_time = time.time() - gfs_atmos_start
-        logger.info(f"   >>> GFS Atmospheric enhancement took: {gfs_atmos_time:.2f} seconds ({gfs_atmos_time/60:.2f} minutes)")
+        # --- NOAA NWS SUPPLEMENT (Weather, Temp, Wind, Pressure) ---
+        logger.info("   Enhancing with NOAA NWS data (weather/temp/wind/pressure)…")
+        nws_start = time.time()
+        nws_enhanced = get_nws_supplement_data(beaches, all_noaa_records)
+        nws_time = time.time() - nws_start
+        logger.info(f"   >>> NWS enhancement took: {nws_time:.2f} seconds ({nws_time/60:.2f} minutes)")
 
         # --- NOAA CO-OPS SUPPLEMENT (Tides, Water Temp) ---
         logger.info("   Enhancing with NOAA CO-OPS data (tides/water temp)…")
         tides_start = time.time()
-        fully_enhanced = get_noaa_tides_supplement_data(beaches, gfs_atmos_enhanced)
+        fully_enhanced = get_noaa_tides_supplement_data(beaches, nws_enhanced)
         tides_time = time.time() - tides_start
         logger.info(f"   >>> CO-OPS enhancement took: {tides_time:.2f} seconds ({tides_time/60:.2f} minutes)")
 
@@ -242,7 +242,7 @@ def run_system_checks():
     logger.info("Running system checks…")
 
     checks_passed = 0
-    total_checks = 3  # Reduced from 4 - skipping GFS Atmospheric to avoid duplicate dataset loading
+    total_checks = 4
 
     if check_database_connection():
         logger.info("[OK] Database connection successful")
@@ -250,10 +250,11 @@ def run_system_checks():
     else:
         logger.error("[FAIL] Database connection failed")
 
-    # SKIP GFS Atmospheric connection test to avoid duplicate dataset loading
-    # It will be tested during actual data fetch in get_gfs_atmospheric_supplement_data()
-    logger.info("[SKIP] GFS Atmospheric connection test (will test during data fetch to avoid duplicate loading)")
-    checks_passed += 1  # Count as passed since we'll test it later
+    if test_nws_connection():
+        logger.info("[OK] NWS API connection successful")
+        checks_passed += 1
+    else:
+        logger.error("[FAIL] NWS API connection failed")
 
     if test_noaa_tides_connection():
         logger.info("[OK] NOAA CO-OPS API connection successful")
@@ -278,7 +279,7 @@ def run_system_checks():
             pass
 
     logger.info(f"System checks: {checks_passed}/{total_checks} passed")
-    return checks_passed >= 3  # Need at least DB + 2 weather APIs
+    return checks_passed >= 3  # Need at least DB + 2 data sources
 
 
 def print_startup_banner():
@@ -295,7 +296,7 @@ def print_startup_banner():
     logger.info("")
     logger.info("DATA SOURCES (All Public Domain - Free for Commercial Use):")
     logger.info("  - NOAA GFSwave - Wave/swell forecasts")
-    logger.info("  - NOAA GFS Atmospheric - Weather, temperature, wind speed/gust/direction, pressure")
+    logger.info("  - NOAA NWS - Weather, temperature, wind speed/gust/direction, pressure")
     logger.info("  - NOAA CO-OPS - Tides, water temperature")
     logger.info("  - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)")
     logger.info("")
@@ -332,7 +333,7 @@ def print_completion_summary(start_time, beaches_count, counties_count, forecast
     logger.info("=" * 80)
     logger.info("DATA SOURCES USED (100% Public Domain):")
     logger.info("   - NOAA GFSwave - Wave/swell/wind")
-    logger.info("   - NOAA GFS Atmospheric - Weather/temperature/wind/pressure")
+    logger.info("   - NOAA NWS - Weather/temperature/wind/pressure")
     logger.info("   - NOAA CO-OPS - Tides/water temperature")
     logger.info("   - Astral library - Sun/moon astronomical data (NOAA algorithms)")
     logger.info("   - All data converted to imperial units")
