@@ -658,24 +658,59 @@ def find_nearest_ocean_point(ds, lat0, lon0):
             continue
 
     # Phase 4: LAST RESORT - Grid scan in 1-degree radius
-    # This ensures we ALWAYS find a valid point (even if far away)
+    # OPTIMIZED: Load entire grid chunk at once instead of individual requests
     logger.warning(f"   No valid point in standard search, scanning 1-degree grid for ({lat0:.3f}, {lon0:.3f})")
 
-    # Create a comprehensive grid search
-    for lat_offset in np.arange(-1.0, 1.1, 0.2):
-        for lon_offset in np.arange(-1.0, 1.1, 0.2):
-            try:
-                lat = lat0 + lat_offset
-                lon = (lon0_360 + lon_offset) % 360
-                val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
+    try:
+        # Load a 2-degree grid chunk (1 degree in each direction) in ONE request
+        lat_min = lat0 - 1.0
+        lat_max = lat0 + 1.0
+        lon_min_360 = (lon0_360 - 1.0) % 360
+        lon_max_360 = (lon0_360 + 1.0) % 360
 
-                if not np.isnan(val):
-                    grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
-                    grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
-                    logger.warning(f"   Found valid point via grid scan at offset ({lat_offset:.2f}, {lon_offset:.2f})")
-                    return grid_lat, grid_lon
-            except Exception:
-                continue
+        # Extract grid chunk at first timestep only
+        grid_chunk = ds[test_var].isel(time=0).sel(
+            lat=slice(lat_min, lat_max),
+            lon=slice(lon_min_360, lon_max_360)
+        ).load()  # Load into memory
+
+        # Get the lat/lon coordinates for this chunk
+        chunk_lats = grid_chunk.lat.values
+        chunk_lons = grid_chunk.lon.values
+        chunk_data = grid_chunk.values
+
+        # Find all valid (non-NaN) points in the chunk
+        valid_mask = ~np.isnan(chunk_data)
+
+        if np.any(valid_mask):
+            # Find valid points and calculate distances
+            valid_lat_indices, valid_lon_indices = np.where(valid_mask)
+
+            # Calculate distances from target point to all valid points
+            min_distance = None
+            best_lat_idx = None
+            best_lon_idx = None
+
+            for i, j in zip(valid_lat_indices, valid_lon_indices):
+                point_lat = chunk_lats[i]
+                point_lon = chunk_lons[j]
+
+                # Simple Euclidean distance (good enough for small areas)
+                distance = np.sqrt((point_lat - lat0)**2 + ((point_lon - lon0_360)**2))
+
+                if min_distance is None or distance < min_distance:
+                    min_distance = distance
+                    best_lat_idx = i
+                    best_lon_idx = j
+
+            if best_lat_idx is not None:
+                grid_lat = float(chunk_lats[best_lat_idx])
+                grid_lon = float(chunk_lons[best_lon_idx])
+                logger.warning(f"   Found valid point via grid scan at ({grid_lat:.3f}, {grid_lon:.3f}), distance: {min_distance:.3f}°")
+                return grid_lat, grid_lon
+
+    except Exception as e:
+        logger.error(f"   Grid scan failed: {e}")
 
     # This should never happen, but if it does, return None
     logger.error(f"   CRITICAL: Could not find ANY valid ocean point for ({lat0:.3f}, {lon0:.3f})")
@@ -829,8 +864,11 @@ def get_noaa_data_bulk_optimized(ds, beaches):
     
     # Step 3: Process all beaches using cached grid data
     logger.info("   Processing all beaches using cached and enhanced grid data...")
+    processing_start = time.time()
     all_records = []
-    
+    beach_count_total = sum(len(beaches) for beaches in location_groups.values())
+    beaches_processed = 0
+
     for location_key, group_beaches in location_groups.items():
         if location_key not in grid_data_cache or grid_data_cache[location_key] is None:
             continue
@@ -839,18 +877,30 @@ def get_noaa_data_bulk_optimized(ds, beaches):
         
         for beach in group_beaches:
             try:
-                # For each beach, further enhance with its specific CDIP data
-                beach_enhanced_data = enhance_with_cdip_data(beach, base_grid_data, cdip_data)
-                
-                # Process this beach using the enhanced grid data
+                # OPTIMIZATION: Reuse base_grid_data (already CDIP-enhanced for the location group)
+                # instead of re-enhancing for each beach individually. Beaches in the same
+                # location group are within ~6-7 miles and can share CDIP data.
+
+                # Process this beach using the shared enhanced grid data
                 beach_records = process_beach_with_cached_data(
-                    beach, beach_enhanced_data, location_key, cdip_data
+                    beach, base_grid_data, location_key, cdip_data
                 )
                 all_records.extend(beach_records)
-                
+                beaches_processed += 1
+
+                # Progress logging every 10 beaches
+                if beaches_processed % 10 == 0:
+                    elapsed = time.time() - processing_start
+                    rate = beaches_processed / elapsed if elapsed > 0 else 0
+                    logger.info(f"   Progress: {beaches_processed}/{beach_count_total} beaches processed ({rate:.1f} beaches/sec)")
+
             except Exception as e:
                 logger.error(f"   Error processing {beach['Name']} with cached data: {e}")
-    
+                beaches_processed += 1
+
+    processing_time = time.time() - processing_start
+    logger.info(f"   Beach processing complete: {beaches_processed} beaches in {processing_time:.2f}s ({beaches_processed/processing_time:.1f} beaches/sec)")
+
     # Identify beaches with no NOAA records and backfill from nearest neighbor that has data.
     records_by_beach = {}
     for record in all_records:
