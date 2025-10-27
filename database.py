@@ -274,8 +274,18 @@ def _fill_records_with_neighbors(records, fields=None, fill_surf_min=False):
     return records
 
 
-def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False):
-    """Drop None (and optionally zero-float) fields before upsert to preserve prior values."""
+def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, allow_zero_fields=None):
+    """Drop None (and optionally zero-float) fields before upsert to preserve prior values.
+
+    Args:
+        records: List of record dicts
+        required_keys: Set of keys that must be present
+        skip_zero_floats: If True, skip fields with value 0.0 (except for allow_zero_fields)
+        allow_zero_fields: Set of field names where 0 is a valid value (e.g., wind_speed_mph)
+    """
+    if allow_zero_fields is None:
+        allow_zero_fields = set()
+
     cleaned = []
     for rec in records:
         if any(rec.get(key) is None for key in required_keys):
@@ -288,7 +298,8 @@ def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False):
                 continue
             if value is None:
                 continue
-            if skip_zero_floats and isinstance(value, Real) and not isinstance(value, bool):
+            # Skip zero values EXCEPT for fields where 0 is valid (like wind speed)
+            if skip_zero_floats and key not in allow_zero_fields and isinstance(value, Real) and not isinstance(value, bool):
                 try:
                     as_float = float(value)
                 except (TypeError, ValueError):
@@ -306,7 +317,13 @@ def upsert_forecast_data(records, table_name="forecast_data"):
         return 0
 
     enriched = _fill_records_with_neighbors(records, fill_surf_min=True)
-    prepared = _prepare_records_for_upsert(enriched, {"beach_id", "timestamp"}, skip_zero_floats=True)
+    # Allow zero values for fields where 0 is valid (calm winds = 0 mph, freezing = 0°F, etc.)
+    prepared = _prepare_records_for_upsert(
+        enriched,
+        {"beach_id", "timestamp"},
+        skip_zero_floats=True,
+        allow_zero_fields={"wind_speed_mph", "wind_gust_mph", "temperature"}
+    )
     if not prepared:
         logger.warning(f"   No forecast records had non-null values to upsert into {table_name}")
         return 0
