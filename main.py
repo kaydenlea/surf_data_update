@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 """
 Main execution script for Hybrid Surf Database Update
-Orchestrates NOAA GFSwave primary data and Open-Meteo supplement (fills only missing fields).
+Orchestrates multiple data sources:
+  - NOAA GFSwave (primary wave/swell data)
+  - Open-Meteo (atmospheric supplement: temperature, weather, wind gust, pressure)
+  - NOAA CO-OPS (tides and water temperature)
+  - Astral library (sun/moon astronomical calculations using NOAA algorithms)
 """
 
 import sys
 import time
-import urllib.request
-import urllib.error
-import json
 from datetime import datetime, timezone, timedelta
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Import our custom modules
 from config import (
     logger, TIDE_ADJUSTMENT_FT, NOAA_REQUEST_DELAY, OPENMETEO_REQUEST_DELAY,
-    NOAA_BATCH_DELAY, OPENMETEO_BATCH_DELAY, DAYS_FORECAST, MAX_WORKERS,
-    API_DELAY, RETRY_DELAY, MAX_RETRIES, VC_API_KEY, VISUAL_CROSSING_BASE
+    NOAA_BATCH_DELAY, OPENMETEO_BATCH_DELAY, DAYS_FORECAST
 )
 from utils import log_step
 from database import (
@@ -29,9 +28,11 @@ from noaa_handler import (
     validate_noaa_dataset
 )
 from openmeteo_handler import (
-    get_openmeteo_supplement_data, 
+    get_openmeteo_supplement_data,
     test_openmeteo_connection
 )
+from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
+from astral_handler import update_daily_conditions_astral, test_astral_calculation
 
 # --------------------------------------------------------------------------------------
 # HYBRID FORECAST UPDATE
@@ -167,8 +168,8 @@ def update_forecast_data_hybrid(beaches):
     """
     Update forecast data using:
       1) NOAA GFSwave (primary: swell, surf, wind speed/dir) -> records with local timestamps
-      2) Open-Meteo supplement (fills ONLY: temperature, weather, wind_speed_mph, wind_gust_mph,
-         water_temp_f, pressure_inhg, tide_level_ft) on the SAME (beach_id, timestamp)
+      2) Open-Meteo supplement (fills: temperature, weather, wind_speed_mph, wind_gust_mph, pressure_inhg)
+      3) NOAA CO-OPS supplement (fills: tide_level_ft, water_temp_f)
     """
     log_step("Updating forecast data with hybrid NOAA + Open-Meteo", 4)
 
@@ -198,13 +199,16 @@ def update_forecast_data_hybrid(beaches):
         all_noaa_records = _ensure_today_midnight_start(all_noaa_records, beaches)
 
         # --- OPEN-METEO SUPPLEMENT ---
-        logger.info("   Enhancing with Open-Meteo supplement (fill missing fields only)…")
-        enhanced_records = get_openmeteo_supplement_data(beaches, all_noaa_records)
+        logger.info("   Enhancing with Open-Meteo supplement (temperature, weather, wind, pressure)…")
+        openmeteo_enhanced = get_openmeteo_supplement_data(beaches, all_noaa_records)
 
-        # Upsert to DB. Records already include keys and all NOAA fields; only the
-        # six target fields will be newly filled where they were None.
+        # --- NOAA CO-OPS SUPPLEMENT (Tides, Water Temp) ---
+        logger.info("   Enhancing with NOAA CO-OPS data (tides/water temp)…")
+        fully_enhanced = get_noaa_tides_supplement_data(beaches, openmeteo_enhanced)
+
+        # Upsert to DB
         logger.info("   Uploading enhanced records to database…")
-        total_inserted = upsert_forecast_data(enhanced_records)
+        total_inserted = upsert_forecast_data(fully_enhanced)
 
         log_step(
             f"Hybrid forecast update completed: {len(beaches)} beaches, "
@@ -242,101 +246,18 @@ def update_forecast_data_hybrid(beaches):
 #         return 0
 
 # --------------------------------------------------------------------------------------
-# DAILY CONDITIONS (VISUAL CROSSING)
+# DAILY CONDITIONS (ASTRAL - NOAA ALGORITHMS)
 # --------------------------------------------------------------------------------------
 
-def fetch_vc_daily_for_county(county_info, today_utc, end_date_utc):
-    """Fetch 7-day daily data for a county from Visual Crossing with retry logic."""
-    county = county_info["county"]
-    lat = county_info["latitude"]
-    lon = county_info["longitude"]
-
-    url = (
-        f"{VISUAL_CROSSING_BASE}/"
-        f"{lat},{lon}/{today_utc}/{end_date_utc}"
-        f"?unitGroup=us&key={VC_API_KEY}&contentType=json"
-    )
-
-    for attempt in range(MAX_RETRIES + 1):
-        try:
-            if attempt > 0:
-                time.sleep(API_DELAY * attempt)
-
-            with urllib.request.urlopen(url, timeout=30) as resp:
-                data = json.load(resp)
-            break
-
-        except urllib.error.HTTPError as e:
-            if e.code == 429:  # Rate limited
-                if attempt < MAX_RETRIES:
-                    wait_time = RETRY_DELAY * (attempt + 1)
-                    logger.warning(f"   Rate limited for {county} (attempt {attempt + 1}), waiting {wait_time}s…")
-                    time.sleep(wait_time)
-                    continue
-                else:
-                    logger.error(f"ERROR: Rate limit exceeded for {county} after {MAX_RETRIES + 1} attempts")
-                    return []
-            else:
-                logger.error(f"ERROR: HTTP error for {county}: {e.code}")
-                return []
-        except Exception as e:
-            logger.error(f"ERROR: Error fetching daily data for {county}: {e}")
-            if attempt < MAX_RETRIES:
-                time.sleep(API_DELAY * (attempt + 1))
-                continue
-            return []
-
-    rows = []
-    for day in data.get("days", []):
-        date_str = day.get("datetime")
-        moonphase = day.get("moonphase")
-        sunrise = day.get("sunrise", "")
-        sunset = day.get("sunset", "")
-
-        sunrise_hm = sunrise[-8:-3] if isinstance(sunrise, str) and len(sunrise) >= 8 else None
-        sunset_hm = sunset[-8:-3] if isinstance(sunset, str) and len(sunset) >= 8 else None
-
-        rows.append({
-            "county": county,
-            "date": date_str,
-            "moon_phase": moonphase,
-            "sunrise": sunrise_hm,
-            "sunset": sunset_hm,
-        })
-
-    return rows
-
 def update_daily_conditions(counties):
-    """Update daily county conditions."""
+    """Update daily county conditions using Astral library (NOAA astronomical algorithms)."""
     log_step("Updating daily conditions", 5)
 
-    # Use PST/PDT for daily conditions (user-facing)
-    import pytz
-    pst = pytz.timezone('America/Los_Angeles')
-    today_pst = datetime.now(pst).date()
-    end_date_pst = today_pst + timedelta(days=DAYS_FORECAST - 1)
+    daily_records = update_daily_conditions_astral(counties)
+    daily_count = upsert_daily_conditions(daily_records)
 
-    logger.info(f"   Fetching daily conditions from {today_pst} to {end_date_pst} (PST/PDT)")
-
-    all_rows = []
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        futures = {
-            pool.submit(fetch_vc_daily_for_county, c, today_pst, end_date_pst): c["county"]
-            for c in counties
-        }
-        for fut in as_completed(futures):
-            county = futures[fut]
-            try:
-                rows = fut.result() or []
-                all_rows.extend(rows)
-                if rows:
-                    logger.info(f"   OK {county}: {len(rows)} days")
-            except Exception as e:
-                logger.error(f"ERROR: Error for county {county}: {e}")
-
-    total_inserted = upsert_daily_conditions(all_rows)
-    log_step(f"Daily conditions updated: {len(counties)} counties, {total_inserted} records")
-    return total_inserted
+    log_step(f"Daily conditions updated: {len(counties)} counties, {daily_count} records")
+    return daily_count
 
 # --------------------------------------------------------------------------------------
 # SYSTEM CHECKS & BANNERS
@@ -347,7 +268,7 @@ def run_system_checks():
     logger.info("Running system checks…")
 
     checks_passed = 0
-    total_checks = 3
+    total_checks = 4
 
     if check_database_connection():
         logger.info("✓ Database connection successful")
@@ -361,22 +282,21 @@ def run_system_checks():
     else:
         logger.error("✗ Open-Meteo API connection failed")
 
-    # Visual Crossing simple test
-    try:
-        test_url = f"{VISUAL_CROSSING_BASE}/37.7749,-122.4194/today?key={VC_API_KEY}&contentType=json&unitGroup=us&elements=datetime"
-        with urllib.request.urlopen(test_url, timeout=10) as resp:
-            test_data = json.load(resp)
-        if test_data:
-            logger.info("✓ Visual Crossing API connection successful")
-            checks_passed += 1
-        else:
-            logger.error("✗ Visual Crossing API returned empty response")
-    except Exception as e:
-        logger.error(f"✗ Visual Crossing API connection failed: {e}")
+    if test_noaa_tides_connection():
+        logger.info("✓ NOAA CO-OPS API connection successful")
+        checks_passed += 1
+    else:
+        logger.error("✗ NOAA CO-OPS API connection failed")
+
+    if test_astral_calculation():
+        logger.info("✓ Astral calculations successful")
+        checks_passed += 1
+    else:
+        logger.error("✗ Astral calculations failed")
 
     logger.info(f"System checks: {checks_passed}/{total_checks} passed")
-    # Need at least DB + one weather API
-    return checks_passed >= 2
+    # Need at least DB + 2 data sources
+    return checks_passed >= 3
 
 def print_startup_banner():
     """Print startup banner with configuration info."""
@@ -385,14 +305,18 @@ def print_startup_banner():
     now_pst = datetime.now(timezone.utc).astimezone(pst)
 
     logger.info("=" * 80)
-    logger.info("SURF DATABASE UPDATE - HYBRID NOAA + OPEN-METEO")
+    logger.info("SURF DATABASE UPDATE - HYBRID NOAA + OPEN-METEO + ASTRAL")
     logger.info("=" * 80)
     logger.info(f"Start time (PST/PDT): {now_pst.strftime('%Y-%m-%d %H:%M:%S %Z')}")
     logger.info(f"Forecast days: {DAYS_FORECAST}")
     logger.info(f"Tide adjustment: +{TIDE_ADJUSTMENT_FT} feet")
-    logger.info("Primary source: NOAA GFSwave")
-    logger.info("Supplement source: Open-Meteo (fills missing: temp, code, gust, SST, pressure, tide)")
-    logger.info("Fallback source: Open-Meteo (full)")
+    logger.info("")
+    logger.info("DATA SOURCES:")
+    logger.info("  • Primary: NOAA GFSwave (wave/swell/wind speed/dir)")
+    logger.info("  • Supplement: Open-Meteo (temperature, weather, wind gust, pressure)")
+    logger.info("  • Tides: NOAA CO-OPS (tide levels, water temperature)")
+    logger.info("  • Astronomical: Astral library (sun/moon using NOAA algorithms)")
+    logger.info("")
     logger.info("Units: Imperial (mph, feet, °F, inHg)")
     logger.info("Swell ranking: Dynamic by surf impact score")
     logger.info(f"NOAA rate limiting: {NOAA_REQUEST_DELAY}s per request, {NOAA_BATCH_DELAY}s between groups")
@@ -426,8 +350,9 @@ def print_completion_summary(start_time, beaches_count, counties_count, forecast
     logger.info("=" * 80)
     logger.info("DATA SOURCES USED:")
     logger.info("   • Primary: NOAA GFSwave (wave/swell/wind speed/dir)")
-    logger.info("   • Supplement: Open-Meteo (temperature, weather code, gusts, SST, pressure, tide)")
-    logger.info("   • Daily conditions: Visual Crossing (sun/moon)")
+    logger.info("   • Supplement: Open-Meteo (temperature, weather, wind gust, pressure)")
+    logger.info("   • Tides: NOAA CO-OPS (tide levels, water temperature)")
+    logger.info("   • Astronomical: Astral library (sun/moon using NOAA algorithms)")
     logger.info("   • All data converted to imperial units")
     logger.info("=" * 80)
 
