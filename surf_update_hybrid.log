@@ -6979,3 +6979,165 @@
 2025-10-26 19:11:00,621 - INFO - Script interrupted by user (Ctrl+C)
 2025-10-26 19:11:00,636 - INFO - ✗ Script completed with errors
 2025-10-26 19:11:00,636 - INFO - Exiting with code: 1
+2025-10-26 19:29:35,901 - INFO - ================================================================================
+2025-10-26 19:29:35,901 - INFO - SURF DATABASE UPDATE - HYBRID NOAA + OPEN-METEO + ASTRAL
+2025-10-26 19:29:35,901 - INFO - ================================================================================
+2025-10-26 19:29:35,902 - INFO - Start time (PST/PDT): 2025-10-26 19:29:35 PDT
+2025-10-26 19:29:35,902 - INFO - Forecast days: 7
+2025-10-26 19:29:35,902 - INFO - Tide adjustment: +2.4 feet
+2025-10-26 19:29:35,902 - INFO - 
+2025-10-26 19:29:35,902 - INFO - DATA SOURCES:
+2025-10-26 19:29:35,902 - INFO -   • Primary: NOAA GFSwave (wave/swell/wind speed/dir)
+2025-10-26 19:29:35,902 - INFO -   • Supplement: Open-Meteo (temperature, weather, wind gust, pressure)
+2025-10-26 19:29:35,903 - INFO -   • Tides: NOAA CO-OPS (tide levels, water temperature)
+2025-10-26 19:29:35,903 - INFO -   • Astronomical: Astral library (sun/moon using NOAA algorithms)
+2025-10-26 19:29:35,903 - INFO - 
+2025-10-26 19:29:35,903 - INFO - Units: Imperial (mph, feet, °F, inHg)
+2025-10-26 19:29:35,903 - INFO - Swell ranking: Dynamic by surf impact score
+2025-10-26 19:29:35,903 - INFO - NOAA rate limiting: 2.0s per request, 5.0s between groups
+2025-10-26 19:29:35,903 - INFO - Open-Meteo rate limiting: 1.0s per request, 2.0s between batches
+2025-10-26 19:29:35,904 - INFO - ================================================================================
+2025-10-26 19:29:35,904 - INFO - Running system checks…
+2025-10-26 19:29:36,320 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-10-26 19:29:36,322 - INFO - Database connection successful
+2025-10-26 19:29:36,323 - INFO - ✓ Database connection successful
+2025-10-26 19:29:36,323 - INFO - Testing Open-Meteo API connection...
+2025-10-26 19:29:36,331 - INFO - Open-Meteo API connection successful
+2025-10-26 19:29:36,331 - INFO - ✓ Open-Meteo API connection successful
+2025-10-26 19:29:36,331 - INFO - Testing NOAA CO-OPS API connection...
+2025-10-26 19:29:36,800 - INFO - NOAA CO-OPS API connection successful
+2025-10-26 19:29:36,800 - INFO - ✓ NOAA CO-OPS API connection successful
+2025-10-26 19:29:36,801 - INFO - Testing Astral astronomical calculations...
+2025-10-26 19:29:36,801 - INFO - Astral calculation successful - sunrise: 07:29, sunset: 18:17, moon phase: 0.151
+2025-10-26 19:29:36,801 - INFO - ✓ Astral calculations successful
+2025-10-26 19:29:36,801 - INFO - System checks: 4/4 passed
+2025-10-26 19:29:36,801 - INFO - STEP 1: Starting data cleanup
+2025-10-26 19:29:36,801 - INFO - STEP 1: Cleaning up old data
+2025-10-26 19:29:36,802 - INFO - DELETE: Removing forecast_data before 2025-10-26T00:00:00-07:00 (Pacific)
+2025-10-26 19:29:37,429 - INFO - HTTP Request: DELETE https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?timestamp=lt.2025-10-26T07%3A00%3A00Z "HTTP/2 200 OK"
+2025-10-26 19:29:37,482 - INFO - HTTP Request: DELETE https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?timestamp=lt.2025-10-26T00%3A00%3A00-07%3A00 "HTTP/2 200 OK"
+2025-10-26 19:29:37,483 - INFO -    No tide rows older than 2025-10-26T00:00:00-07:00 found to delete
+2025-10-26 19:29:37,553 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=timestamp&order=timestamp.asc&limit=1 "HTTP/2 200 OK"
+2025-10-26 19:29:37,554 - INFO -    Earliest tide timestamp remaining: 2025-10-26T07:00:00+00:00
+2025-10-26 19:29:37,554 - INFO - DELETE: Removing beach_tides_hourly before 2025-10-26T00:00:00-07:00 (Pacific)
+2025-10-26 19:29:39,279 - INFO - HTTP Request: DELETE https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beach_tides_hourly?timestamp=lt.2025-10-26T07%3A00%3A00Z "HTTP/2 200 OK"
+2025-10-26 19:29:39,347 - INFO - HTTP Request: DELETE https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beach_tides_hourly?timestamp=lt.2025-10-26T00%3A00%3A00-07%3A00 "HTTP/2 200 OK"
+2025-10-26 19:29:39,347 - INFO -    No tide rows older than 2025-10-26T00:00:00-07:00 found to delete
+2025-10-26 19:29:39,430 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beach_tides_hourly?select=timestamp&order=timestamp.asc&limit=1 "HTTP/2 200 OK"
+2025-10-26 19:29:39,431 - INFO -    Earliest tide timestamp remaining: 2025-10-26T07:00:00+00:00
+2025-10-26 19:29:39,431 - INFO - DELETE: Removing daily_county_conditions before 2025-10-26
+2025-10-26 19:29:39,482 - INFO - HTTP Request: DELETE https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?date=lt.2025-10-26 "HTTP/2 200 OK"
+2025-10-26 19:29:39,484 - INFO -    Cleaned up daily conditions older than 2025-10-26
+2025-10-26 19:29:39,484 - INFO - OK: Old data cleanup completed
+2025-10-26 19:29:39,484 - INFO - STEP 2: Fetching location data
+2025-10-26 19:29:39,485 - INFO - STEP 2: Fetching beach data
+2025-10-26 19:29:39,583 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-26 19:29:39,599 - INFO -    Fetched 1000 beaches (batch 1)
+2025-10-26 19:29:39,677 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id%2CName%2CLATITUDE%2CLONGITUDE%2CCOUNTY&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-26 19:29:39,679 - INFO -    Fetched 336 beaches (batch 2)
+2025-10-26 19:29:39,682 - INFO - OK: Found 1336 beaches with valid coordinates
+2025-10-26 19:29:39,682 - INFO - STEP 3: Calculating county centroids
+2025-10-26 19:29:39,746 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=0&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-26 19:29:39,796 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=COUNTY%2CLATITUDE%2CLONGITUDE&offset=1000&limit=1000 "HTTP/2 206 Partial Content"
+2025-10-26 19:29:39,798 - INFO - OK: Calculated centroids for 15 counties
+2025-10-26 19:29:39,798 - INFO - Loaded 1336 beaches and 15 counties
+2025-10-26 19:29:39,798 - INFO - STEP 3: Processing forecast data
+2025-10-26 19:29:39,798 - INFO - STEP 4: Updating forecast data with hybrid NOAA + Open-Meteo
+2025-10-26 19:29:39,799 - INFO -    Loading NOAA GFSwave dataset (rate-limited)…
+2025-10-26 19:29:39,799 - INFO -    Searching for available NOAA GFSwave dataset (rate limited)...
+2025-10-26 19:29:39,799 - INFO -    Current UTC time: 2025-10-27T02:29:39.799214+00:00
+2025-10-26 19:29:39,799 - INFO -    Current PST time: 2025-10-26 19:29:39 PDT
+2025-10-26 19:29:39,799 - INFO -    Using dataset date: 20251027 (UTC-based for NOAA compatibility)
+2025-10-26 19:29:39,799 - INFO -    Trying today's data: 20251027
+2025-10-26 19:29:39,799 - INFO -    Base URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave
+2025-10-26 19:29:39,799 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:29:39,799 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:29:40,262 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z'
+2025-10-26 19:29:43,262 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:29:43,263 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:29:43,444 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z'
+2025-10-26 19:29:46,444 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:29:46,444 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:29:46,578 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z'
+2025-10-26 19:29:49,579 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:29:49,579 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:29:49,721 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z'
+2025-10-26 19:29:52,722 - INFO -    Base URL: http://nomads.ncep.noaa.gov/dods/wave/gfswave
+2025-10-26 19:29:52,722 - INFO -    Testing URL: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:29:52,722 - INFO -       Testing: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:29:52,879 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z'
+2025-10-26 19:29:55,879 - INFO -    Testing URL: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:29:55,880 - INFO -       Testing: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:29:56,035 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z'
+2025-10-26 19:29:59,036 - INFO -    Testing URL: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:29:59,036 - INFO -       Testing: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:29:59,273 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z'
+2025-10-26 19:30:02,274 - INFO -    Testing URL: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:30:02,274 - INFO -       Testing: http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:30:02,584 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z'
+2025-10-26 19:30:05,585 - INFO -    Base URL: https://nomads.ncep.noaa.gov/dods/wave/gfswave
+2025-10-26 19:30:05,585 - INFO -    Testing URL: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:30:05,585 - INFO -       Testing: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z
+2025-10-26 19:30:05,714 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_18z'
+2025-10-26 19:30:08,715 - INFO -    Testing URL: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:30:08,715 - INFO -       Testing: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z
+2025-10-26 19:30:08,866 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_12z'
+2025-10-26 19:30:11,867 - INFO -    Testing URL: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:30:11,867 - INFO -       Testing: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z
+2025-10-26 19:30:11,982 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_06z'
+2025-10-26 19:30:14,982 - INFO -    Testing URL: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:30:14,983 - INFO -       Testing: https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z
+2025-10-26 19:30:15,093 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'https://nomads.ncep.noaa.gov/dods/wave/gfswave/20251027/gfswave.wcoast.0p16_00z'
+2025-10-26 19:30:18,094 - INFO -    Trying yesterday's data: 20251026
+2025-10-26 19:30:18,095 - INFO -    Base URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave
+2025-10-26 19:30:18,095 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251026/gfswave.wcoast.0p16_18z
+2025-10-26 19:30:18,095 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251026/gfswave.wcoast.0p16_18z
+2025-10-26 19:30:18,722 - INFO -       SUCCESS: 129 time steps, swell shape: (129, 151, 241)
+2025-10-26 19:30:18,722 - INFO -    FOUND: Using 20251026 18z (yesterday)
+2025-10-26 19:30:18,722 - INFO -    Loading NOAA GFSwave dataset with rate limiting...
+2025-10-26 19:30:19,052 - INFO -    NOAA dataset loaded: 129 time steps
+2025-10-26 19:30:19,053 - INFO -    Available variables: ['dirpwsfc', 'htsgwsfc', 'perpwsfc', 'swdir_1', 'swdir_2', 'swdir_3', 'swell_1', 'swell_2', 'swell_3', 'swper_1', 'swper_2', 'swper_3', 'ugrdsfc', 'vgrdsfc', 'wdirsfc', 'windsfc', 'wvdirsfc', 'wvhgtsfc', 'wvpersfc']
+2025-10-26 19:30:19,053 - WARNING -    Wind gust (gustsfc) not available in this dataset
+2025-10-26 19:30:19,053 - INFO - NOAA dataset validation passed
+2025-10-26 19:30:19,053 - INFO -    RATE-LIMITED: Bulk extracting NOAA data for all beaches with CDIP enhancement...
+2025-10-26 19:30:19,053 - INFO -    Loading CDIP forecast data for California coastline...
+2025-10-26 19:30:19,054 - INFO -    Loading CDIP socal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/socal_alongshore_forecast.nc
+2025-10-26 19:30:21,098 - INFO -    CDIP socal: Found spectral energy density data
+2025-10-26 19:30:21,106 - INFO -    CDIP socal loaded: 80 timesteps, 5529 sites
+2025-10-26 19:30:21,107 - INFO -    Loading CDIP norcal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/norcal_alongshore_forecast.nc
+2025-10-26 19:30:23,015 - INFO -    CDIP norcal: Found spectral energy density data
+2025-10-26 19:30:23,024 - INFO -    CDIP norcal loaded: 80 timesteps, 6065 sites
+2025-10-26 19:30:23,025 - INFO -    Combining 2 CDIP datasets...
+2025-10-26 19:30:23,077 - INFO -    CDIP combined data loaded: 80 timesteps, 11594 sites
+2025-10-26 19:30:23,078 - INFO -      SOCAL: 5529 sites
+2025-10-26 19:30:23,078 - INFO -      NORCAL: 6065 sites
+2025-10-26 19:30:23,086 - INFO -    Grouping beaches by location to minimize server requests...
+2025-10-26 19:30:23,088 - INFO -    Grouped 1336 beaches into 189 location groups
+2025-10-26 19:30:23,088 - INFO -    Loading location group 1/189: 35.3,-120.8 (serves 13 beaches)...
+2025-10-26 19:30:34,522 - INFO -    Location 35.3,-120.8 loaded and enhanced successfully
+2025-10-26 19:30:34,522 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:30:35,222 - INFO -    Loading location group 2/189: 33.8,-118.4 (serves 19 beaches)...
+2025-10-26 19:30:45,531 - INFO -    Location 33.8,-118.4 loaded and enhanced successfully
+2025-10-26 19:30:45,531 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:30:46,232 - INFO -    Loading location group 3/189: 32.6,-117.1 (serves 18 beaches)...
+2025-10-26 19:30:57,686 - INFO -    Location 32.6,-117.1 loaded and enhanced successfully
+2025-10-26 19:30:57,686 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:30:58,386 - INFO -    Loading location group 4/189: 32.5,-117.1 (serves 1 beaches)...
+2025-10-26 19:31:11,651 - INFO -    Location 32.5,-117.1 loaded and enhanced successfully
+2025-10-26 19:31:11,652 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:31:12,352 - INFO -    Loading location group 5/189: 40.9,-124.1 (serves 6 beaches)...
+2025-10-26 19:31:17,414 - WARNING -    No valid point in standard search, loading regional grid for (40.929, -124.133)
+2025-10-26 19:31:17,528 - WARNING -    Found nearest valid point: (40.000, 235.833), distance: 0.93° (~64 mi)
+2025-10-26 19:31:27,858 - INFO -    Location 40.9,-124.1 loaded and enhanced successfully
+2025-10-26 19:31:27,858 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:31:28,559 - INFO -    Loading location group 6/189: 42.0,-124.2 (serves 2 beaches)...
+2025-10-26 19:31:34,512 - WARNING -    No valid point in standard search, loading regional grid for (41.993, -124.209)
+2025-10-26 19:31:34,621 - WARNING -    Found nearest valid point: (42.167, 234.833), distance: 0.73° (~51 mi)
+2025-10-26 19:31:48,593 - INFO -    Location 42.0,-124.2 loaded and enhanced successfully
+2025-10-26 19:31:48,593 - INFO -    Rate limiting: waiting 0.7s before next location...
+2025-10-26 19:31:49,293 - INFO -    Loading location group 7/189: 41.9,-124.2 (serves 3 beaches)...
+2025-10-26 19:31:54,499 - WARNING -    No valid point in standard search, loading regional grid for (41.869, -124.212)
+2025-10-26 19:31:54,615 - WARNING -    Found nearest valid point: (42.167, 234.833), distance: 0.77° (~53 mi)
+2025-10-26 19:32:06,372 - INFO - Script interrupted by user (Ctrl+C)
+2025-10-26 19:32:06,388 - INFO - ✗ Script completed with errors
+2025-10-26 19:32:06,389 - INFO - Exiting with code: 1

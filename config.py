@@ -34,7 +34,7 @@ NOAA_OCEAN_REQUEST_DELAY = 0.2      # GFSwave ocean data: 0.2 seconds per reques
 NOAA_ATMOSPHERIC_REQUEST_DELAY = 0.2  # GFS atmospheric data: 0.2 seconds per request (same as ocean)
 NOAA_REQUEST_DELAY = 2.0  # Default fallback (kept for backward compatibility)
 
-NOAA_OCEAN_BATCH_DELAY = 0.2      # GFSwave ocean data: 0.2 seconds per batch
+NOAA_OCEAN_BATCH_DELAY = 0.7      # GFSwave ocean data: 0.7 seconds per batch (increased to avoid rate limits)
 NOAA_ATMOSPHERIC_BATCH_DELAY = 0.2  # GFS atmospheric data: 0.2 seconds per batch (same as ocean)
 NOAA_BATCH_DELAY = 5.0    # Default fallback (kept for backward compatibility)
 
