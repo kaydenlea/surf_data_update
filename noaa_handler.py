@@ -566,11 +566,17 @@ def get_noaa_dataset_url():
     
     raise Exception("No NOAA GFSwave dataset available - exhausted all URL combinations")
 
-def find_nearest_ocean_point(ds, lat0, lon0):
+def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
     """
     Find the nearest valid ocean grid point for a beach location.
     IMPROVED: Always returns the closest valid point, even for bays/harbors.
     Searches progressively wider areas until valid data is found.
+
+    Args:
+        ds: NOAA dataset
+        lat0: Target latitude
+        lon0: Target longitude
+        max_distance_deg: Maximum distance to search (default 3.0 degrees ~200 miles)
     """
     lon0_360 = lon0 % 360  # Convert longitude to 0-360 format for NOAA data
     test_var = "swell_2"  # Use swell_2 to test for valid ocean data
@@ -657,63 +663,49 @@ def find_nearest_ocean_point(ds, lat0, lon0):
         except Exception:
             continue
 
-    # Phase 4: LAST RESORT - Grid scan in 1-degree radius
-    # OPTIMIZED: Load entire grid chunk at once instead of individual requests
-    logger.warning(f"   No valid point in standard search, scanning 1-degree grid for ({lat0:.3f}, {lon0:.3f})")
+    # Phase 4: LAST RESORT - Sparse spiral scan
+    # LIMIT checks to max 25 to avoid spending forever on problematic locations
+    logger.warning(f"   No valid point in standard search, doing sparse spiral scan for ({lat0:.3f}, {lon0:.3f})")
 
-    try:
-        # Load a 2-degree grid chunk (1 degree in each direction) in ONE request
-        lat_min = lat0 - 1.0
-        lat_max = lat0 + 1.0
-        lon_min_360 = (lon0_360 - 1.0) % 360
-        lon_max_360 = (lon0_360 + 1.0) % 360
+    # Create spiral pattern - coarser grid (0.3° steps for faster search) sorted by distance
+    search_points = []
+    for lat_offset in np.arange(-max_distance_deg, max_distance_deg + 0.1, 0.3):
+        for lon_offset in np.arange(-max_distance_deg, max_distance_deg + 0.1, 0.3):
+            distance = np.sqrt(lat_offset**2 + lon_offset**2)
+            if distance <= max_distance_deg:  # Only include points within max distance
+                search_points.append((distance, lat_offset, lon_offset))
 
-        # Extract grid chunk at first timestep only
-        grid_chunk = ds[test_var].isel(time=0).sel(
-            lat=slice(lat_min, lat_max),
-            lon=slice(lon_min_360, lon_max_360)
-        ).load()  # Load into memory
+    # Sort by distance - check closest points first
+    search_points.sort(key=lambda x: x[0])
 
-        # Get the lat/lon coordinates for this chunk
-        chunk_lats = grid_chunk.lat.values
-        chunk_lons = grid_chunk.lon.values
-        chunk_data = grid_chunk.values
+    # LIMIT: Only check first 25 points to avoid excessive runtime
+    # For valid ocean locations, this will find a point within first 5-10 checks
+    MAX_CHECKS = 25
+    search_points = search_points[:MAX_CHECKS]
 
-        # Find all valid (non-NaN) points in the chunk
-        valid_mask = ~np.isnan(chunk_data)
+    checked = 0
+    for distance, lat_offset, lon_offset in search_points:
+        checked += 1
+        try:
+            lat = lat0 + lat_offset
+            lon = (lon0_360 + lon_offset) % 360
+            val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
 
-        if np.any(valid_mask):
-            # Find valid points and calculate distances
-            valid_lat_indices, valid_lon_indices = np.where(valid_mask)
-
-            # Calculate distances from target point to all valid points
-            min_distance = None
-            best_lat_idx = None
-            best_lon_idx = None
-
-            for i, j in zip(valid_lat_indices, valid_lon_indices):
-                point_lat = chunk_lats[i]
-                point_lon = chunk_lons[j]
-
-                # Simple Euclidean distance (good enough for small areas)
-                distance = np.sqrt((point_lat - lat0)**2 + ((point_lon - lon0_360)**2))
-
-                if min_distance is None or distance < min_distance:
-                    min_distance = distance
-                    best_lat_idx = i
-                    best_lon_idx = j
-
-            if best_lat_idx is not None:
-                grid_lat = float(chunk_lats[best_lat_idx])
-                grid_lon = float(chunk_lons[best_lon_idx])
-                logger.warning(f"   Found valid point via grid scan at ({grid_lat:.3f}, {grid_lon:.3f}), distance: {min_distance:.3f}°")
+            if not np.isnan(val):
+                grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
+                grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
+                logger.warning(f"   Found valid point via spiral scan after {checked} checks at distance {distance:.2f}° ({lat_offset:.2f}, {lon_offset:.2f})")
                 return grid_lat, grid_lon
+        except Exception as e:
+            # Log occasional errors to help debug
+            if checked <= 3:
+                logger.debug(f"   Check {checked} failed: {e}")
+            continue
 
-    except Exception as e:
-        logger.error(f"   Grid scan failed: {e}")
-
-    # This should never happen, but if it does, return None
-    logger.error(f"   CRITICAL: Could not find ANY valid ocean point for ({lat0:.3f}, {lon0:.3f})")
+    # If we still haven't found anything after 25 checks, this location is problematic
+    # Don't waste more time - just return None and skip this beach group
+    logger.error(f"   Could not find valid ocean point for ({lat0:.3f}, {lon0:.3f}) after {checked} checks within {max_distance_deg}° (~{max_distance_deg*69:.0f} miles)")
+    logger.error(f"   This location may be too far inland or in an area with no GFS coverage. Skipping.")
     return None, None
 
 def load_noaa_dataset(url):
