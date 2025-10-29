@@ -310,6 +310,50 @@ def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, 
         cleaned.append(filtered)
     return cleaned
 
+def _deduplicate_records(records, unique_keys):
+    """
+    Deduplicate records based on unique keys, keeping the last occurrence.
+    This merges duplicate records by combining all non-null fields.
+
+    Args:
+        records: List of record dicts
+        unique_keys: Tuple of keys that uniquely identify a record (e.g., ("beach_id", "timestamp"))
+
+    Returns:
+        List of deduplicated records
+    """
+    if not records:
+        return records
+
+    # Use a dict to track records by unique key
+    merged = {}
+    duplicates_found = 0
+
+    for rec in records:
+        # Create a key tuple from the unique keys
+        key_values = tuple(rec.get(k) for k in unique_keys)
+
+        # Skip if any unique key is missing
+        if any(v is None for v in key_values):
+            continue
+
+        if key_values in merged:
+            # Merge with existing record: new values override old ones (but keep old non-null values)
+            duplicates_found += 1
+            existing = merged[key_values]
+            for field, value in rec.items():
+                if value is not None:
+                    existing[field] = value
+        else:
+            # First time seeing this key
+            merged[key_values] = dict(rec)  # Make a copy
+
+    if duplicates_found > 0:
+        logger.info(f"   Deduplicated {duplicates_found} duplicate records (merged fields)")
+
+    return list(merged.values())
+
+
 def upsert_forecast_data(records, table_name="forecast_data"):
     """Upsert forecast records to database in chunks."""
     if not records:
@@ -328,10 +372,13 @@ def upsert_forecast_data(records, table_name="forecast_data"):
         logger.warning(f"   No forecast records had non-null values to upsert into {table_name}")
         return 0
 
-    logger.info(f"   Uploading {len(prepared)} records to {table_name}...")
+    # Deduplicate records to avoid "cannot affect row a second time" error
+    deduplicated = _deduplicate_records(prepared, ("beach_id", "timestamp"))
+
+    logger.info(f"   Uploading {len(deduplicated)} records to {table_name}...")
     total_inserted = 0
 
-    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
+    for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,
@@ -356,10 +403,13 @@ def upsert_daily_conditions(records, table_name="daily_county_conditions"):
         logger.warning(f"   No daily records had non-null values to upsert into {table_name}")
         return 0
 
-    logger.info(f"   Uploading {len(prepared)} daily records to {table_name}...")
+    # Deduplicate records
+    deduplicated = _deduplicate_records(prepared, ("county", "date"))
+
+    logger.info(f"   Uploading {len(deduplicated)} daily records to {table_name}...")
     total_inserted = 0
 
-    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
+    for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,
@@ -384,10 +434,13 @@ def upsert_tide_data(records, table_name="beach_tides_hourly"):
         logger.warning(f"   No tide records had non-null values to upsert into {table_name}")
         return 0
 
-    logger.info(f"   Uploading {len(prepared)} tide records to {table_name}...")
+    # Deduplicate records
+    deduplicated = _deduplicate_records(prepared, ("beach_id", "timestamp"))
+
+    logger.info(f"   Uploading {len(deduplicated)} tide records to {table_name}...")
     total_inserted = 0
 
-    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
+    for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,
@@ -494,10 +547,13 @@ def upsert_county_tide_data(records, table_name="county_tides_15min"):
         logger.warning(f"   No county tide records had non-null values to upsert into {table_name}")
         return 0
 
-    logger.info(f"   Uploading {len(prepared)} county tide records to {table_name}...")
+    # Deduplicate records
+    deduplicated = _deduplicate_records(prepared, ("county", "timestamp"))
+
+    logger.info(f"   Uploading {len(deduplicated)} county tide records to {table_name}...")
     total_inserted = 0
 
-    for chunk in chunk_iter(prepared, UPSERT_CHUNK):
+    for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
         try:
             supabase.table(table_name).upsert(
                 chunk,

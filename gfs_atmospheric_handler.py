@@ -647,20 +647,21 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                 rec["weather"] = safe_int(weather_code)
                 filled_count += 1
 
-                # Fill wind speed
-                if data["wind_speed"] is not None:
-                    rec["wind_speed_mph"] = safe_float(data["wind_speed"])
-                    filled_count += 1
+                # DISABLED: Wind data now comes from NOAA GFSwave (better for coastal conditions)
+                # # Fill wind speed
+                # if data["wind_speed"] is not None:
+                #     rec["wind_speed_mph"] = safe_float(data["wind_speed"])
+                #     filled_count += 1
 
-                # Fill wind direction
-                if data["wind_direction"] is not None:
-                    rec["wind_direction_deg"] = safe_float(data["wind_direction"])
-                    filled_count += 1
+                # # Fill wind direction
+                # if data["wind_direction"] is not None:
+                #     rec["wind_direction_deg"] = safe_float(data["wind_direction"])
+                #     filled_count += 1
 
-                # Fill wind gust
-                if data["wind_gust"] is not None:
-                    rec["wind_gust_mph"] = safe_float(data["wind_gust"])
-                    filled_count += 1
+                # # Fill wind gust
+                # if data["wind_gust"] is not None:
+                #     rec["wind_gust_mph"] = safe_float(data["wind_gust"])
+                #     filled_count += 1
 
                 # Fill pressure
                 if data["pressure"] is not None:

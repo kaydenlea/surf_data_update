@@ -598,12 +598,11 @@ def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
     # 3. Try large radius (for inland bays/harbors)
     # 4. Last resort: scan entire nearby grid area
 
-    # Phase 1: Small radius (0.05-0.15 degrees, ~3-10 miles)
+    # Phase 1: Small radius - REDUCED to 6 key directions to fail faster
     small_offsets = [
-        # Nearby cardinal and diagonal directions
-        (0, 0.1), (0, -0.1), (0.05, 0), (-0.05, 0),
-        (0.05, 0.1), (-0.05, -0.1), (0.05, -0.1), (-0.05, 0.1),
-        (0, 0.15), (0, -0.15), (0.1, 0), (-0.1, 0),
+        # Cardinal directions + offshore priority (west for CA coast)
+        (0, -0.1), (0, 0.1), (0.1, 0), (-0.1, 0),
+        (0, -0.2), (0.1, -0.1),  # Prioritize west/northwest
     ]
 
     for dlat, dlon in small_offsets:
@@ -619,13 +618,11 @@ def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
         except Exception:
             continue
 
-    # Phase 2: Medium radius (0.2-0.4 degrees, ~12-25 miles)
-    # Prioritize offshore (west/more negative longitude for CA coast)
+    # Phase 2: Medium radius - REDUCED to 6 points
+    # Prioritize offshore (west for CA coast)
     medium_offsets = [
-        (0, 0.2), (0, -0.2), (0, 0.3), (0, -0.3),
-        (0.15, 0.2), (-0.15, 0.2), (0.15, -0.2), (-0.15, -0.2),
-        (0.2, 0), (-0.2, 0), (0.2, 0.2), (-0.2, -0.2),
-        (0, 0.4), (0, -0.4), (0.2, 0.3), (-0.2, 0.3),
+        (0, -0.3), (0, -0.5), (0, 0.3),  # West priority
+        (0.2, -0.3), (-0.2, -0.3), (0, 0.5),
     ]
 
     for dlat, dlon in medium_offsets:
@@ -641,33 +638,18 @@ def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
         except Exception:
             continue
 
-    # Phase 3: Large radius (0.5-0.75 degrees, ~30-50 miles)
-    # For very inland bays or harbors (e.g., San Francisco Bay)
-    large_offsets = [
-        (0, 0.5), (0, -0.5), (0.3, 0.5), (-0.3, 0.5),
-        (0.3, -0.5), (-0.3, -0.5), (0.5, 0), (-0.5, 0),
-        (0, 0.75), (0, -0.75), (0.5, 0.5), (-0.5, -0.5),
-    ]
-
-    for dlat, dlon in large_offsets:
-        try:
-            lat = lat0 + dlat
-            lon = (lon0_360 + dlon) % 360
-            val = ds[test_var].isel(time=0).sel(lat=lat, lon=lon, method="nearest").values
-
-            if not np.isnan(val):
-                grid_lat = float(ds.lat.sel(lat=lat, method="nearest").values)
-                grid_lon = float(ds.lon.sel(lon=lon, method="nearest").values)
-                logger.debug(f"   Found valid point at large offset ({dlat:.2f}, {dlon:.2f}) for ({lat0:.3f}, {lon0:.3f})")
-                return grid_lat, grid_lon
-        except Exception:
-            continue
+    # Phase 3: SKIP - go directly to bulk grid load
+    # The large offset phase was making too many requests
+    # If phases 1-2 fail (12 checks), go straight to bulk load
 
     # Phase 4: LAST RESORT - Bulk grid load and find nearest valid point
     # OPTIMIZED: Load entire search area at once (ONE request), find nearest valid point in memory
     logger.warning(f"   No valid point in standard search, loading regional grid for ({lat0:.3f}, {lon0:.3f})")
 
     try:
+        # Rate limit before bulk load (this is a large request that could trigger rate limits)
+        enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
+
         # Define search area
         lat_min = lat0 - max_distance_deg
         lat_max = lat0 + max_distance_deg
@@ -788,7 +770,7 @@ def get_noaa_data_bulk_optimized(ds, beaches):
     pacific_tz = pytz.timezone("America/Los_Angeles")
     pacific_today_midnight = pd.Timestamp.now(pacific_tz).normalize()
     window_start = pacific_today_midnight.tz_convert("UTC")
-    window_end = window_start + pd.Timedelta(days=7)
+    window_end = window_start + pd.Timedelta(days=8)
 
     mask = (time_vals_full >= window_start) & (time_vals_full < window_end)
     sel_idx = np.where(mask)[0]
@@ -840,10 +822,13 @@ def get_noaa_data_bulk_optimized(ds, beaches):
             representative_beach["LONGITUDE"]
         )
 
-        # IMPROVED: If representative beach fails, try each beach in the group individually
+        # IMPROVED: If representative beach fails, try a few more beaches but limit attempts
+        # Don't try every beach in large groups - if first few fail, the whole area is problematic
         if grid_lat is None or grid_lon is None:
-            logger.warning(f"   Representative beach failed for location {location_key}, trying individual beaches...")
-            for idx, beach in enumerate(group_beaches):
+            max_retries = min(3, beach_count)  # Try max 3 beaches, or fewer if group is small
+            logger.warning(f"   Representative beach failed for location {location_key}, trying up to {max_retries} more beaches...")
+
+            for idx, beach in enumerate(group_beaches[:max_retries]):
                 enforce_noaa_rate_limit(NOAA_OCEAN_REQUEST_DELAY)
                 grid_lat, grid_lon = find_nearest_ocean_point(
                     ds,
@@ -851,12 +836,12 @@ def get_noaa_data_bulk_optimized(ds, beaches):
                     beach["LONGITUDE"]
                 )
                 if grid_lat is not None and grid_lon is not None:
-                    logger.info(f"   Found valid ocean point using beach {idx+1}/{beach_count} from group")
+                    logger.info(f"   Found valid ocean point using beach {idx+1} from group")
                     representative_beach = beach
                     break
 
         if grid_lat is None or grid_lon is None:
-            logger.warning(f"   No valid ocean point for location {location_key} after trying all {beach_count} beaches")
+            logger.warning(f"   No valid ocean point for location {location_key} - skipping entire group ({beach_count} beaches)")
             continue
         
         # Enforce rate limiting before bulk data extraction

@@ -18,9 +18,9 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV
 VC_API_KEY = os.environ.get("VC_API_KEY")
 
 # Script settings (match your existing project as needed)
-DAYS_FORECAST = 7
-BATCH_SIZE = 10
-UPSERT_CHUNK = 3000
+DAYS_FORECAST = 8
+BATCH_SIZE = 20
+UPSERT_CHUNK = 500  # Reduced to avoid Supabase payload size limits
 MAX_WORKERS = 3
 LOG_LEVEL = logging.INFO
 API_DELAY = 2.0
@@ -29,12 +29,12 @@ MAX_RETRIES = 3
 
 # NOAA / Open-Meteo rate limits
 # Separate rate limits for ocean (GFSwave) vs atmospheric (GFS) data
-# Using same delays for both - smaller location groups (0.125° grid) spreads requests out
-NOAA_OCEAN_REQUEST_DELAY = 0.2      # GFSwave ocean data: 0.2 seconds per request
+# Increased delays to avoid rate limiting issues
+NOAA_OCEAN_REQUEST_DELAY = 0.5      # GFSwave ocean data: 0.5 seconds per request (increased from 0.2)
 NOAA_ATMOSPHERIC_REQUEST_DELAY = 0.2  # GFS atmospheric data: 0.2 seconds per request (same as ocean)
 NOAA_REQUEST_DELAY = 2.0  # Default fallback (kept for backward compatibility)
 
-NOAA_OCEAN_BATCH_DELAY = 0.7      # GFSwave ocean data: 0.7 seconds per batch (increased to avoid rate limits)
+NOAA_OCEAN_BATCH_DELAY = 1.5      # GFSwave ocean data: 1.5 seconds per batch (increased to avoid rate limits)
 NOAA_ATMOSPHERIC_BATCH_DELAY = 0.2  # GFS atmospheric data: 0.2 seconds per batch (same as ocean)
 NOAA_BATCH_DELAY = 5.0    # Default fallback (kept for backward compatibility)
 
