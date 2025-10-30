@@ -24,7 +24,7 @@ from database import (
     check_database_connection, get_database_stats,
     fetch_existing_forecast_records
 )
-from gfs_atmospheric_handler import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
+from gfs_atmospheric_handler_v2 import get_gfs_atmospheric_supplement_data, test_gfs_atmospheric_connection
 from noaa_tides_handler import get_noaa_tides_supplement_data, test_noaa_tides_connection
 from usno_handler import update_daily_conditions_usno, test_usno_connection
 

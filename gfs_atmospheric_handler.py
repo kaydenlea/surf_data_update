@@ -270,10 +270,16 @@ def extract_gfs_atmospheric_point(
     ds: xr.Dataset,
     lat: float,
     lon: float,
-    time_indices: List[int]
+    time_indices: List[int],
+    lat_idx: int = None,
+    lon_idx: int = None
 ) -> Dict[str, List]:
     """
     Extract atmospheric data for a single point from GFS dataset.
+
+    Args:
+        lat, lon: Rounded to 0.25° grid coordinates (for logging/reference only)
+        lat_idx, lon_idx: Pre-calculated indices (if provided, skips coordinate lookup)
 
     Returns dict with:
         - temperature: List of temperatures in Fahrenheit
@@ -284,10 +290,6 @@ def extract_gfs_atmospheric_point(
         - cloud_cover: List of cloud cover percentages
         - precip_rate: List of precipitation rates in mm/hr
     """
-    # Find nearest grid point
-    lat_idx = np.abs(ds.lat.values - lat).argmin()
-    lon_idx = np.abs(ds.lon.values - lon).argmin()
-
     result = {
         "temperature": [],
         "wind_speed": [],
@@ -298,16 +300,55 @@ def extract_gfs_atmospheric_point(
         "precip_rate": [],
     }
 
-    # OPTIMIZED: Extract ALL variables for ALL time indices in ONE call
+    # OPTIMIZED: Use direct OPeNDAP constraint expressions instead of xarray selection
+    # This avoids triggering coordinate lookups that cause rate limit issues
     try:
-        # Extract all data at once (single network request for all variables)
-        temp_k_arr = ds["tmp2m"][time_indices, lat_idx, lon_idx].values if "tmp2m" in ds.variables else None
-        u_wind_arr = ds["ugrd10m"][time_indices, lat_idx, lon_idx].values if "ugrd10m" in ds.variables else None
-        v_wind_arr = ds["vgrd10m"][time_indices, lat_idx, lon_idx].values if "vgrd10m" in ds.variables else None
-        gust_arr = ds["gustsfc"][time_indices, lat_idx, lon_idx].values if "gustsfc" in ds.variables else None
-        pressure_arr = ds["pressfc"][time_indices, lat_idx, lon_idx].values if "pressfc" in ds.variables else None
-        cloud_arr = ds["tcdcclm"][time_indices, lat_idx, lon_idx].values if "tcdcclm" in ds.variables else None
-        precip_arr = ds["pratesfc"][time_indices, lat_idx, lon_idx].values if "pratesfc" in ds.variables else None
+        # Build a direct OPeNDAP-style URL constraint to get exactly what we need
+        # Format: variable[time_start:time_end][lat_idx][lon_idx]
+        # This is the MOST efficient way - single HTTP request with constraint expression
+
+        # Get the dataset's underlying URL
+        import re
+
+        # Calculate lat/lon indices from the rounded coordinates
+        # GFS 0.25° grid: lat from 90 to -90, lon from 0 to 359.75
+        # lat index: (90 - lat) / 0.25
+        # lon index: lon / 0.25 (lon is already 0-360 range)
+
+        # Adjust longitude to 0-360 range if needed
+        lon_360 = lon if lon >= 0 else lon + 360
+
+        lat_calc_idx = int(round((90 - lat) / 0.25))
+        lon_calc_idx = int(round(lon_360 / 0.25))
+
+        # Extract variables one by one with explicit indexing (avoid .sel() entirely!)
+        vars_to_extract = []
+        if "tmp2m" in ds.variables:
+            vars_to_extract.append("tmp2m")
+        if "pressfc" in ds.variables:
+            vars_to_extract.append("pressfc")
+        if "tcdcclm" in ds.variables:
+            vars_to_extract.append("tcdcclm")
+        if "pratesfc" in ds.variables:
+            vars_to_extract.append("pratesfc")
+
+        # MATCH THE SWELL HANDLER APPROACH EXACTLY
+        # Call .isel().values directly for each variable - NO .load() or .compute()!
+        # This is how the swell handler does it and it works fine
+        logger.info(f"   DEBUG: Extracting data for lat_idx={lat_calc_idx}, lon_idx={lon_calc_idx}, {len(time_indices)} timesteps")
+        logger.info(f"   DEBUG: Using direct .isel().values calls (matching swell handler)")
+
+        import time as time_module
+        extract_start = time_module.time()
+
+        # Extract each variable separately using direct .isel().values (just like swell handler)
+        temp_k_arr = ds["tmp2m"].isel(time=time_indices, lat=lat_calc_idx, lon=lon_calc_idx).values if "tmp2m" in ds.variables else None
+        pressure_arr = ds["pressfc"].isel(time=time_indices, lat=lat_calc_idx, lon=lon_calc_idx).values if "pressfc" in ds.variables else None
+        cloud_arr = ds["tcdcclm"].isel(time=time_indices, lat=lat_calc_idx, lon=lon_calc_idx).values if "tcdcclm" in ds.variables else None
+        precip_arr = ds["pratesfc"].isel(time=time_indices, lat=lat_calc_idx, lon=lon_calc_idx).values if "pratesfc" in ds.variables else None
+
+        extract_time = time_module.time() - extract_start
+        logger.info(f"   DEBUG: Variable extraction completed in {extract_time:.2f} seconds")
 
         # Now process the arrays in memory (no more network calls)
         for i in range(len(time_indices)):
@@ -319,34 +360,10 @@ def extract_gfs_atmospheric_point(
             else:
                 result["temperature"].append(None)
 
-            # Wind components
-            if u_wind_arr is not None and v_wind_arr is not None:
-                u_wind = float(u_wind_arr[i])
-                v_wind = float(v_wind_arr[i])
-
-                # Calculate wind speed and direction
-                wind_speed_ms = np.sqrt(u_wind**2 + v_wind**2)
-                wind_speed = mps_to_mph(wind_speed_ms)
-                result["wind_speed"].append(wind_speed)
-
-                # Wind direction (meteorological convention: direction FROM which wind blows)
-                wind_dir = (np.degrees(np.arctan2(-u_wind, -v_wind)) + 360) % 360
-                result["wind_direction"].append(wind_dir)
-            else:
-                result["wind_speed"].append(None)
-                result["wind_direction"].append(None)
-
-            # Wind gust (if available)
-            if gust_arr is not None:
-                gust_ms = float(gust_arr[i])
-                gust_mph = mps_to_mph(gust_ms)
-                result["wind_gust"].append(gust_mph)
-            else:
-                # Estimate gust as 1.4x wind speed if not available
-                if result["wind_speed"][-1] is not None:
-                    result["wind_gust"].append(result["wind_speed"][-1] * 1.4)
-                else:
-                    result["wind_gust"].append(None)
+            # Wind data (not used - comes from GFSwave)
+            result["wind_speed"].append(None)
+            result["wind_direction"].append(None)
+            result["wind_gust"].append(None)
 
             # Surface pressure (convert Pa to inHg)
             if pressure_arr is not None:
@@ -356,14 +373,14 @@ def extract_gfs_atmospheric_point(
             else:
                 result["pressure"].append(None)
 
-            # Cloud cover
+            # Cloud cover (for weather code)
             if cloud_arr is not None:
                 cloud_pct = float(cloud_arr[i])
                 result["cloud_cover"].append(cloud_pct)
             else:
                 result["cloud_cover"].append(None)
 
-            # Precipitation rate (convert kg/m²/s to mm/hr)
+            # Precipitation rate (for weather code, convert kg/m²/s to mm/hr)
             if precip_arr is not None:
                 precip_kgm2s = float(precip_arr[i])
                 precip_mmhr = precip_kgm2s * 3600  # Convert to mm/hr
@@ -416,7 +433,12 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
         ds.close()
         return existing_records
 
-    # Get time range from dataset
+    # Extract coordinate metadata with rate limiting
+    # Use BATCH delay (not REQUEST delay) because coordinate extraction can trigger multiple requests
+    logger.info("   Loading GFS time coordinate metadata...")
+    enforce_noaa_rate_limit(NOAA_ATMOSPHERIC_BATCH_DELAY)
+
+    # Extract time coordinate (may trigger multiple HTTP range requests on server side)
     time_vals_full = pd.to_datetime(ds.time.values)
     if time_vals_full.tz is None:
         time_vals_full = time_vals_full.tz_localize("UTC")
@@ -488,7 +510,9 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
             continue
         key_to_index[f"{bid}_{ts_iso}"] = idx
 
-    # Group beaches by location (cache nearby beaches)
+    # Group beaches by location using GFS grid resolution (0.25 degrees)
+    # This matches the swell handler approach - no need to load lat/lon arrays!
+    # GFS is 0.25° resolution, so round to nearest 0.25° grid point
     from collections import defaultdict
     location_groups = defaultdict(list)
 
@@ -496,13 +520,17 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
         if beach["id"] not in needed_by_beach:
             continue
 
-        # Round to 0.25 degrees (GFS grid resolution)
-        # This creates ~83 location groups for 1336 beaches
-        # Each location group will have ~16 beaches on average
-        lat_key = round(beach["LATITUDE"] * 4) / 4
-        lon_key = round(beach["LONGITUDE"] * 4) / 4
-        cache_key = f"{lat_key},{lon_key}"
-        location_groups[cache_key].append(beach)
+        # Round to nearest 0.25 degree (GFS grid resolution) - same as swell handler approach
+        # This avoids loading the full lat/lon arrays which triggers rate limits
+        gfs_lat = round(beach["LATITUDE"] * 4) / 4  # Round to 0.25°
+        gfs_lon = round(beach["LONGITUDE"] * 4) / 4  # Round to 0.25°
+        cache_key = f"{gfs_lat},{gfs_lon}"
+
+        location_groups[cache_key].append({
+            **beach,
+            "gfs_lat": gfs_lat,
+            "gfs_lon": gfs_lon
+        })
 
     logger.info(f"   GFS Atmospheric: processing {len(location_groups)} unique locations for {len(needed_by_beach)} beaches...")
 
@@ -513,18 +541,16 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
     for cache_key, group_beaches in location_groups.items():
         processed_locations += 1
 
-        # Rate limit BEFORE processing EVERY location (including first) to avoid hitting NOAA limits
-        # NOAA is extremely strict - we must delay even before the first request
-        logger.info(f"   GFS Atmospheric: waiting {NOAA_ATMOSPHERIC_BATCH_DELAY}s before location {processed_locations}/{total_locations}...")
-        time.sleep(NOAA_ATMOSPHERIC_BATCH_DELAY)
+        logger.info(f"   ===== PROCESSING LOCATION {processed_locations}/{total_locations}: {cache_key} =====")
 
         if processed_locations % 10 == 0:
             logger.info(f"   GFS Atmospheric: {processed_locations}/{total_locations} locations processed")
 
-        # Use first beach in group for coordinates
+        # Use first beach in group for coordinates (all beaches in group share same GFS grid point)
         representative_beach = group_beaches[0]
-        lat = representative_beach["LATITUDE"]
-        lon = representative_beach["LONGITUDE"]
+        lat = representative_beach["gfs_lat"]  # Use exact GFS grid coordinate
+        lon = representative_beach["gfs_lon"]  # Use exact GFS grid coordinate
+        logger.info(f"   DEBUG: Location coords: lat={lat}, lon={lon}, beaches in group: {len(group_beaches)}")
 
         # Get all timestamps needed for this location group
         all_timestamps_needed = set()
@@ -535,9 +561,10 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
         # IMPORTANT: Database timestamps are stored in UTC but represent Pacific time intervals
         # (e.g., Pacific noon = UTC 19:00). GFS data is at UTC 3-hour intervals.
         # We need to match based on Pacific time, not UTC time.
+        # SHIFT: Apply +6 hour shift to align peak temperature with afternoon (2 PM instead of 8 AM)
         timestamp_to_index = {}
-        sample_logged = False  # Only log first few samples to avoid log spam
         pacific_tz = pytz.timezone("America/Los_Angeles")
+        TIME_SHIFT_HOURS = 6  # Shift GFS times forward by 6 hours for better alignment
 
         for ts_iso in all_timestamps_needed:
             try:
@@ -548,25 +575,10 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                 ts_pacific = ts_utc.tz_convert(pacific_tz)
 
                 # Now find the GFS time that corresponds to this same Pacific time
-                # Convert all GFS times to Pacific and find the closest match
-                gfs_times_pacific = time_vals_full.tz_convert(pacific_tz)
+                # Convert all GFS times to Pacific and SHIFT forward by 6 hours
+                gfs_times_pacific = time_vals_full.tz_convert(pacific_tz) + pd.Timedelta(hours=TIME_SHIFT_HOURS)
                 time_diffs = np.abs(gfs_times_pacific - ts_pacific)
                 closest_idx = time_diffs.argmin()
-
-                # Debug logging for timestamp mapping (sample only to avoid spam)
-                if not sample_logged:
-                    gfs_time_utc = time_vals_full[closest_idx]
-                    gfs_time_pacific = gfs_times_pacific[closest_idx]
-                    time_diff_hours = time_diffs[closest_idx] / pd.Timedelta(hours=1)
-                    logger.info(
-                        f"   SAMPLE timestamp mapping (FIXED):\n"
-                        f"      Database timestamp (UTC): {ts_iso}\n"
-                        f"      Represents Pacific time: {ts_pacific}\n"
-                        f"      Matched GFS time (Pacific): {gfs_time_pacific}\n"
-                        f"      Matched GFS time (UTC): {gfs_time_utc}\n"
-                        f"      Time difference: {time_diff_hours:.2f} hours"
-                    )
-                    sample_logged = True
 
                 # Accept matches within 2 hours
                 # NOTE: There will typically be a ~1 hour offset because:
@@ -584,10 +596,19 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
 
         # Extract data for this location
         time_indices = list(set(timestamp_to_index.values()))
+        logger.info(f"   DEBUG: Found {len(time_indices)} unique time indices to extract")
 
         try:
-            enforce_noaa_rate_limit(NOAA_ATMOSPHERIC_REQUEST_DELAY)
+            logger.info(f"   DEBUG: Starting extract_gfs_atmospheric_point()")
             atmospheric_data = extract_gfs_atmospheric_point(ds, lat, lon, time_indices)
+            logger.info(f"   DEBUG: extract_gfs_atmospheric_point() completed successfully")
+
+            # IMPORTANT: Wait AFTER each location to avoid rate limits
+            # The .load() call takes ~40 seconds, but we still need to space out requests
+            if processed_locations < total_locations:
+                logger.info(f"   DEBUG: Waiting {NOAA_ATMOSPHERIC_BATCH_DELAY}s after completing location {processed_locations}")
+                time.sleep(NOAA_ATMOSPHERIC_BATCH_DELAY)
+
         except Exception as e:
             logger.debug(f"   Error extracting atmospheric data for {cache_key}: {e}")
             continue

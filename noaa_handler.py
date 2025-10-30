@@ -31,6 +31,7 @@ CDIP_URLS = {
     'norcal': "https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/norcal_alongshore_forecast.nc"
 }
 M_TO_FT = 3.28084
+NOAA_GRID_RESOLUTION_DEG = 0.16  # GFSwave West Coast grid spacing (0p16)
 
 def nearest_valid_value(series, index):
     """Return the closest non-null/non-NaN entry around the given index."""
@@ -601,8 +602,9 @@ def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
     # Phase 1: Small radius - REDUCED to 6 key directions to fail faster
     small_offsets = [
         # Cardinal directions + offshore priority (west for CA coast)
-        (0, -0.1), (0, 0.1), (0.1, 0), (-0.1, 0),
-        (0, -0.2), (0.1, -0.1),  # Prioritize west/northwest
+        (0, -NOAA_GRID_RESOLUTION_DEG), (0, NOAA_GRID_RESOLUTION_DEG),
+        (NOAA_GRID_RESOLUTION_DEG, 0), (-NOAA_GRID_RESOLUTION_DEG, 0),
+        (0, -2 * NOAA_GRID_RESOLUTION_DEG), (NOAA_GRID_RESOLUTION_DEG, -NOAA_GRID_RESOLUTION_DEG),
     ]
 
     for dlat, dlon in small_offsets:
@@ -621,8 +623,11 @@ def find_nearest_ocean_point(ds, lat0, lon0, max_distance_deg=3.0):
     # Phase 2: Medium radius - REDUCED to 6 points
     # Prioritize offshore (west for CA coast)
     medium_offsets = [
-        (0, -0.3), (0, -0.5), (0, 0.3),  # West priority
-        (0.2, -0.3), (-0.2, -0.3), (0, 0.5),
+        (0, -2 * NOAA_GRID_RESOLUTION_DEG), (0, -3 * NOAA_GRID_RESOLUTION_DEG),
+        (0, 2 * NOAA_GRID_RESOLUTION_DEG),  # West priority
+        (2 * NOAA_GRID_RESOLUTION_DEG, -2 * NOAA_GRID_RESOLUTION_DEG),
+        (-2 * NOAA_GRID_RESOLUTION_DEG, -2 * NOAA_GRID_RESOLUTION_DEG),
+        (0, 3 * NOAA_GRID_RESOLUTION_DEG),
     ]
 
     for dlat, dlon in medium_offsets:
@@ -786,11 +791,12 @@ def get_noaa_data_bulk_optimized(ds, beaches):
     location_groups = {}
     
     for beach in beaches:
-        # Round coordinates more aggressively to create larger groups
-        # 0.1 degree is roughly 6-7 miles, acceptable for wave data
-        rounded_lat = round(beach["LATITUDE"] / 0.1) * 0.1
-        rounded_lon = round(beach["LONGITUDE"] / 0.1) * 0.1
-        location_key = f"{rounded_lat:.1f},{rounded_lon:.1f}"
+        # Align grouping with the native 0.16° NOAA GFSwave grid spacing
+        lat_index = int(round(beach["LATITUDE"] / NOAA_GRID_RESOLUTION_DEG))
+        lon_index = int(round(beach["LONGITUDE"] / NOAA_GRID_RESOLUTION_DEG))
+        rounded_lat = lat_index * NOAA_GRID_RESOLUTION_DEG
+        rounded_lon = lon_index * NOAA_GRID_RESOLUTION_DEG
+        location_key = f"{rounded_lat:.3f},{rounded_lon:.3f}"
         
         if location_key not in location_groups:
             location_groups[location_key] = []
