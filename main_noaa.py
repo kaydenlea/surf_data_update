@@ -130,9 +130,13 @@ def _drop_records_before_today(records):
         return records
 
     import pytz
+    from datetime import time as dtime
 
     pacific = pytz.timezone('America/Los_Angeles')
-    midnight_today = datetime.now(pacific).replace(hour=0, minute=0, second=0, microsecond=0)
+    now_pacific = datetime.now(pacific)
+    # Get midnight using localize() instead of replace() to handle DST correctly
+    today_date = now_pacific.date()
+    midnight_today = pacific.localize(datetime.combine(today_date, dtime(0, 0)))
 
     filtered = []
     removed = 0

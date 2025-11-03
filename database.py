@@ -46,8 +46,10 @@ def cleanup_old_data(batch_size: int = 100):
     try:
         pacific = pytz.timezone('America/Los_Angeles')
         now_pacific = datetime.now(pacific)
-        midnight_today = pacific.localize(datetime.combine(now_pacific.date(), dtime(0, 0)))
-        cutoff_date = now_pacific.date()
+        # Get midnight using localize() instead of replace() to handle DST correctly
+        today_date = now_pacific.date()
+        midnight_today = pacific.localize(datetime.combine(today_date, dtime(0, 0)))
+        cutoff_date = today_date
 
         logger.info(f"DELETE: Removing forecast_data before {midnight_today.isoformat()} (Pacific)")
         forecast_ok = cleanup_forecast_data_by_date(midnight_today)

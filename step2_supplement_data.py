@@ -302,3 +302,4 @@ if __name__ == "__main__":
         logger.error(f"FATAL ERROR: {e}")
         logger.info("Exiting with code: 2")
         sys.exit(2)
+
