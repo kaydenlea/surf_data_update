@@ -289,16 +289,44 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
     # Step 3: Process all beaches using cached grid data (SAME AS SWELL HANDLER)
     logger.info("   Processing beaches using cached grid data...")
 
-    # Build index for quick updates
+    # Build index for quick updates with fuzzy timestamp matching
+    # Group records by beach_id and timestamp for fast lookup
     updated_records = list(existing_records)
-    record_index = {}
+    record_index = {}  # Exact match: "beach_id_timestamp" -> index
+    records_by_beach = {}  # Fuzzy match: beach_id -> [(timestamp_obj, index), ...]
+
     for idx, record in enumerate(updated_records):
         bid = record.get("beach_id")
         ts = record.get("timestamp")
         if bid and ts:
+            # Exact match index
             record_index[f"{bid}_{ts}"] = idx
 
+            # Fuzzy match index: parse timestamp and store for closest-match lookup
+            try:
+                ts_obj = pd.Timestamp(ts)
+                if bid not in records_by_beach:
+                    records_by_beach[bid] = []
+                records_by_beach[bid].append((ts_obj, idx))
+            except Exception:
+                pass  # Skip if timestamp is invalid
+
+    # Sort each beach's timestamps for efficient binary search
+    for bid in records_by_beach:
+        records_by_beach[bid].sort(key=lambda x: x[0])
+
+    logger.info(f"   GFS: Built record index with {len(record_index)} entries")
+    logger.info(f"   GFS: Built fuzzy match index for {len(records_by_beach)} beaches")
+
+    # Debug: Show a few sample keys from record_index
+    if len(record_index) > 0:
+        sample_keys = list(record_index.keys())[:3]
+        logger.debug(f"   GFS: Sample record keys: {sample_keys}")
+
     filled_count = 0
+    skipped_count = 0
+    exact_matches = 0
+    fuzzy_matches = 0
 
     for location_key, group_beaches in location_groups.items():
         if location_key not in grid_data_cache or grid_data_cache[location_key] is None:
@@ -335,19 +363,53 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                 # Use the clean Pacific timestamp to match NOAA records
                 ts_iso = clean_pacific_time.isoformat()
 
+                # Try exact match first
                 key = f"{bid}_{ts_iso}"
-                if key not in record_index:
+                rec_idx = None
+                is_fuzzy = False
+
+                if key in record_index:
+                    rec_idx = record_index[key]
+                    exact_matches += 1
+                else:
+                    # Fallback: Find closest timestamp within 90 minutes (1.5 hours)
+                    if bid in records_by_beach:
+                        beach_records = records_by_beach[bid]
+                        closest_idx = None
+                        min_diff = None
+
+                        for ts_obj, idx in beach_records:
+                            diff = abs((clean_pacific_time - ts_obj).total_seconds())
+                            if diff <= 5400:  # 90 minutes = 5400 seconds
+                                if min_diff is None or diff < min_diff:
+                                    min_diff = diff
+                                    closest_idx = idx
+
+                        if closest_idx is not None:
+                            rec_idx = closest_idx
+                            is_fuzzy = True
+                            fuzzy_matches += 1
+                            if fuzzy_matches <= 3:  # Log first few fuzzy matches
+                                logger.debug(f"   GFS: Fuzzy match for {bid} at {ts_iso} (diff: {min_diff/60:.1f} min)")
+
+                if rec_idx is None:
+                    skipped_count += 1
+                    # Debug: Log first few mismatches to help diagnose timestamp issues
+                    if skipped_count <= 5:  # Only log first few to avoid spam
+                        logger.debug(f"   GFS: No record found for key {key}")
                     continue
 
-                rec = updated_records[record_index[key]]
+                rec = updated_records[rec_idx]
 
-                # Fill temperature
+                # Fill temperature (only if missing or GFS has valid data)
                 if grid_data['temperature_k'] is not None:
                     temp_k = grid_data['temperature_k'][i]
                     if not np.isnan(temp_k):
                         temp_c = temp_k - 273.15
-                        rec["temperature"] = safe_float(celsius_to_fahrenheit(temp_c))
-                        filled_count += 1
+                        temp_f = safe_float(celsius_to_fahrenheit(temp_c))
+                        if temp_f is not None:
+                            rec["temperature"] = temp_f
+                            filled_count += 1
 
                 # Fill pressure
                 if grid_data['pressure_pa'] is not None:
@@ -372,11 +434,20 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                         precip_mmhr = float(precip_val) * 3600
 
                 weather_code = derive_weather_code(cloud_pct, precip_mmhr, temp_f)
-                rec["weather"] = safe_int(weather_code)
-                filled_count += 1
+                weather_int = safe_int(weather_code)
+                # Only set weather if we got a valid value
+                if weather_int is not None:
+                    rec["weather"] = weather_int
+                    filled_count += 1
 
     elapsed_time = time.time() - start_time
+    total_attempts = exact_matches + fuzzy_matches + skipped_count
+    match_rate = ((exact_matches + fuzzy_matches) / total_attempts * 100) if total_attempts > 0 else 0
+
     logger.info(f"   GFS Atmospheric: filled {filled_count} field values")
+    logger.info(f"   GFS Atmospheric: exact matches: {exact_matches}, fuzzy matches: {fuzzy_matches}")
+    logger.info(f"   GFS Atmospheric: skipped {skipped_count} timestamps (no matching records within 90 min)")
+    logger.info(f"   GFS Atmospheric: match rate: {match_rate:.1f}% ({exact_matches + fuzzy_matches}/{total_attempts})")
     logger.info(f"   GFS Atmospheric: completed in {elapsed_time:.2f} seconds ({elapsed_time/60:.2f} minutes)")
 
     return updated_records
