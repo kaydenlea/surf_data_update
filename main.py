@@ -98,30 +98,13 @@ def _ensure_today_midnight_start(records, beaches):
             # Avoid duplicating if a record already exists at this timestamp
             ts_iso = t.isoformat()
             if not any(r.get("timestamp") == ts_iso for r in recs):
+                # Create placeholder with only required fields
+                # Don't explicitly set other fields to None - let supplement handlers fill them
+                # or preserve existing DB values (via default_to_null=False on upsert)
                 placeholders.append({
                     "beach_id": bid,
                     "timestamp": ts_iso,
-                    # NOAA fields left None; Open-Meteo will fill supplement fields
-                    "primary_swell_height_ft": None,
-                    "primary_swell_period_s": None,
-                    "primary_swell_direction": None,
-                    "secondary_swell_height_ft": None,
-                    "secondary_swell_period_s": None,
-                    "secondary_swell_direction": None,
-                    "tertiary_swell_height_ft": None,
-                    "tertiary_swell_period_s": None,
-                    "tertiary_swell_direction": None,
-                    "surf_height_min_ft": None,
-                    "surf_height_max_ft": None,
-                    "wave_energy_kj": None,
-                    "wind_speed_mph": None,
-                    "wind_direction_deg": None,
-                    "wind_gust_mph": None,
-                    "water_temp_f": None,
-                    "tide_level_ft": None,
-                    "temperature": None,
-                    "weather": None,
-                    "pressure_inhg": None,
+                    # No other fields - supplement handlers will add them if data is available
                 })
             t += timedelta(hours=3)
 

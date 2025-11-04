@@ -251,16 +251,20 @@ def get_noaa_tides_supplement_data(
                 dt = datetime.strptime(t_str, "%Y-%m-%d %H:%M")
                 dt_local = pacific.localize(dt)
 
-                # Align to 3-hour intervals
+                # Align to 3-hour intervals (DST-safe using Timestamp constructor)
                 local_hour = dt_local.hour
                 pacific_intervals = [0, 3, 6, 9, 12, 15, 18, 21]
                 closest_interval = min(pacific_intervals, key=lambda x: abs(x - local_hour))
 
-                clean_time = dt_local.replace(
+                # Use Timestamp constructor to handle DST properly
+                clean_time = pd.Timestamp(
+                    year=dt_local.year,
+                    month=dt_local.month,
+                    day=dt_local.day,
                     hour=closest_interval,
                     minute=0,
                     second=0,
-                    microsecond=0
+                    tz="America/Los_Angeles"
                 )
 
                 ts_iso = clean_time.isoformat()
@@ -278,16 +282,20 @@ def get_noaa_tides_supplement_data(
                 dt = datetime.strptime(t_str, "%Y-%m-%d %H:%M")
                 dt_local = pacific.localize(dt)
 
-                # Align to 3-hour intervals
+                # Align to 3-hour intervals (DST-safe using Timestamp constructor)
                 local_hour = dt_local.hour
                 pacific_intervals = [0, 3, 6, 9, 12, 15, 18, 21]
                 closest_interval = min(pacific_intervals, key=lambda x: abs(x - local_hour))
 
-                clean_time = dt_local.replace(
+                # Use Timestamp constructor to handle DST properly
+                clean_time = pd.Timestamp(
+                    year=dt_local.year,
+                    month=dt_local.month,
+                    day=dt_local.day,
                     hour=closest_interval,
                     minute=0,
                     second=0,
-                    microsecond=0
+                    tz="America/Los_Angeles"
                 )
 
                 ts_iso = clean_time.isoformat()

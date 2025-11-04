@@ -312,8 +312,28 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
 
             # Process each timestep
             for i, time_val in enumerate(time_vals):
-                ts_utc = time_val.tz_convert("UTC") if time_val.tz is not None else time_val.tz_localize("UTC")
-                ts_iso = ts_utc.isoformat()
+                # Convert to Pacific time and align to 3-hour boundaries (SAME AS NOAA HANDLER)
+                ts = pd.Timestamp(time_val)
+                if ts.tzinfo is None:
+                    ts = ts.tz_localize("UTC")
+
+                # Align to the nearest 3-hour boundary in Pacific time (midnight-anchored)
+                local = ts.tz_convert("America/Los_Angeles")
+                hour = int(local.strftime('%H'))
+                remainder = hour % 3
+                lower = hour - remainder
+                upper = lower + 3
+                target_hour = lower if (hour - lower) <= (upper - hour) else upper
+                if target_hour >= 24:
+                    target_hour = 0
+                    local = (local + pd.Timedelta(days=1))
+                clean_pacific_time = pd.Timestamp(
+                    year=local.year, month=local.month, day=local.day,
+                    hour=target_hour, minute=0, second=0, tz="America/Los_Angeles"
+                )
+
+                # Use the clean Pacific timestamp to match NOAA records
+                ts_iso = clean_pacific_time.isoformat()
 
                 key = f"{bid}_{ts_iso}"
                 if key not in record_index:

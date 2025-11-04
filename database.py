@@ -276,7 +276,7 @@ def _fill_records_with_neighbors(records, fields=None, fill_surf_min=False):
     return records
 
 
-def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, allow_zero_fields=None):
+def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, allow_zero_fields=None, allow_none_fields=None):
     """Drop None (and optionally zero-float) fields before upsert to preserve prior values.
 
     Args:
@@ -284,9 +284,12 @@ def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, 
         required_keys: Set of keys that must be present
         skip_zero_floats: If True, skip fields with value 0.0 (except for allow_zero_fields)
         allow_zero_fields: Set of field names where 0 is a valid value (e.g., wind_speed_mph)
+        allow_none_fields: Set of field names where None should be included (to overwrite stale DB values)
     """
     if allow_zero_fields is None:
         allow_zero_fields = set()
+    if allow_none_fields is None:
+        allow_none_fields = set()
 
     cleaned = []
     for rec in records:
@@ -298,7 +301,10 @@ def _prepare_records_for_upsert(records, required_keys, skip_zero_floats=False, 
             if key in required_keys:
                 filtered[key] = value
                 continue
+            # Allow None for fields that need to overwrite stale data (e.g., NOAA fields)
             if value is None:
+                if key in allow_none_fields:
+                    filtered[key] = value
                 continue
             # Skip zero values EXCEPT for fields where 0 is valid (like wind speed)
             if skip_zero_floats and key not in allow_zero_fields and isinstance(value, Real) and not isinstance(value, bool):
@@ -382,9 +388,12 @@ def upsert_forecast_data(records, table_name="forecast_data"):
 
     for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
         try:
+            # Use defaultToNull=false to preserve existing values for missing fields
+            # This prevents overwriting good data with nulls when NOAA returns incomplete data
             supabase.table(table_name).upsert(
                 chunk,
-                on_conflict="beach_id,timestamp"
+                on_conflict="beach_id,timestamp",
+                default_to_null=False  # Don't set missing fields to NULL on update
             ).execute()
             total_inserted += len(chunk)
             logger.debug(f"   Upserted chunk of {len(chunk)} records")
@@ -415,7 +424,8 @@ def upsert_daily_conditions(records, table_name="daily_county_conditions"):
         try:
             supabase.table(table_name).upsert(
                 chunk,
-                on_conflict="county,date"
+                on_conflict="county,date",
+                default_to_null=False  # Don't set missing fields to NULL on update
             ).execute()
             total_inserted += len(chunk)
             logger.debug(f"   Upserted chunk of {len(chunk)} daily records")
@@ -446,7 +456,8 @@ def upsert_tide_data(records, table_name="beach_tides_hourly"):
         try:
             supabase.table(table_name).upsert(
                 chunk,
-                on_conflict="beach_id,timestamp"
+                on_conflict="beach_id,timestamp",
+                default_to_null=False  # Don't set missing fields to NULL on update
             ).execute()
             total_inserted += len(chunk)
             logger.debug(f"   Upserted chunk of {len(chunk)} tide records")
@@ -559,7 +570,8 @@ def upsert_county_tide_data(records, table_name="county_tides_15min"):
         try:
             supabase.table(table_name).upsert(
                 chunk,
-                on_conflict="county,timestamp"
+                on_conflict="county,timestamp",
+                default_to_null=False  # Don't set missing fields to NULL on update
             ).execute()
             total_inserted += len(chunk)
             logger.debug(f"   Upserted chunk of {len(chunk)} county tide records")

@@ -1214,51 +1214,29 @@ def process_beach_with_cached_data(beach, grid_data, grid_key, cdip_data=None):
 
 
         record = {
-
             "beach_id": beach_id,
-
             "timestamp": final_timestamp,  # Clean Pacific intervals: 00:00, 03:00, 06:00, etc.
-
         }
 
-
-
+        # Only include non-None values to preserve existing DB data
         def _set_if_value(key, value):
-
             if value is not None:
-
                 record[key] = value
 
-
-
         _set_if_value("primary_swell_height_ft", primary['height_ft'] if primary else None)
-
         _set_if_value("primary_swell_period_s", primary['period_s'] if primary else None)
-
         _set_if_value("primary_swell_direction", primary['direction_deg'] if primary else None)
-
         _set_if_value("secondary_swell_height_ft", secondary['height_ft'] if secondary else None)
-
         _set_if_value("secondary_swell_period_s", secondary['period_s'] if secondary else None)
-
         _set_if_value("secondary_swell_direction", secondary['direction_deg'] if secondary else None)
-
         _set_if_value("tertiary_swell_height_ft", tertiary['height_ft'] if tertiary else None)
-
         _set_if_value("tertiary_swell_period_s", tertiary['period_s'] if tertiary else None)
-
         _set_if_value("tertiary_swell_direction", tertiary['direction_deg'] if tertiary else None)
-
         _set_if_value("surf_height_min_ft", surf_min_ft)
-
         _set_if_value("surf_height_max_ft", surf_max_ft)
-
         _set_if_value("wave_energy_kj", wave_energy_kj)
-
         _set_if_value("wind_speed_mph", wind_speed_mph)
-
         _set_if_value("wind_direction_deg", wind_direction)
-
         _set_if_value("wind_gust_mph", wind_gust_mph)
 
 
