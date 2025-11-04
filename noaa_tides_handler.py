@@ -12,6 +12,7 @@ import requests
 from typing import List, Dict, Optional, Tuple
 from datetime import datetime, timedelta
 import pytz
+import pandas as pd
 import math
 
 from config import logger, TIDE_ADJUSTMENT_FT
