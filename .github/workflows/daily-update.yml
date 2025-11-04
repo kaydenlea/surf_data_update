@@ -2,8 +2,11 @@ name: Daily NOAA Update
 
 on:
   schedule:
-    # Run once daily at 07:30 UTC so it lands at 00:30 PT during DST
-    - cron: "30 7 * * *"
+    # Run once daily at 08:30 UTC so it lands at 00:30 PST (or 07:30 UTC for 00:30 PDT during DST)
+    # PST (winter): 08:30 UTC = 00:30 PST (UTC-8)
+    # PDT (summer): 07:30 UTC = 00:30 PDT (UTC-7)
+    # Currently using PST schedule - change to 07:30 when DST starts in March
+    - cron: "30 8 * * *"
       timezone: UTC
   workflow_dispatch: {}
 
