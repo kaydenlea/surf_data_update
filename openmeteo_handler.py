@@ -4,17 +4,10 @@ Open-Meteo API integration for Hybrid Surf Database Update Script
 Supplement mode: fills ONLY missing fields on top of NOAA rows, aligned by (beach_id, timestamp).
 
 Fills these fields if they are None:
-  - temperature (F)
   - weather (code)
-  - wind_speed_mph
-  - wind_gust_mph
   - water_temp_f
-  - pressure_inhg
-  - tide_level_ft  (applies +TIDE_ADJUSTMENT_FT)
-  - primary_swell_height_ft / primary_swell_period_s / primary_swell_direction
-  - secondary_swell_height_ft / secondary_swell_period_s / secondary_swell_direction
-  - surf_height_min_ft / surf_height_max_ft
-  - wave_energy_kj
+  - wind_speed_mph (paired with wind_gust_mph)
+  - wind_gust_mph (paired with wind_speed_mph)
 """
 
 import time
@@ -106,22 +99,10 @@ openmeteo = openmeteo_requests.Client(session=retry_session)
 
 # ---- Target fields we will fill if NULL in the existing record ----
 TARGET_FIELDS = (
-    "temperature",
     "weather",
+    "water_temp_f",
     "wind_speed_mph",
     "wind_gust_mph",
-    "water_temp_f",
-    "pressure_inhg",
-    "tide_level_ft",
-    "primary_swell_height_ft",
-    "primary_swell_period_s",
-    "primary_swell_direction",
-    "secondary_swell_height_ft",
-    "secondary_swell_period_s",
-    "secondary_swell_direction",
-    "surf_height_min_ft",
-    "surf_height_max_ft",
-    "wave_energy_kj",
 )
 
 
@@ -145,13 +126,6 @@ def _haversine_distance(lat1, lon1, lat2, lon2):
 
 FIELDS_FOR_NEIGHBOR_FILL = (
     "weather",
-    "wind_direction_deg",
-    "secondary_swell_height_ft",
-    "secondary_swell_period_s",
-    "secondary_swell_direction",
-    "tertiary_swell_height_ft",
-    "tertiary_swell_period_s",
-    "tertiary_swell_direction",
 )
 
 
@@ -351,23 +325,42 @@ def _derive_local_date_range(lo_ts, hi_ts):
     """
     Given local tz-aware pandas Timestamps, return (start_date_str, end_date_str) for Open-Meteo.
     Open-Meteo expects date strings (YYYY-MM-DD) inclusive range for hourly queries.
-    Caps the range to 16 days from today to stay within Open-Meteo's free tier limits.
+    Caps the range to stay within Open-Meteo's available data range (typically ~7 days historical to 10 days future).
     """
-    # Cap to Open-Meteo's 16-day forecast limit BEFORE padding (free tier)
     now_local = pd.Timestamp.now(tz=lo_ts.tz)
-    max_end_date_ts = now_local.normalize() + pd.Timedelta(days=16)
 
-    # Clamp hi_ts first before ceiling
-    if hi_ts > max_end_date_ts:
-        logger.warning(f"   Open-Meteo: requested end timestamp {hi_ts} exceeds 16-day limit, capping to {max_end_date_ts}")
-        hi_ts = max_end_date_ts
+    # Open-Meteo free tier limits (being conservative):
+    # - Historical: up to ~7 days back (to be safe)
+    # - Future: up to 10 days ahead (Open-Meteo free tier typically provides up to 10 days)
+    min_allowed_date = now_local.normalize() - pd.Timedelta(days=7)
+    max_allowed_date = now_local.normalize() + pd.Timedelta(days=10)
 
-    # add small padding to be safe with hourly boundaries
+    logger.info(f"   Open-Meteo: now_local={now_local}, requested range: {lo_ts} to {hi_ts}")
+    logger.info(f"   Open-Meteo: allowed range: {min_allowed_date} to {max_allowed_date}")
+
+    # Clamp start date to not go too far back
+    if lo_ts < min_allowed_date:
+        logger.warning(f"   Open-Meteo: requested start {lo_ts} is too far back, capping to {min_allowed_date}")
+        lo_ts = min_allowed_date
+
+    # Clamp end date to not go too far forward
+    if hi_ts > max_allowed_date:
+        logger.warning(f"   Open-Meteo: requested end {hi_ts} exceeds 10-day forecast limit, capping to {max_allowed_date}")
+        hi_ts = max_allowed_date
+
+    # Use floor to avoid going past limits (don't add extra padding)
     start_date_ts = lo_ts.floor("D")
-    end_date_ts = hi_ts.floor("D")  # Use floor instead of ceil to avoid going past limit
+    end_date_ts = hi_ts.floor("D")
+
+    # Ensure end_date is not before start_date
+    if end_date_ts < start_date_ts:
+        logger.warning(f"   Open-Meteo: adjusted date range resulted in end before start, using start date for both")
+        end_date_ts = start_date_ts
 
     start_date = start_date_ts.strftime("%Y-%m-%d")
     end_date = end_date_ts.strftime("%Y-%m-%d")
+
+    logger.info(f"   Open-Meteo: final date range {start_date} to {end_date}")
     return start_date, end_date
 
 def get_openmeteo_supplement_data(beaches, existing_records):
@@ -424,11 +417,11 @@ def get_openmeteo_supplement_data(beaches, existing_records):
             logger.info(f"   Waiting {OPENMETEO_BATCH_DELAY}s between Open-Meteo batches…")
             time.sleep(OPENMETEO_BATCH_DELAY)
 
-        # 4) WEATHER call: gust, temp, pressure, weather_code (local timezone)
+        # 4) WEATHER call: weather_code, wind speed, and wind gust (local timezone)
         weather_params = {
             "latitude": lats,
             "longitude": lons,
-            "hourly": ["windgusts_10m", "temperature_2m", "pressure_msl", "weather_code", "windspeed_10m"],
+            "hourly": ["weather_code", "windspeed_10m", "windgusts_10m"],
             "timezone": "America/Los_Angeles",
             "start_date": start_date,
             "end_date": end_date
@@ -438,22 +431,12 @@ def get_openmeteo_supplement_data(beaches, existing_records):
         logger.info("      Waiting briefly before Marine call…")
         safe_openmeteo_delay()
 
-        # 5) MARINE call: sea surface temp & tide (local timezone)
+        # 5) MARINE call: sea surface temp only (local timezone)
         # Using forecast_days instead of start_date/end_date for better data coverage
         marine_params = {
             "latitude": lats,
             "longitude": lons,
-            "hourly": [
-                "sea_surface_temperature",
-                "sea_level_height_msl",
-                "swell_wave_height",
-                "swell_wave_period",
-                "swell_wave_direction",
-                "wave_height",
-                "wind_wave_height",
-                "wind_wave_period",
-                "wind_wave_direction"
-            ],
+            "hourly": ["sea_surface_temperature"],
             "timezone": "America/Los_Angeles",
             "forecast_days": 16
         }
@@ -484,21 +467,11 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     unit="s", utc=True
                 ).tz_convert("America/Los_Angeles")
 
-                wind_gust_kph = wh.Variables(0).ValuesAsNumpy()
-                temp_c        = wh.Variables(1).ValuesAsNumpy()
-                pressure_hpa  = wh.Variables(2).ValuesAsNumpy()
-                weather_code  = wh.Variables(3).ValuesAsNumpy()
-                wind_speed_kph= wh.Variables(4).ValuesAsNumpy()
+                weather_code      = wh.Variables(0).ValuesAsNumpy()
+                wind_speed_kph    = wh.Variables(1).ValuesAsNumpy()
+                wind_gust_kph     = wh.Variables(2).ValuesAsNumpy()
 
                 water_temp_c      = mh.Variables(0).ValuesAsNumpy()
-                tide_level_m     = mh.Variables(1).ValuesAsNumpy()
-                swell_height_m   = mh.Variables(2).ValuesAsNumpy()
-                swell_period_s   = mh.Variables(3).ValuesAsNumpy()
-                swell_direction  = mh.Variables(4).ValuesAsNumpy()
-                wave_height_m    = mh.Variables(5).ValuesAsNumpy()
-                wind_wave_height_m = mh.Variables(6).ValuesAsNumpy()
-                wind_wave_period_s = mh.Variables(7).ValuesAsNumpy()
-                wind_wave_direction = mh.Variables(8).ValuesAsNumpy()
 
                 # Process WEATHER data with weather timestamps
                 for j, ts_local in enumerate(weather_timestamps):
@@ -537,36 +510,42 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     rec = updated_records[idx]
 
                     # Prepare candidate values from WEATHER API
-                    temp_val = nearest_valid_value(temp_c, j)
                     weather_val = nearest_valid_value(weather_code, j)
                     wind_speed_val = nearest_valid_value(wind_speed_kph, j)
                     wind_gust_val = nearest_valid_value(wind_gust_kph, j)
-                    pressure_val = nearest_valid_value(pressure_hpa, j)
+
+                    # Convert wind speeds to mph
+                    wind_speed_mph_val = safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None
+                    wind_gust_mph_val = safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None
+
+                    # Ensure gusts are never lower than speed
+                    if wind_speed_mph_val is not None and wind_gust_mph_val is not None:
+                        if wind_gust_mph_val < wind_speed_mph_val:
+                            wind_gust_mph_val = wind_speed_mph_val
 
                     candidates = {
-                        "temperature":   safe_float(celsius_to_fahrenheit(temp_val)) if temp_val is not None else None,
-                        "weather":       safe_int(weather_val) if weather_val is not None else None,
-                        "wind_speed_mph": safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None,
-                        "wind_gust_mph": safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None,
-                        "pressure_inhg": safe_float(hpa_to_inhg(pressure_val)) if pressure_val is not None else None,
+                        "weather": safe_int(weather_val) if weather_val is not None else None,
+                        "wind_speed_mph": wind_speed_mph_val,
+                        "wind_gust_mph": wind_gust_mph_val,
                     }
 
-                    # Guardrail: ensure gusts are never lower than speed
-                    existing_speed = rec.get("wind_speed_mph")
-                    existing_gust = rec.get("wind_gust_mph")
-                    cand_speed = candidates.get("wind_speed_mph")
-                    cand_gust = candidates.get("wind_gust_mph")
-                    final_speed = cand_speed if ("wind_speed_mph" in missing and cand_speed is not None) else existing_speed
-                    final_gust  = cand_gust  if ("wind_gust_mph"  in missing and cand_gust  is not None) else existing_gust
-                    if final_speed is not None and final_gust is not None and final_gust < final_speed:
-                        if "wind_gust_mph" in missing and cand_gust is not None:
-                            candidates["wind_gust_mph"] = final_speed
+                    # PAIRED FILLING LOGIC: wind_speed_mph and wind_gust_mph must be filled together
+                    # If EITHER field is missing, fill BOTH from Open Meteo to ensure they're from same source
+                    wind_speed_missing = "wind_speed_mph" in missing
+                    wind_gust_missing = "wind_gust_mph" in missing
 
-                    # Only set the fields that are actually missing in this record
+                    if wind_speed_missing or wind_gust_missing:
+                        if wind_speed_mph_val is not None and wind_gust_mph_val is not None:
+                            # Fill BOTH fields to ensure paired data from Open Meteo
+                            rec["wind_speed_mph"] = wind_speed_mph_val
+                            rec["wind_gust_mph"] = wind_gust_mph_val
+
+                    # Fill non-wind fields independently
                     for f in missing:
-                        val = candidates.get(f, None)
-                        if val is not None:
-                            rec[f] = val
+                        if f not in ("wind_speed_mph", "wind_gust_mph"):
+                            val = candidates.get(f, None)
+                            if val is not None:
+                                rec[f] = val
 
                 # Process MARINE data with marine timestamps (separate loop for water_temp, tides, etc.)
                 for j, ts_local in enumerate(marine_timestamps):
@@ -602,49 +581,9 @@ def get_openmeteo_supplement_data(beaches, existing_records):
 
                     # Prepare candidate values from MARINE API
                     water_temp_val = nearest_valid_value(water_temp_c, j)
-                    tide_level_val = nearest_valid_value(tide_level_m, j)
-                    raw_tide_ft = safe_float(meters_to_feet(tide_level_val)) if tide_level_val is not None else None
-                    adjusted_tide_ft = (raw_tide_ft + TIDE_ADJUSTMENT_FT) if raw_tide_ft is not None else None
-
-                    swell_height_m_val = nearest_valid_value(swell_height_m, j)
-                    swell_height_ft = safe_float(meters_to_feet(swell_height_m_val)) if swell_height_m_val is not None else None
-                    swell_period_s_val = safe_float(nearest_valid_value(swell_period_s, j))
-                    swell_direction_val = safe_float(nearest_valid_value(swell_direction, j))
-
-                    wave_height_m_val = nearest_valid_value(wave_height_m, j)
-                    wave_height_m_val = safe_float(wave_height_m_val) if wave_height_m_val is not None else None
-
-                    wind_wave_height_m_val = nearest_valid_value(wind_wave_height_m, j)
-                    wind_wave_height_ft = safe_float(meters_to_feet(wind_wave_height_m_val)) if wind_wave_height_m_val is not None else None
-                    wind_wave_period_s_val = safe_float(nearest_valid_value(wind_wave_period_s, j))
-                    wind_wave_direction_val = safe_float(nearest_valid_value(wind_wave_direction, j))
-
-                    secondary_height_ft = wind_wave_height_ft if wind_wave_height_ft is not None else swell_height_ft
-                    secondary_period_s_val = wind_wave_period_s_val if wind_wave_period_s_val is not None else swell_period_s_val
-                    secondary_direction_val = wind_wave_direction_val if wind_wave_direction_val is not None else swell_direction_val
-
-                    surf_min_ft, surf_max_ft = get_surf_height_range(wave_height_m_val) if wave_height_m_val is not None else (None, None)
-                    surf_min_ft, surf_max_ft = normalize_surf_range(surf_min_ft, surf_max_ft)
-                    surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
-                    surf_max_ft = safe_float(surf_max_ft) if surf_max_ft is not None else None
-
-                    wave_energy_kj = None
-                    if swell_height_ft is not None and swell_period_s_val is not None and swell_period_s_val > 0:
-                        wave_energy_kj = calculate_wave_energy_kj(swell_height_ft, swell_period_s_val)
-                        wave_energy_kj = safe_float(wave_energy_kj) if wave_energy_kj is not None else None
 
                     marine_candidates = {
-                        "water_temp_f":  safe_float(celsius_to_fahrenheit(water_temp_val)) if water_temp_val is not None else None,
-                        "tide_level_ft": adjusted_tide_ft,
-                        "primary_swell_height_ft": swell_height_ft,
-                        "primary_swell_period_s": swell_period_s_val,
-                        "primary_swell_direction": swell_direction_val,
-                        "secondary_swell_height_ft": secondary_height_ft,
-                        "secondary_swell_period_s": secondary_period_s_val,
-                        "secondary_swell_direction": secondary_direction_val,
-                        "surf_height_min_ft": surf_min_ft,
-                        "surf_height_max_ft": surf_max_ft,
-                        "wave_energy_kj": wave_energy_kj,
+                        "water_temp_f": safe_float(celsius_to_fahrenheit(water_temp_val)) if water_temp_val is not None else None,
                     }
 
                     # Only set the fields that are actually missing in this record

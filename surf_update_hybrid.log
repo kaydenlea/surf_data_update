@@ -11129,3 +11129,1383 @@ Grid points WITH data:
 2025-11-04 21:21:04,541 - INFO -   - Grid 92: 125 records (Southern California)
 2025-11-04 21:21:04,541 - INFO -   - Grid 93: 125 records (Southern California)
 2025-11-04 21:21:04,541 - INFO -   - Grid 94: 125 records (Southern California)
+2025-11-05 09:28:37,950 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=%2A&limit=1 "HTTP/2 200 OK"
+2025-11-05 09:28:37,953 - INFO - ================================================================================
+2025-11-05 09:28:37,953 - INFO - NEIGHBOR FILL - AUTO-DETECTS ALL COLUMNS
+2025-11-05 09:28:37,953 - INFO - ================================================================================
+2025-11-05 09:28:37,953 - INFO - Processing 20 fields: pressure_inhg, primary_swell_direction, primary_swell_height_ft, primary_swell_period_s, secondary_swell_direction, secondary_swell_height_ft, secondary_swell_period_s, surf_height_max_ft, surf_height_min_ft, temperature, tertiary_swell_direction, tertiary_swell_height_ft, tertiary_swell_period_s, tide_level_ft, water_temp_f, wave_energy_kj, weather, wind_direction_deg, wind_gust_mph, wind_speed_mph
+2025-11-05 09:28:37,953 - INFO - ================================================================================
+2025-11-05 09:28:37,953 - INFO - Fetching grid points from database...
+2025-11-05 09:28:38,110 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_points?select=id%2Clatitude%2Clongitude%2Clatitude_index%2Clongitude_index%2Cregion "HTTP/2 200 OK"
+2025-11-05 09:28:38,110 - INFO - Found 94 grid points
+2025-11-05 09:28:38,111 - INFO - Post-fill: starting neighbor backfill for ALL records (cadence=h, fallback=6)
+2025-11-05 09:28:38,497 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=0&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:38,964 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=1000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:39,230 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=2000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:39,536 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=3000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:39,859 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=4000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:40,026 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=5000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:40,281 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=6000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:40,600 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=7000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:40,801 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=8000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:40,991 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=9000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:41,185 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=10000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:41,305 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=11000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:41,392 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?select=id%2Cgrid_id%2Ctimestamp%2Cpressure_inhg%2Cprimary_swell_direction%2Cprimary_swell_height_ft%2Cprimary_swell_period_s%2Csecondary_swell_direction%2Csecondary_swell_height_ft%2Csecondary_swell_period_s%2Csurf_height_max_ft%2Csurf_height_min_ft%2Ctemperature%2Ctertiary_swell_direction%2Ctertiary_swell_height_ft%2Ctertiary_swell_period_s%2Ctide_level_ft%2Cwater_temp_f%2Cwave_energy_kj%2Cweather%2Cwind_direction_deg%2Cwind_gust_mph%2Cwind_speed_mph&timestamp=gte.1970-01-01T00%3A00%3A00&order=timestamp.asc%2Cgrid_id.asc&offset=12000&limit=1000 "HTTP/2 200 OK"
+2025-11-05 09:28:41,395 - INFO - Post-fill: evaluating 12314 forecast rows
+2025-11-05 09:28:49,996 - INFO - Post-fill: 12314 records | buckets=131 | skipped bad_ts=0 no_coords=0
+2025-11-05 09:28:49,996 - INFO - Post-fill: field fills -> pressure_inhg: 282, primary_swell_direction: 3, primary_swell_height_ft: 3, primary_swell_period_s: 3, temperature: 282, tide_level_ft: 129, water_temp_f: 6268, wave_energy_kj: 3, weather: 4121, wind_direction_deg: 7, wind_gust_mph: 282
+2025-11-05 09:28:50,494 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22tide_level_ft%22%2C%22id%22%2C%22wind_gust_mph%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22temperature%22%2C%22pressure_inhg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:50,496 - INFO - Post-fill: batch 1/87 completed (100 rows)
+2025-11-05 09:28:50,613 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22tide_level_ft%22%2C%22id%22%2C%22wind_gust_mph%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22temperature%22%2C%22pressure_inhg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:50,615 - INFO - Post-fill: batch 2/87 completed (100 rows)
+2025-11-05 09:28:50,719 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22tide_level_ft%22%2C%22primary_swell_period_s%22%2C%22id%22%2C%22wind_gust_mph%22%2C%22primary_swell_height_ft%22%2C%22grid_id%22%2C%22weather%22%2C%22primary_swell_direction%22%2C%22timestamp%22%2C%22temperature%22%2C%22pressure_inhg%22%2C%22water_temp_f%22%2C%22wave_energy_kj%22 "HTTP/2 200 OK"
+2025-11-05 09:28:50,721 - INFO - Post-fill: batch 3/87 completed (100 rows)
+2025-11-05 09:28:50,850 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22tide_level_ft%22%2C%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22 "HTTP/2 200 OK"
+2025-11-05 09:28:50,852 - INFO - Post-fill: batch 4/87 completed (100 rows)
+2025-11-05 09:28:50,932 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22tide_level_ft%22%2C%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:50,934 - INFO - Post-fill: batch 5/87 completed (100 rows)
+2025-11-05 09:28:51,003 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,005 - INFO - Post-fill: batch 6/87 completed (100 rows)
+2025-11-05 09:28:51,080 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,082 - INFO - Post-fill: batch 7/87 completed (100 rows)
+2025-11-05 09:28:51,163 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,165 - INFO - Post-fill: batch 8/87 completed (100 rows)
+2025-11-05 09:28:51,227 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,229 - INFO - Post-fill: batch 9/87 completed (100 rows)
+2025-11-05 09:28:51,291 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,294 - INFO - Post-fill: batch 10/87 completed (100 rows)
+2025-11-05 09:28:51,548 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,549 - INFO - Post-fill: batch 11/87 completed (100 rows)
+2025-11-05 09:28:51,618 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,620 - INFO - Post-fill: batch 12/87 completed (100 rows)
+2025-11-05 09:28:51,703 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,704 - INFO - Post-fill: batch 13/87 completed (100 rows)
+2025-11-05 09:28:51,784 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,786 - INFO - Post-fill: batch 14/87 completed (100 rows)
+2025-11-05 09:28:51,865 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,867 - INFO - Post-fill: batch 15/87 completed (100 rows)
+2025-11-05 09:28:51,940 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:51,942 - INFO - Post-fill: batch 16/87 completed (100 rows)
+2025-11-05 09:28:52,007 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,009 - INFO - Post-fill: batch 17/87 completed (100 rows)
+2025-11-05 09:28:52,086 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,088 - INFO - Post-fill: batch 18/87 completed (100 rows)
+2025-11-05 09:28:52,157 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,158 - INFO - Post-fill: batch 19/87 completed (100 rows)
+2025-11-05 09:28:52,222 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,224 - INFO - Post-fill: batch 20/87 completed (100 rows)
+2025-11-05 09:28:52,499 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,501 - INFO - Post-fill: batch 21/87 completed (100 rows)
+2025-11-05 09:28:52,578 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,580 - INFO - Post-fill: batch 22/87 completed (100 rows)
+2025-11-05 09:28:52,639 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,640 - INFO - Post-fill: batch 23/87 completed (100 rows)
+2025-11-05 09:28:52,724 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,726 - INFO - Post-fill: batch 24/87 completed (100 rows)
+2025-11-05 09:28:52,787 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,789 - INFO - Post-fill: batch 25/87 completed (100 rows)
+2025-11-05 09:28:52,885 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,887 - INFO - Post-fill: batch 26/87 completed (100 rows)
+2025-11-05 09:28:52,954 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:52,956 - INFO - Post-fill: batch 27/87 completed (100 rows)
+2025-11-05 09:28:53,019 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,020 - INFO - Post-fill: batch 28/87 completed (100 rows)
+2025-11-05 09:28:53,077 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,079 - INFO - Post-fill: batch 29/87 completed (100 rows)
+2025-11-05 09:28:53,139 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,140 - INFO - Post-fill: batch 30/87 completed (100 rows)
+2025-11-05 09:28:53,418 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,420 - INFO - Post-fill: batch 31/87 completed (100 rows)
+2025-11-05 09:28:53,479 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,481 - INFO - Post-fill: batch 32/87 completed (100 rows)
+2025-11-05 09:28:53,548 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,549 - INFO - Post-fill: batch 33/87 completed (100 rows)
+2025-11-05 09:28:53,604 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,606 - INFO - Post-fill: batch 34/87 completed (100 rows)
+2025-11-05 09:28:53,666 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,667 - INFO - Post-fill: batch 35/87 completed (100 rows)
+2025-11-05 09:28:53,731 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,732 - INFO - Post-fill: batch 36/87 completed (100 rows)
+2025-11-05 09:28:53,789 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,790 - INFO - Post-fill: batch 37/87 completed (100 rows)
+2025-11-05 09:28:53,855 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,857 - INFO - Post-fill: batch 38/87 completed (100 rows)
+2025-11-05 09:28:53,993 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:53,995 - INFO - Post-fill: batch 39/87 completed (100 rows)
+2025-11-05 09:28:54,049 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,050 - INFO - Post-fill: batch 40/87 completed (100 rows)
+2025-11-05 09:28:54,307 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,309 - INFO - Post-fill: batch 41/87 completed (100 rows)
+2025-11-05 09:28:54,367 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,369 - INFO - Post-fill: batch 42/87 completed (100 rows)
+2025-11-05 09:28:54,431 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,432 - INFO - Post-fill: batch 43/87 completed (100 rows)
+2025-11-05 09:28:54,480 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,482 - INFO - Post-fill: batch 44/87 completed (100 rows)
+2025-11-05 09:28:54,539 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,541 - INFO - Post-fill: batch 45/87 completed (100 rows)
+2025-11-05 09:28:54,594 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,595 - INFO - Post-fill: batch 46/87 completed (100 rows)
+2025-11-05 09:28:54,700 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,702 - INFO - Post-fill: batch 47/87 completed (100 rows)
+2025-11-05 09:28:54,772 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,774 - INFO - Post-fill: batch 48/87 completed (100 rows)
+2025-11-05 09:28:54,829 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,830 - INFO - Post-fill: batch 49/87 completed (100 rows)
+2025-11-05 09:28:54,885 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:54,887 - INFO - Post-fill: batch 50/87 completed (100 rows)
+2025-11-05 09:28:55,139 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,140 - INFO - Post-fill: batch 51/87 completed (100 rows)
+2025-11-05 09:28:55,191 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,193 - INFO - Post-fill: batch 52/87 completed (100 rows)
+2025-11-05 09:28:55,250 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,252 - INFO - Post-fill: batch 53/87 completed (100 rows)
+2025-11-05 09:28:55,310 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,312 - INFO - Post-fill: batch 54/87 completed (100 rows)
+2025-11-05 09:28:55,368 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,369 - INFO - Post-fill: batch 55/87 completed (100 rows)
+2025-11-05 09:28:55,436 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,437 - INFO - Post-fill: batch 56/87 completed (100 rows)
+2025-11-05 09:28:55,498 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,499 - INFO - Post-fill: batch 57/87 completed (100 rows)
+2025-11-05 09:28:55,558 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,560 - INFO - Post-fill: batch 58/87 completed (100 rows)
+2025-11-05 09:28:55,621 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,622 - INFO - Post-fill: batch 59/87 completed (100 rows)
+2025-11-05 09:28:55,686 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,688 - INFO - Post-fill: batch 60/87 completed (100 rows)
+2025-11-05 09:28:55,949 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:55,951 - INFO - Post-fill: batch 61/87 completed (100 rows)
+2025-11-05 09:28:56,014 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,015 - INFO - Post-fill: batch 62/87 completed (100 rows)
+2025-11-05 09:28:56,073 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,074 - INFO - Post-fill: batch 63/87 completed (100 rows)
+2025-11-05 09:28:56,137 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,139 - INFO - Post-fill: batch 64/87 completed (100 rows)
+2025-11-05 09:28:56,211 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,212 - INFO - Post-fill: batch 65/87 completed (100 rows)
+2025-11-05 09:28:56,288 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22water_temp_f%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,290 - INFO - Post-fill: batch 66/87 completed (100 rows)
+2025-11-05 09:28:56,353 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22%2C%22water_temp_f%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,355 - INFO - Post-fill: batch 67/87 completed (100 rows)
+2025-11-05 09:28:56,448 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,449 - INFO - Post-fill: batch 68/87 completed (100 rows)
+2025-11-05 09:28:56,507 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,509 - INFO - Post-fill: batch 69/87 completed (100 rows)
+2025-11-05 09:28:56,568 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,570 - INFO - Post-fill: batch 70/87 completed (100 rows)
+2025-11-05 09:28:56,824 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,825 - INFO - Post-fill: batch 71/87 completed (100 rows)
+2025-11-05 09:28:56,898 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,900 - INFO - Post-fill: batch 72/87 completed (100 rows)
+2025-11-05 09:28:56,955 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:56,957 - INFO - Post-fill: batch 73/87 completed (100 rows)
+2025-11-05 09:28:57,022 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,024 - INFO - Post-fill: batch 74/87 completed (100 rows)
+2025-11-05 09:28:57,107 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,108 - INFO - Post-fill: batch 75/87 completed (100 rows)
+2025-11-05 09:28:57,180 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,181 - INFO - Post-fill: batch 76/87 completed (100 rows)
+2025-11-05 09:28:57,242 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,244 - INFO - Post-fill: batch 77/87 completed (100 rows)
+2025-11-05 09:28:57,297 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,299 - INFO - Post-fill: batch 78/87 completed (100 rows)
+2025-11-05 09:28:57,353 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,354 - INFO - Post-fill: batch 79/87 completed (100 rows)
+2025-11-05 09:28:57,409 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,411 - INFO - Post-fill: batch 80/87 completed (100 rows)
+2025-11-05 09:28:57,666 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,668 - INFO - Post-fill: batch 81/87 completed (100 rows)
+2025-11-05 09:28:57,729 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,731 - INFO - Post-fill: batch 82/87 completed (100 rows)
+2025-11-05 09:28:57,786 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,787 - INFO - Post-fill: batch 83/87 completed (100 rows)
+2025-11-05 09:28:57,846 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,847 - INFO - Post-fill: batch 84/87 completed (100 rows)
+2025-11-05 09:28:57,902 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,903 - INFO - Post-fill: batch 85/87 completed (100 rows)
+2025-11-05 09:28:57,969 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22weather%22%2C%22id%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 200 OK"
+2025-11-05 09:28:57,971 - INFO - Post-fill: batch 86/87 completed (100 rows)
+2025-11-05 09:28:58,069 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=id&columns=%22id%22%2C%22grid_id%22%2C%22weather%22%2C%22timestamp%22%2C%22wind_direction_deg%22 "HTTP/2 200 OK"
+2025-11-05 09:28:58,070 - INFO - Post-fill: batch 87/87 completed (67 rows)
+2025-11-05 09:28:58,070 - INFO - Post-fill: updated 8667 forecast rows with neighbor data
+2025-11-05 09:28:58,071 - INFO - Post-fill: completed neighbor backfill
+2025-11-05 09:38:01,027 - INFO - ================================================================================
+2025-11-05 09:38:01,028 - INFO - SURF DATABASE UPDATE - GRID-BASED APPROACH (93% SMALLER)
+2025-11-05 09:38:01,028 - INFO - ================================================================================
+2025-11-05 09:38:01,028 - INFO - Start time (PST/PDT): 2025-11-05 09:38:01 PST
+2025-11-05 09:38:01,028 - INFO - Forecast days: 16
+2025-11-05 09:38:01,028 - INFO - 
+2025-11-05 09:38:01,028 - INFO - GRID-BASED ARCHITECTURE:
+2025-11-05 09:38:01,028 - INFO -   - 94 nearshore grid points (vs 1,336 beaches)
+2025-11-05 09:38:01,028 - INFO -   - ~12,032 forecast records per run (16 days × 8 intervals/day)
+2025-11-05 09:38:01,028 - INFO -   - 93% reduction in database size vs beach-based approach
+2025-11-05 09:38:01,029 - INFO -   - Beaches reference grid points via grid_id foreign key
+2025-11-05 09:38:01,029 - INFO - 
+2025-11-05 09:38:01,029 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-11-05 09:38:01,029 - INFO -   - NOAA GFSwave - Wave/swell forecasts (direct grid extraction)
+2025-11-05 09:38:01,029 - INFO -   - GFS Atmospheric - Pressure data
+2025-11-05 09:38:01,029 - INFO -   - Open Meteo - Weather codes, water temperature (16 days)
+2025-11-05 09:38:01,029 - INFO -   - NOAA CO-OPS - Tides
+2025-11-05 09:38:01,029 - INFO -   - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)
+2025-11-05 09:38:01,030 - INFO - 
+2025-11-05 09:38:01,030 - INFO - DATA FLOW:
+2025-11-05 09:38:01,030 - INFO -   1. Extract wave data from 94 grid points (NOAA GFSwave + CDIP)
+2025-11-05 09:38:01,030 - INFO -   2. Supplement with pressure (GFS Atmospheric)
+2025-11-05 09:38:01,030 - INFO -   3. Supplement with weather codes & water temp (Open Meteo)
+2025-11-05 09:38:01,030 - INFO -   4. Supplement with tides (NOAA CO-OPS)
+2025-11-05 09:38:01,030 - INFO -   5. Store in grid_forecast_data table
+2025-11-05 09:38:01,030 - INFO -   6. Beaches lookup nearest grid point forecast via grid_id
+2025-11-05 09:38:01,030 - INFO - ================================================================================
+2025-11-05 09:38:01,031 - INFO - Running system checks...
+2025-11-05 09:38:01,572 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-11-05 09:38:01,575 - INFO - Database connection successful
+2025-11-05 09:38:01,575 - INFO - [OK] Database connection successful
+2025-11-05 09:38:01,575 - INFO - Testing Astral astronomical calculations...
+2025-11-05 09:38:01,576 - INFO - Astral calculation successful - sunrise: 06:39, sunset: 17:06, moon phase: 0.496
+2025-11-05 09:38:01,576 - INFO - [OK] Astral astronomical calculations working
+2025-11-05 09:38:01,576 - INFO - System checks: 2/2 passed
+2025-11-05 09:38:01,576 - INFO - STEP 1: Processing grid forecast data
+2025-11-05 09:38:01,576 - INFO - STEP 1: Updating grid-based forecast data with full NOAA stack
+2025-11-05 09:38:01,576 - INFO -    Fetching grid points from database...
+2025-11-05 09:38:01,576 - INFO - Fetching grid points from database...
+2025-11-05 09:38:01,646 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_points?select=id%2Clatitude%2Clongitude%2Clatitude_index%2Clongitude_index%2Cregion "HTTP/2 200 OK"
+2025-11-05 09:38:01,647 - INFO - Found 94 grid points
+2025-11-05 09:38:01,647 - INFO -    Found 94 grid points
+2025-11-05 09:38:01,647 - INFO -    Loading CDIP data for enhancement...
+2025-11-05 09:38:01,647 - INFO -    Loading CDIP forecast data for California coastline...
+2025-11-05 09:38:01,647 - INFO -    Loading CDIP socal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/socal_alongshore_forecast.nc
+2025-11-05 09:38:05,678 - INFO -    CDIP socal: Found spectral energy density data
+2025-11-05 09:38:05,685 - INFO -    CDIP socal loaded: 80 timesteps, 5529 sites
+2025-11-05 09:38:05,685 - INFO -    Loading CDIP norcal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/norcal_alongshore_forecast.nc
+2025-11-05 09:38:07,985 - INFO -    CDIP norcal: Found spectral energy density data
+2025-11-05 09:38:07,992 - INFO -    CDIP norcal loaded: 80 timesteps, 6065 sites
+2025-11-05 09:38:07,993 - INFO -    Combining 2 CDIP datasets...
+2025-11-05 09:38:08,052 - INFO -    CDIP combined data loaded: 80 timesteps, 11594 sites
+2025-11-05 09:38:08,054 - INFO -      SOCAL: 5529 sites
+2025-11-05 09:38:08,054 - INFO -      NORCAL: 6065 sites
+2025-11-05 09:38:08,060 - INFO -    Loading NOAA GFSwave dataset...
+2025-11-05 09:38:08,061 - INFO -    Searching for available NOAA GFSwave dataset (rate limited)...
+2025-11-05 09:38:08,061 - INFO -    Current UTC time: 2025-11-05T17:38:08.061319+00:00
+2025-11-05 09:38:08,061 - INFO -    Current PST time: 2025-11-05 09:38:08 PST
+2025-11-05 09:38:08,061 - INFO -    Using dataset date: 20251105 (UTC-based for NOAA compatibility)
+2025-11-05 09:38:08,061 - INFO -    Trying today's data: 20251105
+2025-11-05 09:38:08,062 - INFO -    Base URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave
+2025-11-05 09:38:08,062 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 09:38:08,062 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 09:38:08,462 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z'
+2025-11-05 09:38:11,462 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 09:38:11,462 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 09:38:12,246 - INFO -       SUCCESS: 129 time steps, swell shape: (129, 151, 241)
+2025-11-05 09:38:12,247 - INFO -    FOUND: Using 20251105 12z
+2025-11-05 09:38:12,247 - INFO -    Loading NOAA GFSwave dataset with rate limiting...
+2025-11-05 09:38:12,952 - INFO -    NOAA dataset loaded: 129 time steps
+2025-11-05 09:38:12,952 - INFO -    Available variables: ['dirpwsfc', 'htsgwsfc', 'perpwsfc', 'swdir_1', 'swdir_2', 'swdir_3', 'swell_1', 'swell_2', 'swell_3', 'swper_1', 'swper_2', 'swper_3', 'ugrdsfc', 'vgrdsfc', 'wdirsfc', 'windsfc', 'wvdirsfc', 'wvhgtsfc', 'wvpersfc']
+2025-11-05 09:38:12,952 - WARNING -    Wind gust (gustsfc) not available in this dataset
+2025-11-05 09:38:12,952 - INFO - NOAA dataset validation passed
+2025-11-05 09:38:12,952 - INFO -    Extracting data from grid points with CDIP enhancement...
+2025-11-05 09:38:12,953 - INFO - ================================================================================
+2025-11-05 09:38:12,953 - INFO - EXTRACTING NOAA GFSWAVE DATA FROM GRID POINTS
+2025-11-05 09:38:12,953 - INFO - WITH CDIP ENHANCEMENT
+2025-11-05 09:38:12,953 - INFO - ================================================================================
+2025-11-05 09:38:12,953 - INFO - Processing 94 grid points × 129 time steps
+2025-11-05 09:38:12,953 - INFO - Expected records: 12,126
+2025-11-05 09:38:12,954 - INFO -    Processing grid point 1/94 (grid_id=1)
+2025-11-05 09:38:25,111 - INFO -    Processing grid point 2/94 (grid_id=2)
+2025-11-05 09:38:36,104 - INFO -    Processing grid point 3/94 (grid_id=3)
+2025-11-05 09:38:47,250 - INFO -    Processing grid point 4/94 (grid_id=4)
+2025-11-05 09:38:58,007 - INFO -    Processing grid point 5/94 (grid_id=5)
+2025-11-05 09:39:13,866 - INFO -    Processing grid point 6/94 (grid_id=6)
+2025-11-05 09:39:24,480 - INFO -    Processing grid point 7/94 (grid_id=7)
+2025-11-05 09:39:34,645 - INFO -    Processing grid point 8/94 (grid_id=8)
+2025-11-05 09:39:45,320 - INFO -    Processing grid point 9/94 (grid_id=9)
+2025-11-05 09:39:55,948 - INFO -    Processing grid point 10/94 (grid_id=10)
+2025-11-05 09:40:06,404 - INFO -    Processing grid point 11/94 (grid_id=11)
+2025-11-05 09:40:21,797 - INFO -    Processing grid point 12/94 (grid_id=12)
+2025-11-05 09:40:32,616 - INFO -    Processing grid point 13/94 (grid_id=13)
+2025-11-05 09:40:43,176 - INFO -    Processing grid point 14/94 (grid_id=14)
+2025-11-05 09:40:53,268 - INFO -    Processing grid point 15/94 (grid_id=15)
+2025-11-05 09:41:08,186 - INFO -    Processing grid point 16/94 (grid_id=16)
+2025-11-05 09:41:18,776 - INFO -    Processing grid point 17/94 (grid_id=17)
+2025-11-05 09:41:29,245 - INFO -    Processing grid point 18/94 (grid_id=18)
+2025-11-05 09:41:39,569 - INFO -    Processing grid point 19/94 (grid_id=19)
+2025-11-05 09:41:49,650 - INFO -    Processing grid point 20/94 (grid_id=20)
+2025-11-05 09:41:59,686 - INFO -    Processing grid point 21/94 (grid_id=21)
+2025-11-05 09:42:13,681 - INFO -    Processing grid point 22/94 (grid_id=22)
+2025-11-05 09:42:23,621 - INFO -    Processing grid point 23/94 (grid_id=23)
+2025-11-05 09:42:34,111 - INFO -    Processing grid point 24/94 (grid_id=24)
+2025-11-05 09:42:44,129 - INFO -    Processing grid point 25/94 (grid_id=25)
+2025-11-05 09:42:55,095 - INFO -    Processing grid point 26/94 (grid_id=26)
+2025-11-05 09:43:05,158 - INFO -    Processing grid point 27/94 (grid_id=27)
+2025-11-05 09:43:15,541 - INFO -    Processing grid point 28/94 (grid_id=28)
+2025-11-05 09:43:25,762 - INFO -    Processing grid point 29/94 (grid_id=29)
+2025-11-05 09:43:36,057 - INFO -    Processing grid point 30/94 (grid_id=30)
+2025-11-05 09:43:45,970 - INFO -    Processing grid point 31/94 (grid_id=31)
+2025-11-05 09:43:55,755 - INFO -    Processing grid point 32/94 (grid_id=32)
+2025-11-05 09:44:10,105 - INFO -    Processing grid point 33/94 (grid_id=33)
+2025-11-05 09:44:20,285 - INFO -    Processing grid point 34/94 (grid_id=34)
+2025-11-05 09:44:30,355 - INFO -    Processing grid point 35/94 (grid_id=35)
+2025-11-05 09:44:40,350 - INFO -    Processing grid point 36/94 (grid_id=36)
+2025-11-05 09:44:50,768 - INFO -    Processing grid point 37/94 (grid_id=37)
+2025-11-05 09:45:01,022 - INFO -    Processing grid point 38/94 (grid_id=38)
+2025-11-05 09:45:16,506 - INFO -    Processing grid point 39/94 (grid_id=39)
+2025-11-05 09:45:27,209 - INFO -    Processing grid point 40/94 (grid_id=40)
+2025-11-05 09:45:37,765 - INFO -    Processing grid point 41/94 (grid_id=41)
+2025-11-05 09:45:48,366 - INFO -    Processing grid point 42/94 (grid_id=42)
+2025-11-05 09:45:58,981 - INFO -    Processing grid point 43/94 (grid_id=43)
+2025-11-05 09:46:12,941 - INFO -    Processing grid point 44/94 (grid_id=44)
+2025-11-05 09:46:23,481 - INFO -    Processing grid point 45/94 (grid_id=45)
+2025-11-05 09:46:33,874 - INFO -    Processing grid point 46/94 (grid_id=46)
+2025-11-05 09:46:43,938 - INFO -    Processing grid point 47/94 (grid_id=47)
+2025-11-05 09:46:54,146 - INFO -    Processing grid point 48/94 (grid_id=48)
+2025-11-05 09:47:05,195 - INFO -    Processing grid point 49/94 (grid_id=49)
+2025-11-05 09:47:15,826 - INFO -    Processing grid point 50/94 (grid_id=50)
+2025-11-05 09:47:26,762 - INFO -    Processing grid point 51/94 (grid_id=51)
+2025-11-05 09:47:37,032 - INFO -    Processing grid point 52/94 (grid_id=52)
+2025-11-05 09:47:47,048 - INFO -    Processing grid point 53/94 (grid_id=53)
+2025-11-05 09:47:57,183 - INFO -    Processing grid point 54/94 (grid_id=54)
+2025-11-05 09:48:07,552 - INFO -    Processing grid point 55/94 (grid_id=55)
+2025-11-05 09:48:17,856 - INFO -    Processing grid point 56/94 (grid_id=56)
+2025-11-05 09:48:28,131 - INFO -    Processing grid point 57/94 (grid_id=57)
+2025-11-05 09:48:38,871 - INFO -    Processing grid point 58/94 (grid_id=58)
+2025-11-05 09:48:48,979 - INFO -    Processing grid point 59/94 (grid_id=59)
+2025-11-05 09:48:59,273 - INFO -    Processing grid point 60/94 (grid_id=60)
+2025-11-05 09:49:12,688 - INFO -    Processing grid point 61/94 (grid_id=61)
+2025-11-05 09:49:23,012 - INFO -    Processing grid point 62/94 (grid_id=62)
+2025-11-05 09:49:33,546 - INFO -    Processing grid point 63/94 (grid_id=63)
+2025-11-05 09:49:44,523 - INFO -    Processing grid point 64/94 (grid_id=64)
+2025-11-05 09:49:54,678 - INFO -    Processing grid point 65/94 (grid_id=65)
+2025-11-05 09:50:15,199 - INFO -    Processing grid point 66/94 (grid_id=66)
+2025-11-05 09:50:25,248 - INFO -    Processing grid point 67/94 (grid_id=67)
+2025-11-05 09:50:35,383 - INFO -    Processing grid point 68/94 (grid_id=68)
+2025-11-05 09:50:45,902 - INFO -    Processing grid point 69/94 (grid_id=69)
+2025-11-05 09:50:56,364 - INFO -    Processing grid point 70/94 (grid_id=70)
+2025-11-05 09:51:10,905 - INFO -    Processing grid point 71/94 (grid_id=71)
+2025-11-05 09:51:21,384 - INFO -    Processing grid point 72/94 (grid_id=72)
+2025-11-05 09:51:31,946 - INFO -    Processing grid point 73/94 (grid_id=73)
+2025-11-05 09:51:42,448 - INFO -    Processing grid point 74/94 (grid_id=74)
+2025-11-05 09:51:52,760 - INFO -    Processing grid point 75/94 (grid_id=75)
+2025-11-05 09:52:03,225 - INFO -    Processing grid point 76/94 (grid_id=76)
+2025-11-05 09:52:13,480 - INFO -    Processing grid point 77/94 (grid_id=77)
+2025-11-05 09:52:23,488 - INFO -    Processing grid point 78/94 (grid_id=78)
+2025-11-05 09:52:33,634 - INFO -    Processing grid point 79/94 (grid_id=79)
+2025-11-05 09:52:43,609 - INFO -    Processing grid point 80/94 (grid_id=80)
+2025-11-05 09:52:53,483 - INFO -    Processing grid point 81/94 (grid_id=81)
+2025-11-05 09:53:03,532 - INFO -    Processing grid point 82/94 (grid_id=82)
+2025-11-05 09:53:13,785 - INFO -    Processing grid point 83/94 (grid_id=83)
+2025-11-05 09:53:23,794 - INFO -    Processing grid point 84/94 (grid_id=84)
+2025-11-05 09:53:33,929 - INFO -    Processing grid point 85/94 (grid_id=85)
+2025-11-05 09:53:44,087 - INFO -    Processing grid point 86/94 (grid_id=86)
+2025-11-05 09:53:54,153 - INFO -    Processing grid point 87/94 (grid_id=87)
+2025-11-05 09:54:04,346 - INFO -    Processing grid point 88/94 (grid_id=88)
+2025-11-05 09:54:15,354 - INFO -    Processing grid point 89/94 (grid_id=89)
+2025-11-05 09:54:25,445 - INFO -    Processing grid point 90/94 (grid_id=90)
+2025-11-05 09:54:35,253 - INFO -    Processing grid point 91/94 (grid_id=91)
+2025-11-05 09:54:45,392 - INFO -    Processing grid point 92/94 (grid_id=92)
+2025-11-05 09:54:55,265 - INFO -    Processing grid point 93/94 (grid_id=93)
+2025-11-05 09:55:09,613 - INFO -    Processing grid point 94/94 (grid_id=94)
+2025-11-05 09:55:19,645 - INFO - Extracted 12,126 records from 94 grid points
+2025-11-05 09:55:19,645 - INFO - ================================================================================
+2025-11-05 09:55:19,650 - INFO -    NOAA GFSwave complete: 12,126 records
+2025-11-05 09:55:19,650 - INFO -    >>> GFSwave processing took: 1031.59 seconds (17.19 minutes)
+2025-11-05 09:55:19,650 - INFO -    Sample timestamp: 2025-11-05T03:00:00-08:00
+2025-11-05 09:55:19,650 - INFO -    Enhancing with GFS Atmospheric data (pressure)...
+2025-11-05 09:55:19,653 - INFO -    GFS Atmospheric: fetching weather data...
+2025-11-05 09:55:19,653 - INFO -    Searching for available GFS Atmospheric dataset...
+2025-11-05 09:55:19,653 - INFO -    Starting search from 2025-11-05 12z
+2025-11-05 09:55:20,354 - INFO -    Wind gust (gustsfc) available in this dataset
+2025-11-05 09:55:20,364 - INFO -    [OK] Found GFS Atmospheric: https://nomads.ncep.noaa.gov/dods/gfs_0p25/gfs20251105/gfs_0p25_12z
+2025-11-05 09:55:20,365 - INFO -    Loading GFS Atmospheric dataset...
+2025-11-05 09:55:20,752 - INFO -    [OK] GFS Atmospheric dataset loaded successfully
+2025-11-05 09:55:20,753 - INFO -    GFS dataset time range: 2025-11-05 12:00:00+00:00 to 2025-11-21 12:00:00+00:00 (UTC)
+2025-11-05 09:55:20,754 - INFO -    Filtered to 127 time steps in 16-day forecast window
+2025-11-05 09:55:20,754 - INFO -    Grouping beaches by location...
+2025-11-05 09:55:20,754 - INFO -    Grouped 94 beaches into 48 location groups
+2025-11-05 09:55:20,755 - INFO -    Loading location group 1/48: 41.75,-124.50 (2 beaches)
+2025-11-05 09:55:41,622 - INFO -    Location 41.75,-124.50 loaded successfully
+2025-11-05 09:55:41,623 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:55:46,623 - INFO -    Loading location group 2/48: 41.75,-124.25 (2 beaches)
+2025-11-05 09:56:06,702 - INFO -    Location 41.75,-124.25 loaded successfully
+2025-11-05 09:56:06,703 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:56:11,703 - INFO -    Loading location group 3/48: 41.50,-124.50 (1 beaches)
+2025-11-05 09:56:32,067 - INFO -    Location 41.50,-124.50 loaded successfully
+2025-11-05 09:56:32,067 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:56:37,068 - INFO -    Loading location group 4/48: 41.50,-124.25 (1 beaches)
+2025-11-05 09:56:56,864 - INFO -    Location 41.50,-124.25 loaded successfully
+2025-11-05 09:56:56,864 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:57:01,865 - INFO -    Loading location group 5/48: 41.25,-124.50 (2 beaches)
+2025-11-05 09:57:22,415 - INFO -    Location 41.25,-124.50 loaded successfully
+2025-11-05 09:57:22,415 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:57:27,416 - INFO -    Loading location group 6/48: 41.25,-124.25 (2 beaches)
+2025-11-05 09:57:47,790 - INFO -    Location 41.25,-124.25 loaded successfully
+2025-11-05 09:57:47,790 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:57:52,791 - INFO -    Loading location group 7/48: 41.00,-124.50 (1 beaches)
+2025-11-05 09:58:12,955 - INFO -    Location 41.00,-124.50 loaded successfully
+2025-11-05 09:58:12,955 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:58:17,956 - INFO -    Loading location group 8/48: 41.00,-124.25 (1 beaches)
+2025-11-05 09:58:38,892 - INFO -    Location 41.00,-124.25 loaded successfully
+2025-11-05 09:58:38,893 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:58:43,893 - INFO -    Loading location group 9/48: 40.75,-124.50 (2 beaches)
+2025-11-05 09:59:04,330 - INFO -    Location 40.75,-124.50 loaded successfully
+2025-11-05 09:59:04,330 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:59:09,331 - INFO -    Loading location group 10/48: 40.75,-124.25 (2 beaches)
+2025-11-05 09:59:29,568 - INFO -    Location 40.75,-124.25 loaded successfully
+2025-11-05 09:59:29,568 - INFO -    Waiting 5.0s before next location...
+2025-11-05 09:59:34,569 - INFO -    Loading location group 11/48: 40.50,-124.50 (1 beaches)
+2025-11-05 09:59:55,023 - INFO -    Location 40.50,-124.50 loaded successfully
+2025-11-05 09:59:55,023 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:00:00,023 - INFO -    Loading location group 12/48: 40.25,-124.50 (2 beaches)
+2025-11-05 10:00:41,666 - INFO -    Location 40.25,-124.50 loaded successfully
+2025-11-05 10:00:41,666 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:00:46,667 - INFO -    Loading location group 13/48: 40.25,-124.25 (1 beaches)
+2025-11-05 10:01:20,599 - INFO -    Location 40.25,-124.25 loaded successfully
+2025-11-05 10:01:20,599 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:01:25,600 - INFO -    Loading location group 14/48: 40.00,-124.50 (1 beaches)
+2025-11-05 10:01:49,321 - INFO -    Location 40.00,-124.50 loaded successfully
+2025-11-05 10:01:49,321 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:01:54,321 - INFO -    Loading location group 15/48: 40.00,-124.25 (1 beaches)
+2025-11-05 10:02:15,650 - INFO -    Location 40.00,-124.25 loaded successfully
+2025-11-05 10:02:15,650 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:02:20,650 - INFO -    Loading location group 16/48: 37.75,-122.75 (4 beaches)
+2025-11-05 10:02:42,473 - INFO -    Location 37.75,-122.75 loaded successfully
+2025-11-05 10:02:42,473 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:02:47,474 - INFO -    Loading location group 17/48: 37.50,-122.75 (2 beaches)
+2025-11-05 10:03:10,422 - INFO -    Location 37.50,-122.75 loaded successfully
+2025-11-05 10:03:10,422 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:03:15,423 - INFO -    Loading location group 18/48: 37.50,-122.50 (1 beaches)
+2025-11-05 10:03:36,862 - INFO -    Location 37.50,-122.50 loaded successfully
+2025-11-05 10:03:36,862 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:03:41,863 - INFO -    Loading location group 19/48: 37.25,-122.75 (4 beaches)
+2025-11-05 10:04:03,975 - INFO -    Location 37.25,-122.75 loaded successfully
+2025-11-05 10:04:03,975 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:04:08,975 - INFO -    Loading location group 20/48: 37.25,-122.50 (2 beaches)
+2025-11-05 10:04:29,251 - INFO -    Location 37.25,-122.50 loaded successfully
+2025-11-05 10:04:29,251 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:04:34,251 - INFO -    Loading location group 21/48: 37.00,-122.75 (2 beaches)
+2025-11-05 10:04:57,666 - INFO -    Location 37.00,-122.75 loaded successfully
+2025-11-05 10:04:57,666 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:05:02,666 - INFO -    Loading location group 22/48: 37.00,-122.50 (1 beaches)
+2025-11-05 10:05:24,024 - INFO -    Location 37.00,-122.50 loaded successfully
+2025-11-05 10:05:24,025 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:05:29,025 - INFO -    Loading location group 23/48: 36.75,-122.75 (4 beaches)
+2025-11-05 10:05:50,596 - INFO -    Location 36.75,-122.75 loaded successfully
+2025-11-05 10:05:50,596 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:05:55,596 - INFO -    Loading location group 24/48: 36.75,-122.50 (2 beaches)
+2025-11-05 10:06:20,178 - INFO -    Location 36.75,-122.50 loaded successfully
+2025-11-05 10:06:20,178 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:06:25,178 - INFO -    Loading location group 25/48: 36.50,-122.75 (2 beaches)
+2025-11-05 10:06:47,674 - INFO -    Location 36.50,-122.75 loaded successfully
+2025-11-05 10:06:47,675 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:06:52,675 - INFO -    Loading location group 26/48: 36.50,-122.50 (1 beaches)
+2025-11-05 10:07:13,398 - INFO -    Location 36.50,-122.50 loaded successfully
+2025-11-05 10:07:13,398 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:07:18,398 - INFO -    Loading location group 27/48: 36.25,-122.75 (4 beaches)
+2025-11-05 10:07:40,614 - INFO -    Location 36.25,-122.75 loaded successfully
+2025-11-05 10:07:40,614 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:07:45,615 - INFO -    Loading location group 28/48: 36.25,-122.50 (2 beaches)
+2025-11-05 10:08:06,845 - INFO -    Location 36.25,-122.50 loaded successfully
+2025-11-05 10:08:06,845 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:08:11,846 - INFO -    Loading location group 29/48: 36.00,-122.75 (2 beaches)
+2025-11-05 10:08:33,658 - INFO -    Location 36.00,-122.75 loaded successfully
+2025-11-05 10:08:33,659 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:08:38,659 - INFO -    Loading location group 30/48: 36.00,-122.50 (1 beaches)
+2025-11-05 10:08:59,822 - INFO -    Location 36.00,-122.50 loaded successfully
+2025-11-05 10:08:59,823 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:09:04,823 - INFO -    Loading location group 31/48: 35.75,-122.75 (4 beaches)
+2025-11-05 10:09:26,857 - INFO -    Location 35.75,-122.75 loaded successfully
+2025-11-05 10:09:26,858 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:09:31,858 - INFO -    Loading location group 32/48: 35.75,-122.50 (2 beaches)
+2025-11-05 10:09:53,265 - INFO -    Location 35.75,-122.50 loaded successfully
+2025-11-05 10:09:53,265 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:09:58,266 - INFO -    Loading location group 33/48: 35.50,-122.75 (2 beaches)
+2025-11-05 10:10:21,362 - INFO -    Location 35.50,-122.75 loaded successfully
+2025-11-05 10:10:21,362 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:10:26,362 - INFO -    Loading location group 34/48: 35.50,-122.50 (1 beaches)
+2025-11-05 10:10:48,373 - INFO -    Location 35.50,-122.50 loaded successfully
+2025-11-05 10:10:48,373 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:10:53,374 - INFO -    Loading location group 35/48: 35.25,-122.75 (4 beaches)
+2025-11-05 10:11:15,286 - INFO -    Location 35.25,-122.75 loaded successfully
+2025-11-05 10:11:15,286 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:11:20,287 - INFO -    Loading location group 36/48: 35.25,-122.50 (2 beaches)
+2025-11-05 10:11:41,162 - INFO -    Location 35.25,-122.50 loaded successfully
+2025-11-05 10:11:41,162 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:11:46,162 - INFO -    Loading location group 37/48: 35.00,-122.75 (2 beaches)
+2025-11-05 10:12:08,713 - INFO -    Location 35.00,-122.75 loaded successfully
+2025-11-05 10:12:08,713 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:12:13,714 - INFO -    Loading location group 38/48: 35.00,-122.50 (1 beaches)
+2025-11-05 10:12:34,711 - INFO -    Location 35.00,-122.50 loaded successfully
+2025-11-05 10:12:34,712 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:12:39,712 - INFO -    Loading location group 39/48: 33.50,-118.00 (1 beaches)
+2025-11-05 10:13:00,736 - INFO -    Location 33.50,-118.00 loaded successfully
+2025-11-05 10:13:00,736 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:13:05,737 - INFO -    Loading location group 40/48: 33.50,-117.75 (1 beaches)
+2025-11-05 10:13:27,482 - INFO -    Location 33.50,-117.75 loaded successfully
+2025-11-05 10:13:27,482 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:13:32,483 - INFO -    Loading location group 41/48: 33.25,-118.00 (2 beaches)
+2025-11-05 10:13:54,157 - INFO -    Location 33.25,-118.00 loaded successfully
+2025-11-05 10:13:54,157 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:13:59,157 - INFO -    Loading location group 42/48: 33.25,-117.75 (4 beaches)
+2025-11-05 10:14:20,405 - INFO -    Location 33.25,-117.75 loaded successfully
+2025-11-05 10:14:20,406 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:14:25,406 - INFO -    Loading location group 43/48: 33.00,-118.00 (1 beaches)
+2025-11-05 10:14:47,098 - INFO -    Location 33.00,-118.00 loaded successfully
+2025-11-05 10:14:47,099 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:14:52,099 - INFO -    Loading location group 44/48: 33.00,-117.75 (2 beaches)
+2025-11-05 10:15:13,429 - INFO -    Location 33.00,-117.75 loaded successfully
+2025-11-05 10:15:13,429 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:15:18,430 - INFO -    Loading location group 45/48: 32.75,-118.00 (2 beaches)
+2025-11-05 10:15:44,425 - INFO -    Location 32.75,-118.00 loaded successfully
+2025-11-05 10:15:44,425 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:15:49,426 - INFO -    Loading location group 46/48: 32.75,-117.75 (4 beaches)
+2025-11-05 10:16:11,232 - INFO -    Location 32.75,-117.75 loaded successfully
+2025-11-05 10:16:11,233 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:16:16,233 - INFO -    Loading location group 47/48: 32.50,-118.00 (1 beaches)
+2025-11-05 10:16:44,164 - INFO -    Location 32.50,-118.00 loaded successfully
+2025-11-05 10:16:44,164 - INFO -    Waiting 5.0s before next location...
+2025-11-05 10:16:49,165 - INFO -    Loading location group 48/48: 32.50,-117.75 (2 beaches)
+2025-11-05 10:17:12,802 - INFO -    Location 32.50,-117.75 loaded successfully
+2025-11-05 10:17:12,814 - INFO -    Processing beaches using cached grid data...
+2025-11-05 10:17:12,965 - INFO -    GFS: Built record index with 12126 entries
+2025-11-05 10:17:12,965 - INFO -    GFS: Built fuzzy match index for 94 beaches
+2025-11-05 10:17:13,605 - INFO -    GFS Atmospheric: filled 47752 field values
+2025-11-05 10:17:13,605 - INFO -    GFS Atmospheric: exact matches: 11938, fuzzy matches: 0
+2025-11-05 10:17:13,606 - INFO -    GFS Atmospheric: skipped 0 timestamps (no matching records within 90 min)
+2025-11-05 10:17:13,606 - INFO -    GFS Atmospheric: match rate: 100.0% (11938/11938)
+2025-11-05 10:17:13,606 - INFO -    GFS Atmospheric: completed in 1313.95 seconds (21.90 minutes)
+2025-11-05 10:17:13,609 - INFO -    >>> GFS Atmospheric enhancement took: 1313.96 seconds
+2025-11-05 10:17:13,609 - INFO -    Enhancing with Open Meteo data (weather_codes/water_temp)...
+2025-11-05 10:17:13,613 - INFO -    Open-Meteo supplement: aligning to NOAA timestamps and filling only missing fields…
+2025-11-05 10:17:13,713 - INFO -    Will supplement 94 beaches, 12126 hour-rows need fill.
+2025-11-05 10:17:13,719 - WARNING -    Open-Meteo: requested end timestamp 2025-11-21 03:00:00-08:00 exceeds 16-day limit, capping to 2025-11-21 00:00:00-08:00
+2025-11-05 10:17:13,720 - INFO -    Batch 1/5: 20 beaches, window 2025-11-05 → 2025-11-21
+2025-11-05 10:17:14,424 - ERROR - ERROR: Grid forecast update failed: failed to request 'https://api.open-meteo.com/v1/forecast': {'reason': "Parameter 'end_date' is out of allowed range from 2025-08-04 to 2025-11-20", 'error': True}
+2025-11-05 10:17:14,424 - ERROR -       Full error details: failed to request 'https://api.open-meteo.com/v1/forecast': {'reason': "Parameter 'end_date' is out of allowed range from 2025-08-04 to 2025-11-20", 'error': True}
+2025-11-05 10:17:14,442 - ERROR - CRITICAL: No forecast data was processed successfully
+2025-11-05 10:17:14,442 - INFO - [FAIL] Grid-based script completed with errors
+2025-11-05 10:17:14,442 - INFO - Exiting with code: 1
+2025-11-05 11:02:55,005 - INFO - ================================================================================
+2025-11-05 11:02:55,005 - INFO - SURF DATABASE UPDATE - GRID-BASED APPROACH (93% SMALLER)
+2025-11-05 11:02:55,005 - INFO - ================================================================================
+2025-11-05 11:02:55,005 - INFO - Start time (PST/PDT): 2025-11-05 11:02:55 PST
+2025-11-05 11:02:55,006 - INFO - Forecast days: 16
+2025-11-05 11:02:55,006 - INFO - 
+2025-11-05 11:02:55,006 - INFO - GRID-BASED ARCHITECTURE:
+2025-11-05 11:02:55,006 - INFO -   - 94 nearshore grid points (vs 1,336 beaches)
+2025-11-05 11:02:55,006 - INFO -   - ~12,032 forecast records per run (16 days × 8 intervals/day)
+2025-11-05 11:02:55,006 - INFO -   - 93% reduction in database size vs beach-based approach
+2025-11-05 11:02:55,007 - INFO -   - Beaches reference grid points via grid_id foreign key
+2025-11-05 11:02:55,007 - INFO - 
+2025-11-05 11:02:55,007 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-11-05 11:02:55,007 - INFO -   - NOAA GFSwave - Wave/swell forecasts (direct grid extraction)
+2025-11-05 11:02:55,007 - INFO -   - GFS Atmospheric - Pressure data
+2025-11-05 11:02:55,007 - INFO -   - Open Meteo - Weather codes, water temperature, wind speed/gust (16 days)
+2025-11-05 11:02:55,007 - INFO -   - NOAA CO-OPS - Tides
+2025-11-05 11:02:55,007 - INFO -   - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)
+2025-11-05 11:02:55,008 - INFO - 
+2025-11-05 11:02:55,008 - INFO - DATA FLOW:
+2025-11-05 11:02:55,008 - INFO -   1. Extract wave data from 94 grid points (NOAA GFSwave + CDIP)
+2025-11-05 11:02:55,008 - INFO -   2. Supplement with pressure (GFS Atmospheric)
+2025-11-05 11:02:55,008 - INFO -   3. Supplement with weather codes, water temp & wind (Open Meteo)
+2025-11-05 11:02:55,008 - INFO -   4. Supplement with tides (NOAA CO-OPS)
+2025-11-05 11:02:55,008 - INFO -   5. Store in grid_forecast_data table
+2025-11-05 11:02:55,008 - INFO -   6. Beaches lookup nearest grid point forecast via grid_id
+2025-11-05 11:02:55,008 - INFO - ================================================================================
+2025-11-05 11:02:55,009 - INFO - Running system checks...
+2025-11-05 11:02:55,669 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-11-05 11:02:55,672 - INFO - Database connection successful
+2025-11-05 11:02:55,672 - INFO - [OK] Database connection successful
+2025-11-05 11:02:55,672 - INFO - Testing Astral astronomical calculations...
+2025-11-05 11:02:55,673 - INFO - Astral calculation successful - sunrise: 06:39, sunset: 17:06, moon phase: 0.496
+2025-11-05 11:02:55,673 - INFO - [OK] Astral astronomical calculations working
+2025-11-05 11:02:55,673 - INFO - System checks: 2/2 passed
+2025-11-05 11:02:55,673 - INFO - STEP 1: Processing grid forecast data
+2025-11-05 11:02:55,673 - INFO - STEP 1: Updating grid-based forecast data with full NOAA stack
+2025-11-05 11:02:55,673 - INFO -    Fetching grid points from database...
+2025-11-05 11:02:55,673 - INFO - Fetching grid points from database...
+2025-11-05 11:02:55,814 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_points?select=id%2Clatitude%2Clongitude%2Clatitude_index%2Clongitude_index%2Cregion "HTTP/2 200 OK"
+2025-11-05 11:02:55,815 - INFO - Found 94 grid points
+2025-11-05 11:02:55,815 - INFO -    Found 94 grid points
+2025-11-05 11:02:55,815 - INFO -    Loading CDIP data for enhancement...
+2025-11-05 11:02:55,815 - INFO -    Loading CDIP forecast data for California coastline...
+2025-11-05 11:02:55,815 - INFO -    Loading CDIP socal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/socal_alongshore_forecast.nc
+2025-11-05 11:03:00,165 - INFO -    CDIP socal: Found spectral energy density data
+2025-11-05 11:03:00,171 - INFO -    CDIP socal loaded: 80 timesteps, 5529 sites
+2025-11-05 11:03:00,172 - INFO -    Loading CDIP norcal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/norcal_alongshore_forecast.nc
+2025-11-05 11:03:02,486 - INFO -    CDIP norcal: Found spectral energy density data
+2025-11-05 11:03:02,492 - INFO -    CDIP norcal loaded: 80 timesteps, 6065 sites
+2025-11-05 11:03:02,492 - INFO -    Combining 2 CDIP datasets...
+2025-11-05 11:03:02,538 - INFO -    CDIP combined data loaded: 80 timesteps, 11594 sites
+2025-11-05 11:03:02,539 - INFO -      SOCAL: 5529 sites
+2025-11-05 11:03:02,539 - INFO -      NORCAL: 6065 sites
+2025-11-05 11:03:02,544 - INFO -    Loading NOAA GFSwave dataset...
+2025-11-05 11:03:02,544 - INFO -    Searching for available NOAA GFSwave dataset (rate limited)...
+2025-11-05 11:03:02,545 - INFO -    Current UTC time: 2025-11-05T19:03:02.545045+00:00
+2025-11-05 11:03:02,545 - INFO -    Current PST time: 2025-11-05 11:03:02 PST
+2025-11-05 11:03:02,545 - INFO -    Using dataset date: 20251105 (UTC-based for NOAA compatibility)
+2025-11-05 11:03:02,545 - INFO -    Trying today's data: 20251105
+2025-11-05 11:03:02,545 - INFO -    Base URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave
+2025-11-05 11:03:02,545 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 11:03:02,545 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 11:03:02,881 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z'
+2025-11-05 11:03:05,882 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 11:03:05,882 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 11:03:06,727 - INFO -       SUCCESS: 129 time steps, swell shape: (129, 151, 241)
+2025-11-05 11:03:06,727 - INFO -    FOUND: Using 20251105 12z
+2025-11-05 11:03:06,727 - INFO -    Loading NOAA GFSwave dataset with rate limiting...
+2025-11-05 11:03:07,109 - INFO -    NOAA dataset loaded: 129 time steps
+2025-11-05 11:03:07,109 - INFO -    Available variables: ['dirpwsfc', 'htsgwsfc', 'perpwsfc', 'swdir_1', 'swdir_2', 'swdir_3', 'swell_1', 'swell_2', 'swell_3', 'swper_1', 'swper_2', 'swper_3', 'ugrdsfc', 'vgrdsfc', 'wdirsfc', 'windsfc', 'wvdirsfc', 'wvhgtsfc', 'wvpersfc']
+2025-11-05 11:03:07,109 - WARNING -    Wind gust (gustsfc) not available in this dataset
+2025-11-05 11:03:07,109 - INFO - NOAA dataset validation passed
+2025-11-05 11:03:07,109 - INFO -    Extracting data from grid points with CDIP enhancement...
+2025-11-05 11:03:07,110 - INFO - ================================================================================
+2025-11-05 11:03:07,110 - INFO - EXTRACTING NOAA GFSWAVE DATA FROM GRID POINTS
+2025-11-05 11:03:07,110 - INFO - WITH CDIP ENHANCEMENT
+2025-11-05 11:03:07,110 - INFO - ================================================================================
+2025-11-05 11:03:07,110 - INFO - Processing 94 grid points × 129 time steps
+2025-11-05 11:03:07,110 - INFO - Expected records: 12,126
+2025-11-05 11:03:07,110 - INFO -    Processing grid point 1/94 (grid_id=1)
+2025-11-05 11:03:19,548 - INFO -    Processing grid point 2/94 (grid_id=2)
+2025-11-05 11:03:31,637 - INFO -    Processing grid point 3/94 (grid_id=3)
+2025-11-05 11:03:45,498 - INFO -    Processing grid point 4/94 (grid_id=4)
+2025-11-05 11:03:58,064 - INFO -    Processing grid point 5/94 (grid_id=5)
+2025-11-05 11:04:11,886 - INFO -    Processing grid point 6/94 (grid_id=6)
+2025-11-05 11:04:23,006 - INFO -    Processing grid point 7/94 (grid_id=7)
+2025-11-05 11:04:34,575 - INFO -    Processing grid point 8/94 (grid_id=8)
+2025-11-05 11:04:45,795 - INFO -    Processing grid point 9/94 (grid_id=9)
+2025-11-05 11:04:56,525 - INFO -    Processing grid point 10/94 (grid_id=10)
+2025-11-05 11:05:14,960 - INFO -    Processing grid point 11/94 (grid_id=11)
+2025-11-05 11:05:25,847 - INFO -    Processing grid point 12/94 (grid_id=12)
+2025-11-05 11:05:37,677 - INFO -    Processing grid point 13/94 (grid_id=13)
+2025-11-05 11:05:48,843 - INFO -    Processing grid point 14/94 (grid_id=14)
+2025-11-05 11:06:00,045 - INFO -    Processing grid point 15/94 (grid_id=15)
+2025-11-05 11:06:15,608 - INFO -    Processing grid point 16/94 (grid_id=16)
+2025-11-05 11:06:26,547 - INFO -    Processing grid point 17/94 (grid_id=17)
+2025-11-05 11:06:37,303 - INFO -    Processing grid point 18/94 (grid_id=18)
+2025-11-05 11:06:48,119 - INFO -    Processing grid point 19/94 (grid_id=19)
+2025-11-05 11:06:58,512 - INFO -    Processing grid point 20/94 (grid_id=20)
+2025-11-05 11:07:09,303 - INFO -    Processing grid point 21/94 (grid_id=21)
+2025-11-05 11:07:19,958 - INFO -    Processing grid point 22/94 (grid_id=22)
+2025-11-05 11:07:30,776 - INFO -    Processing grid point 23/94 (grid_id=23)
+2025-11-05 11:07:42,338 - INFO -    Processing grid point 24/94 (grid_id=24)
+2025-11-05 11:07:53,278 - INFO -    Processing grid point 25/94 (grid_id=25)
+2025-11-05 11:08:04,258 - INFO -    Processing grid point 26/94 (grid_id=26)
+2025-11-05 11:08:15,735 - INFO -    Processing grid point 27/94 (grid_id=27)
+2025-11-05 11:08:26,396 - INFO -    Processing grid point 28/94 (grid_id=28)
+2025-11-05 11:08:37,264 - INFO -    Processing grid point 29/94 (grid_id=29)
+2025-11-05 11:08:49,610 - INFO -    Processing grid point 30/94 (grid_id=30)
+2025-11-05 11:09:00,197 - INFO -    Processing grid point 31/94 (grid_id=31)
+2025-11-05 11:09:11,613 - INFO -    Processing grid point 32/94 (grid_id=32)
+2025-11-05 11:09:22,709 - INFO -    Processing grid point 33/94 (grid_id=33)
+2025-11-05 11:09:33,999 - INFO -    Processing grid point 34/94 (grid_id=34)
+2025-11-05 11:09:44,997 - INFO -    Processing grid point 35/94 (grid_id=35)
+2025-11-05 11:09:56,124 - INFO -    Processing grid point 36/94 (grid_id=36)
+2025-11-05 11:10:09,207 - INFO -    Processing grid point 37/94 (grid_id=37)
+2025-11-05 11:10:20,408 - INFO -    Processing grid point 38/94 (grid_id=38)
+2025-11-05 11:10:32,385 - INFO -    Processing grid point 39/94 (grid_id=39)
+2025-11-05 11:10:43,067 - INFO -    Processing grid point 40/94 (grid_id=40)
+2025-11-05 11:10:54,011 - INFO -    Processing grid point 41/94 (grid_id=41)
+2025-11-05 11:11:04,948 - INFO -    Processing grid point 42/94 (grid_id=42)
+2025-11-05 11:11:18,475 - INFO -    Processing grid point 43/94 (grid_id=43)
+2025-11-05 11:11:29,013 - INFO -    Processing grid point 44/94 (grid_id=44)
+2025-11-05 11:11:39,716 - INFO -    Processing grid point 45/94 (grid_id=45)
+2025-11-05 11:11:50,348 - INFO -    Processing grid point 46/94 (grid_id=46)
+2025-11-05 11:12:00,764 - INFO -    Processing grid point 47/94 (grid_id=47)
+2025-11-05 11:12:11,687 - INFO -    Processing grid point 48/94 (grid_id=48)
+2025-11-05 11:12:22,745 - INFO -    Processing grid point 49/94 (grid_id=49)
+2025-11-05 11:12:33,926 - INFO -    Processing grid point 50/94 (grid_id=50)
+2025-11-05 11:12:44,319 - INFO -    Processing grid point 51/94 (grid_id=51)
+2025-11-05 11:12:54,745 - INFO -    Processing grid point 52/94 (grid_id=52)
+2025-11-05 11:13:05,660 - INFO -    Processing grid point 53/94 (grid_id=53)
+2025-11-05 11:13:17,376 - INFO -    Processing grid point 54/94 (grid_id=54)
+2025-11-05 11:13:29,621 - INFO -    Processing grid point 55/94 (grid_id=55)
+2025-11-05 11:13:41,412 - INFO -    Processing grid point 56/94 (grid_id=56)
+2025-11-05 11:13:52,689 - INFO -    Processing grid point 57/94 (grid_id=57)
+2025-11-05 11:14:03,328 - INFO -    Processing grid point 58/94 (grid_id=58)
+2025-11-05 11:14:14,400 - INFO -    Processing grid point 59/94 (grid_id=59)
+2025-11-05 11:14:25,792 - INFO -    Processing grid point 60/94 (grid_id=60)
+2025-11-05 11:14:36,550 - INFO -    Processing grid point 61/94 (grid_id=61)
+2025-11-05 11:14:47,502 - INFO -    Processing grid point 62/94 (grid_id=62)
+2025-11-05 11:14:58,070 - INFO -    Processing grid point 63/94 (grid_id=63)
+2025-11-05 11:15:11,954 - INFO -    Processing grid point 64/94 (grid_id=64)
+2025-11-05 11:15:22,788 - INFO -    Processing grid point 65/94 (grid_id=65)
+2025-11-05 11:15:34,717 - INFO -    Processing grid point 66/94 (grid_id=66)
+2025-11-05 11:15:49,321 - INFO -    Processing grid point 67/94 (grid_id=67)
+2025-11-05 11:16:00,810 - INFO -    Processing grid point 68/94 (grid_id=68)
+2025-11-05 11:16:14,853 - INFO -    Processing grid point 69/94 (grid_id=69)
+2025-11-05 11:16:25,368 - INFO -    Processing grid point 70/94 (grid_id=70)
+2025-11-05 11:16:35,974 - INFO -    Processing grid point 71/94 (grid_id=71)
+2025-11-05 11:16:46,816 - INFO -    Processing grid point 72/94 (grid_id=72)
+2025-11-05 11:16:57,238 - INFO -    Processing grid point 73/94 (grid_id=73)
+2025-11-05 11:17:08,464 - INFO -    Processing grid point 74/94 (grid_id=74)
+2025-11-05 11:17:19,140 - INFO -    Processing grid point 75/94 (grid_id=75)
+2025-11-05 11:17:30,484 - INFO -    Processing grid point 76/94 (grid_id=76)
+2025-11-05 11:17:41,949 - INFO -    Processing grid point 77/94 (grid_id=77)
+2025-11-05 11:17:52,733 - INFO -    Processing grid point 78/94 (grid_id=78)
+2025-11-05 11:18:03,811 - INFO -    Processing grid point 79/94 (grid_id=79)
+2025-11-05 11:18:15,631 - INFO -    Processing grid point 80/94 (grid_id=80)
+2025-11-05 11:18:25,978 - INFO -    Processing grid point 81/94 (grid_id=81)
+2025-11-05 11:18:37,212 - INFO -    Processing grid point 82/94 (grid_id=82)
+2025-11-05 11:18:47,810 - INFO -    Processing grid point 83/94 (grid_id=83)
+2025-11-05 11:18:58,486 - INFO -    Processing grid point 84/94 (grid_id=84)
+2025-11-05 11:19:10,085 - INFO -    Processing grid point 85/94 (grid_id=85)
+2025-11-05 11:19:21,749 - INFO -    Processing grid point 86/94 (grid_id=86)
+2025-11-05 11:19:32,597 - INFO -    Processing grid point 87/94 (grid_id=87)
+2025-11-05 11:19:43,847 - INFO -    Processing grid point 88/94 (grid_id=88)
+2025-11-05 11:19:54,784 - INFO -    Processing grid point 89/94 (grid_id=89)
+2025-11-05 11:20:06,585 - INFO -    Processing grid point 90/94 (grid_id=90)
+2025-11-05 11:20:21,893 - INFO -    Processing grid point 91/94 (grid_id=91)
+2025-11-05 11:20:33,117 - INFO -    Processing grid point 92/94 (grid_id=92)
+2025-11-05 11:20:44,083 - INFO -    Processing grid point 93/94 (grid_id=93)
+2025-11-05 11:20:55,291 - INFO -    Processing grid point 94/94 (grid_id=94)
+2025-11-05 11:21:09,680 - INFO - Extracted 12,126 records from 94 grid points
+2025-11-05 11:21:09,680 - INFO - ================================================================================
+2025-11-05 11:21:09,685 - INFO -    NOAA GFSwave complete: 12,126 records
+2025-11-05 11:21:09,685 - INFO -    >>> GFSwave processing took: 1087.14 seconds (18.12 minutes)
+2025-11-05 11:21:09,685 - INFO -    Sample timestamp: 2025-11-05T03:00:00-08:00
+2025-11-05 11:21:09,685 - INFO -    Enhancing with GFS Atmospheric data (pressure)...
+2025-11-05 11:21:09,687 - INFO -    GFS Atmospheric: fetching weather data...
+2025-11-05 11:21:09,687 - INFO -    Searching for available GFS Atmospheric dataset...
+2025-11-05 11:21:09,688 - INFO -    Starting search from 2025-11-05 12z
+2025-11-05 11:21:10,857 - INFO -    Wind gust (gustsfc) available in this dataset
+2025-11-05 11:21:10,867 - INFO -    [OK] Found GFS Atmospheric: https://nomads.ncep.noaa.gov/dods/gfs_0p25/gfs20251105/gfs_0p25_12z
+2025-11-05 11:21:10,868 - INFO -    Loading GFS Atmospheric dataset...
+2025-11-05 11:21:11,300 - INFO -    [OK] GFS Atmospheric dataset loaded successfully
+2025-11-05 11:21:11,301 - INFO -    GFS dataset time range: 2025-11-05 12:00:00+00:00 to 2025-11-21 12:00:00+00:00 (UTC)
+2025-11-05 11:21:11,301 - INFO -    Filtered to 127 time steps in 16-day forecast window
+2025-11-05 11:21:11,301 - INFO -    Grouping beaches by location...
+2025-11-05 11:21:11,302 - INFO -    Grouped 94 beaches into 48 location groups
+2025-11-05 11:21:11,302 - INFO -    Loading location group 1/48: 41.75,-124.50 (2 beaches)
+2025-11-05 11:21:33,278 - INFO -    Location 41.75,-124.50 loaded successfully
+2025-11-05 11:21:33,278 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:21:38,279 - INFO -    Loading location group 2/48: 41.75,-124.25 (2 beaches)
+2025-11-05 11:22:00,329 - INFO -    Location 41.75,-124.25 loaded successfully
+2025-11-05 11:22:00,330 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:22:05,330 - INFO -    Loading location group 3/48: 41.50,-124.50 (1 beaches)
+2025-11-05 11:22:27,831 - INFO -    Location 41.50,-124.50 loaded successfully
+2025-11-05 11:22:27,831 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:22:32,832 - INFO -    Loading location group 4/48: 41.50,-124.25 (1 beaches)
+2025-11-05 11:22:55,438 - INFO -    Location 41.50,-124.25 loaded successfully
+2025-11-05 11:22:55,438 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:23:00,439 - INFO -    Loading location group 5/48: 41.25,-124.50 (2 beaches)
+2025-11-05 11:23:22,809 - INFO -    Location 41.25,-124.50 loaded successfully
+2025-11-05 11:23:22,810 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:23:27,810 - INFO -    Loading location group 6/48: 41.25,-124.25 (2 beaches)
+2025-11-05 11:23:49,307 - INFO -    Location 41.25,-124.25 loaded successfully
+2025-11-05 11:23:49,307 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:23:54,308 - INFO -    Loading location group 7/48: 41.00,-124.50 (1 beaches)
+2025-11-05 11:24:15,712 - INFO -    Location 41.00,-124.50 loaded successfully
+2025-11-05 11:24:15,713 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:24:20,713 - INFO -    Loading location group 8/48: 41.00,-124.25 (1 beaches)
+2025-11-05 11:24:42,349 - INFO -    Location 41.00,-124.25 loaded successfully
+2025-11-05 11:24:42,349 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:24:47,349 - INFO -    Loading location group 9/48: 40.75,-124.50 (2 beaches)
+2025-11-05 11:25:08,693 - INFO -    Location 40.75,-124.50 loaded successfully
+2025-11-05 11:25:08,693 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:25:13,693 - INFO -    Loading location group 10/48: 40.75,-124.25 (2 beaches)
+2025-11-05 11:25:35,085 - INFO -    Location 40.75,-124.25 loaded successfully
+2025-11-05 11:25:35,085 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:25:40,086 - INFO -    Loading location group 11/48: 40.50,-124.50 (1 beaches)
+2025-11-05 11:26:00,938 - INFO -    Location 40.50,-124.50 loaded successfully
+2025-11-05 11:26:00,938 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:26:05,938 - INFO -    Loading location group 12/48: 40.25,-124.50 (2 beaches)
+2025-11-05 11:26:26,654 - INFO -    Location 40.25,-124.50 loaded successfully
+2025-11-05 11:26:26,654 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:26:31,654 - INFO -    Loading location group 13/48: 40.25,-124.25 (1 beaches)
+2025-11-05 11:26:52,900 - INFO -    Location 40.25,-124.25 loaded successfully
+2025-11-05 11:26:52,900 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:26:57,901 - INFO -    Loading location group 14/48: 40.00,-124.50 (1 beaches)
+2025-11-05 11:27:18,691 - INFO -    Location 40.00,-124.50 loaded successfully
+2025-11-05 11:27:18,692 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:27:23,692 - INFO -    Loading location group 15/48: 40.00,-124.25 (1 beaches)
+2025-11-05 11:27:45,608 - INFO -    Location 40.00,-124.25 loaded successfully
+2025-11-05 11:27:45,608 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:27:50,608 - INFO -    Loading location group 16/48: 37.75,-122.75 (4 beaches)
+2025-11-05 11:28:12,838 - INFO -    Location 37.75,-122.75 loaded successfully
+2025-11-05 11:28:12,838 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:28:17,839 - INFO -    Loading location group 17/48: 37.50,-122.75 (2 beaches)
+2025-11-05 11:28:39,465 - INFO -    Location 37.50,-122.75 loaded successfully
+2025-11-05 11:28:39,465 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:28:44,465 - INFO -    Loading location group 18/48: 37.50,-122.50 (1 beaches)
+2025-11-05 11:29:06,270 - INFO -    Location 37.50,-122.50 loaded successfully
+2025-11-05 11:29:06,271 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:29:11,271 - INFO -    Loading location group 19/48: 37.25,-122.75 (4 beaches)
+2025-11-05 11:29:32,144 - INFO -    Location 37.25,-122.75 loaded successfully
+2025-11-05 11:29:32,144 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:29:37,145 - INFO -    Loading location group 20/48: 37.25,-122.50 (2 beaches)
+2025-11-05 11:29:57,737 - INFO -    Location 37.25,-122.50 loaded successfully
+2025-11-05 11:29:57,737 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:30:02,738 - INFO -    Loading location group 21/48: 37.00,-122.75 (2 beaches)
+2025-11-05 11:30:24,734 - INFO -    Location 37.00,-122.75 loaded successfully
+2025-11-05 11:30:24,735 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:30:29,735 - INFO -    Loading location group 22/48: 37.00,-122.50 (1 beaches)
+2025-11-05 11:30:50,638 - INFO -    Location 37.00,-122.50 loaded successfully
+2025-11-05 11:30:50,638 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:30:55,638 - INFO -    Loading location group 23/48: 36.75,-122.75 (4 beaches)
+2025-11-05 11:31:17,434 - INFO -    Location 36.75,-122.75 loaded successfully
+2025-11-05 11:31:17,434 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:31:22,435 - INFO -    Loading location group 24/48: 36.75,-122.50 (2 beaches)
+2025-11-05 11:31:43,790 - INFO -    Location 36.75,-122.50 loaded successfully
+2025-11-05 11:31:43,790 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:31:48,791 - INFO -    Loading location group 25/48: 36.50,-122.75 (2 beaches)
+2025-11-05 11:32:10,431 - INFO -    Location 36.50,-122.75 loaded successfully
+2025-11-05 11:32:10,431 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:32:15,431 - INFO -    Loading location group 26/48: 36.50,-122.50 (1 beaches)
+2025-11-05 11:32:36,247 - INFO -    Location 36.50,-122.50 loaded successfully
+2025-11-05 11:32:36,247 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:32:41,247 - INFO -    Loading location group 27/48: 36.25,-122.75 (4 beaches)
+2025-11-05 11:33:02,640 - INFO -    Location 36.25,-122.75 loaded successfully
+2025-11-05 11:33:02,640 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:33:07,641 - INFO -    Loading location group 28/48: 36.25,-122.50 (2 beaches)
+2025-11-05 11:33:28,424 - INFO -    Location 36.25,-122.50 loaded successfully
+2025-11-05 11:33:28,424 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:33:33,425 - INFO -    Loading location group 29/48: 36.00,-122.75 (2 beaches)
+2025-11-05 11:33:55,890 - INFO -    Location 36.00,-122.75 loaded successfully
+2025-11-05 11:33:55,890 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:34:00,890 - INFO -    Loading location group 30/48: 36.00,-122.50 (1 beaches)
+2025-11-05 11:34:27,220 - INFO -    Location 36.00,-122.50 loaded successfully
+2025-11-05 11:34:27,220 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:34:32,221 - INFO -    Loading location group 31/48: 35.75,-122.75 (4 beaches)
+2025-11-05 11:34:53,332 - INFO -    Location 35.75,-122.75 loaded successfully
+2025-11-05 11:34:53,332 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:34:58,333 - INFO -    Loading location group 32/48: 35.75,-122.50 (2 beaches)
+2025-11-05 11:35:19,314 - INFO -    Location 35.75,-122.50 loaded successfully
+2025-11-05 11:35:19,314 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:35:24,315 - INFO -    Loading location group 33/48: 35.50,-122.75 (2 beaches)
+2025-11-05 11:35:45,327 - INFO -    Location 35.50,-122.75 loaded successfully
+2025-11-05 11:35:45,327 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:35:50,327 - INFO -    Loading location group 34/48: 35.50,-122.50 (1 beaches)
+2025-11-05 11:36:11,456 - INFO -    Location 35.50,-122.50 loaded successfully
+2025-11-05 11:36:11,456 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:36:16,456 - INFO -    Loading location group 35/48: 35.25,-122.75 (4 beaches)
+2025-11-05 11:36:38,044 - INFO -    Location 35.25,-122.75 loaded successfully
+2025-11-05 11:36:38,045 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:36:43,045 - INFO -    Loading location group 36/48: 35.25,-122.50 (2 beaches)
+2025-11-05 11:37:04,391 - INFO -    Location 35.25,-122.50 loaded successfully
+2025-11-05 11:37:04,392 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:37:09,392 - INFO -    Loading location group 37/48: 35.00,-122.75 (2 beaches)
+2025-11-05 11:37:31,373 - INFO -    Location 35.00,-122.75 loaded successfully
+2025-11-05 11:37:31,374 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:37:36,374 - INFO -    Loading location group 38/48: 35.00,-122.50 (1 beaches)
+2025-11-05 11:37:57,185 - INFO -    Location 35.00,-122.50 loaded successfully
+2025-11-05 11:37:57,185 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:38:02,185 - INFO -    Loading location group 39/48: 33.50,-118.00 (1 beaches)
+2025-11-05 11:38:23,637 - INFO -    Location 33.50,-118.00 loaded successfully
+2025-11-05 11:38:23,637 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:38:28,637 - INFO -    Loading location group 40/48: 33.50,-117.75 (1 beaches)
+2025-11-05 11:38:48,642 - INFO -    Location 33.50,-117.75 loaded successfully
+2025-11-05 11:38:48,642 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:38:53,643 - INFO -    Loading location group 41/48: 33.25,-118.00 (2 beaches)
+2025-11-05 11:39:13,909 - INFO -    Location 33.25,-118.00 loaded successfully
+2025-11-05 11:39:13,909 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:39:18,910 - INFO -    Loading location group 42/48: 33.25,-117.75 (4 beaches)
+2025-11-05 11:39:39,893 - INFO -    Location 33.25,-117.75 loaded successfully
+2025-11-05 11:39:39,893 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:39:44,894 - INFO -    Loading location group 43/48: 33.00,-118.00 (1 beaches)
+2025-11-05 11:40:10,468 - INFO -    Location 33.00,-118.00 loaded successfully
+2025-11-05 11:40:10,468 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:40:15,468 - INFO -    Loading location group 44/48: 33.00,-117.75 (2 beaches)
+2025-11-05 11:40:37,187 - INFO -    Location 33.00,-117.75 loaded successfully
+2025-11-05 11:40:37,188 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:40:42,188 - INFO -    Loading location group 45/48: 32.75,-118.00 (2 beaches)
+2025-11-05 11:41:03,313 - INFO -    Location 32.75,-118.00 loaded successfully
+2025-11-05 11:41:03,314 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:41:08,314 - INFO -    Loading location group 46/48: 32.75,-117.75 (4 beaches)
+2025-11-05 11:41:28,705 - INFO -    Location 32.75,-117.75 loaded successfully
+2025-11-05 11:41:28,706 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:41:33,706 - INFO -    Loading location group 47/48: 32.50,-118.00 (1 beaches)
+2025-11-05 11:41:55,094 - INFO -    Location 32.50,-118.00 loaded successfully
+2025-11-05 11:41:55,095 - INFO -    Waiting 5.0s before next location...
+2025-11-05 11:42:00,095 - INFO -    Loading location group 48/48: 32.50,-117.75 (2 beaches)
+2025-11-05 11:42:20,820 - INFO -    Location 32.50,-117.75 loaded successfully
+2025-11-05 11:42:20,832 - INFO -    Processing beaches using cached grid data...
+2025-11-05 11:42:20,982 - INFO -    GFS: Built record index with 12126 entries
+2025-11-05 11:42:20,982 - INFO -    GFS: Built fuzzy match index for 94 beaches
+2025-11-05 11:42:21,620 - INFO -    GFS Atmospheric: filled 47752 field values
+2025-11-05 11:42:21,621 - INFO -    GFS Atmospheric: exact matches: 11938, fuzzy matches: 0
+2025-11-05 11:42:21,621 - INFO -    GFS Atmospheric: skipped 0 timestamps (no matching records within 90 min)
+2025-11-05 11:42:21,621 - INFO -    GFS Atmospheric: match rate: 100.0% (11938/11938)
+2025-11-05 11:42:21,621 - INFO -    GFS Atmospheric: completed in 1271.93 seconds (21.20 minutes)
+2025-11-05 11:42:21,625 - INFO -    >>> GFS Atmospheric enhancement took: 1271.94 seconds
+2025-11-05 11:42:21,625 - INFO -    Enhancing with Open Meteo data (weather_codes/water_temp/wind)...
+2025-11-05 11:42:21,629 - INFO -    Open-Meteo supplement: aligning to NOAA timestamps and filling only missing fields…
+2025-11-05 11:42:21,739 - INFO -    Will supplement 94 beaches, 12126 hour-rows need fill.
+2025-11-05 11:42:21,746 - WARNING -    Open-Meteo: requested end timestamp 2025-11-21 03:00:00-08:00 exceeds 16-day forecast limit, capping to 2025-11-21 00:00:00-08:00
+2025-11-05 11:42:21,747 - INFO -    Batch 1/5: 20 beaches, window 2025-11-05 → 2025-11-21
+2025-11-05 11:42:22,425 - ERROR - ERROR: Grid forecast update failed: failed to request 'https://api.open-meteo.com/v1/forecast': {'reason': "Parameter 'end_date' is out of allowed range from 2025-08-04 to 2025-11-20", 'error': True}
+2025-11-05 11:42:22,425 - ERROR -       Full error details: failed to request 'https://api.open-meteo.com/v1/forecast': {'reason': "Parameter 'end_date' is out of allowed range from 2025-08-04 to 2025-11-20", 'error': True}
+2025-11-05 11:42:22,442 - ERROR - CRITICAL: No forecast data was processed successfully
+2025-11-05 11:42:22,442 - INFO - [FAIL] Grid-based script completed with errors
+2025-11-05 11:42:22,443 - INFO - Exiting with code: 1
+2025-11-05 12:01:28,370 - INFO - ================================================================================
+2025-11-05 12:01:28,370 - INFO - SURF DATABASE UPDATE - GRID-BASED APPROACH (93% SMALLER)
+2025-11-05 12:01:28,370 - INFO - ================================================================================
+2025-11-05 12:01:28,370 - INFO - Start time (PST/PDT): 2025-11-05 12:01:28 PST
+2025-11-05 12:01:28,370 - INFO - Forecast days: 16
+2025-11-05 12:01:28,370 - INFO - 
+2025-11-05 12:01:28,370 - INFO - GRID-BASED ARCHITECTURE:
+2025-11-05 12:01:28,371 - INFO -   - 94 nearshore grid points (vs 1,336 beaches)
+2025-11-05 12:01:28,371 - INFO -   - ~12,032 forecast records per run (16 days × 8 intervals/day)
+2025-11-05 12:01:28,371 - INFO -   - 93% reduction in database size vs beach-based approach
+2025-11-05 12:01:28,371 - INFO -   - Beaches reference grid points via grid_id foreign key
+2025-11-05 12:01:28,371 - INFO - 
+2025-11-05 12:01:28,371 - INFO - DATA SOURCES (All Public Domain - Free for Commercial Use):
+2025-11-05 12:01:28,371 - INFO -   - NOAA GFSwave - Wave/swell forecasts (direct grid extraction)
+2025-11-05 12:01:28,371 - INFO -   - GFS Atmospheric - Pressure data
+2025-11-05 12:01:28,371 - INFO -   - Open Meteo - Weather codes, water temperature, wind speed/gust (16 days)
+2025-11-05 12:01:28,371 - INFO -   - NOAA CO-OPS - Tides
+2025-11-05 12:01:28,371 - INFO -   - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)
+2025-11-05 12:01:28,372 - INFO - 
+2025-11-05 12:01:28,372 - INFO - DATA FLOW:
+2025-11-05 12:01:28,372 - INFO -   1. Extract wave data from 94 grid points (NOAA GFSwave + CDIP)
+2025-11-05 12:01:28,372 - INFO -   2. Supplement with pressure (GFS Atmospheric)
+2025-11-05 12:01:28,372 - INFO -   3. Supplement with weather codes, water temp & wind (Open Meteo)
+2025-11-05 12:01:28,372 - INFO -   4. Supplement with tides (NOAA CO-OPS)
+2025-11-05 12:01:28,372 - INFO -   5. Store in grid_forecast_data table
+2025-11-05 12:01:28,373 - INFO -   6. Beaches lookup nearest grid point forecast via grid_id
+2025-11-05 12:01:28,373 - INFO - ================================================================================
+2025-11-05 12:01:28,373 - INFO - Running system checks...
+2025-11-05 12:01:28,909 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=id&limit=1 "HTTP/2 200 OK"
+2025-11-05 12:01:28,912 - INFO - Database connection successful
+2025-11-05 12:01:28,912 - INFO - [OK] Database connection successful
+2025-11-05 12:01:28,912 - INFO - Testing Astral astronomical calculations...
+2025-11-05 12:01:28,912 - INFO - Astral calculation successful - sunrise: 06:39, sunset: 17:06, moon phase: 0.496
+2025-11-05 12:01:28,913 - INFO - [OK] Astral astronomical calculations working
+2025-11-05 12:01:28,913 - INFO - System checks: 2/2 passed
+2025-11-05 12:01:28,913 - INFO - STEP 1: Processing grid forecast data
+2025-11-05 12:01:28,913 - INFO - STEP 1: Updating grid-based forecast data with full NOAA stack
+2025-11-05 12:01:28,913 - INFO -    Fetching grid points from database...
+2025-11-05 12:01:28,913 - INFO - Fetching grid points from database...
+2025-11-05 12:01:28,989 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_points?select=id%2Clatitude%2Clongitude%2Clatitude_index%2Clongitude_index%2Cregion "HTTP/2 200 OK"
+2025-11-05 12:01:28,990 - INFO - Found 94 grid points
+2025-11-05 12:01:28,990 - INFO -    Found 94 grid points
+2025-11-05 12:01:28,990 - INFO -    Loading CDIP data for enhancement...
+2025-11-05 12:01:28,991 - INFO -    Loading CDIP forecast data for California coastline...
+2025-11-05 12:01:28,991 - INFO -    Loading CDIP socal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/socal_alongshore_forecast.nc
+2025-11-05 12:01:33,022 - INFO -    CDIP socal: Found spectral energy density data
+2025-11-05 12:01:33,028 - INFO -    CDIP socal loaded: 80 timesteps, 5529 sites
+2025-11-05 12:01:33,029 - INFO -    Loading CDIP norcal dataset from https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/model/MOP_alongshore/norcal_alongshore_forecast.nc
+2025-11-05 12:01:35,300 - INFO -    CDIP norcal: Found spectral energy density data
+2025-11-05 12:01:35,308 - INFO -    CDIP norcal loaded: 80 timesteps, 6065 sites
+2025-11-05 12:01:35,308 - INFO -    Combining 2 CDIP datasets...
+2025-11-05 12:01:35,354 - INFO -    CDIP combined data loaded: 80 timesteps, 11594 sites
+2025-11-05 12:01:35,355 - INFO -      SOCAL: 5529 sites
+2025-11-05 12:01:35,355 - INFO -      NORCAL: 6065 sites
+2025-11-05 12:01:35,360 - INFO -    Loading NOAA GFSwave dataset...
+2025-11-05 12:01:35,360 - INFO -    Searching for available NOAA GFSwave dataset (rate limited)...
+2025-11-05 12:01:35,360 - INFO -    Current UTC time: 2025-11-05T20:01:35.360888+00:00
+2025-11-05 12:01:35,361 - INFO -    Current PST time: 2025-11-05 12:01:35 PST
+2025-11-05 12:01:35,361 - INFO -    Using dataset date: 20251105 (UTC-based for NOAA compatibility)
+2025-11-05 12:01:35,361 - INFO -    Trying today's data: 20251105
+2025-11-05 12:01:35,361 - INFO -    Base URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave
+2025-11-05 12:01:35,361 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 12:01:35,361 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z
+2025-11-05 12:01:35,721 - WARNING -       FAILED: [Errno -70] NetCDF: DAP server error: 'http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_18z'
+2025-11-05 12:01:38,721 - INFO -    Testing URL: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 12:01:38,721 - INFO -       Testing: http://nomads.ncep.noaa.gov:80/dods/wave/gfswave/20251105/gfswave.wcoast.0p16_12z
+2025-11-05 12:01:39,360 - INFO -       SUCCESS: 129 time steps, swell shape: (129, 151, 241)
+2025-11-05 12:01:39,361 - INFO -    FOUND: Using 20251105 12z
+2025-11-05 12:01:39,361 - INFO -    Loading NOAA GFSwave dataset with rate limiting...
+2025-11-05 12:01:39,747 - INFO -    NOAA dataset loaded: 129 time steps
+2025-11-05 12:01:39,748 - INFO -    Available variables: ['dirpwsfc', 'htsgwsfc', 'perpwsfc', 'swdir_1', 'swdir_2', 'swdir_3', 'swell_1', 'swell_2', 'swell_3', 'swper_1', 'swper_2', 'swper_3', 'ugrdsfc', 'vgrdsfc', 'wdirsfc', 'windsfc', 'wvdirsfc', 'wvhgtsfc', 'wvpersfc']
+2025-11-05 12:01:39,748 - WARNING -    Wind gust (gustsfc) not available in this dataset
+2025-11-05 12:01:39,748 - INFO - NOAA dataset validation passed
+2025-11-05 12:01:39,748 - INFO -    Extracting data from grid points with CDIP enhancement...
+2025-11-05 12:01:39,748 - INFO - ================================================================================
+2025-11-05 12:01:39,748 - INFO - EXTRACTING NOAA GFSWAVE DATA FROM GRID POINTS
+2025-11-05 12:01:39,749 - INFO - WITH CDIP ENHANCEMENT
+2025-11-05 12:01:39,749 - INFO - ================================================================================
+2025-11-05 12:01:39,749 - INFO - Processing 94 grid points × 129 time steps
+2025-11-05 12:01:39,749 - INFO - Expected records: 12,126
+2025-11-05 12:01:39,749 - INFO -    Processing grid point 1/94 (grid_id=1)
+2025-11-05 12:01:50,670 - INFO -    Processing grid point 2/94 (grid_id=2)
+2025-11-05 12:02:02,278 - INFO -    Processing grid point 3/94 (grid_id=3)
+2025-11-05 12:02:12,700 - INFO -    Processing grid point 4/94 (grid_id=4)
+2025-11-05 12:02:23,391 - INFO -    Processing grid point 5/94 (grid_id=5)
+2025-11-05 12:02:33,954 - INFO -    Processing grid point 6/94 (grid_id=6)
+2025-11-05 12:02:44,237 - INFO -    Processing grid point 7/94 (grid_id=7)
+2025-11-05 12:02:54,825 - INFO -    Processing grid point 8/94 (grid_id=8)
+2025-11-05 12:03:05,992 - INFO -    Processing grid point 9/94 (grid_id=9)
+2025-11-05 12:03:16,800 - INFO -    Processing grid point 10/94 (grid_id=10)
+2025-11-05 12:03:28,136 - INFO -    Processing grid point 11/94 (grid_id=11)
+2025-11-05 12:03:38,866 - INFO -    Processing grid point 12/94 (grid_id=12)
+2025-11-05 12:03:49,111 - INFO -    Processing grid point 13/94 (grid_id=13)
+2025-11-05 12:04:00,350 - INFO -    Processing grid point 14/94 (grid_id=14)
+2025-11-05 12:04:11,270 - INFO -    Processing grid point 15/94 (grid_id=15)
+2025-11-05 12:04:22,119 - INFO -    Processing grid point 16/94 (grid_id=16)
+2025-11-05 12:04:32,427 - INFO -    Processing grid point 17/94 (grid_id=17)
+2025-11-05 12:04:42,720 - INFO -    Processing grid point 18/94 (grid_id=18)
+2025-11-05 12:04:52,814 - INFO -    Processing grid point 19/94 (grid_id=19)
+2025-11-05 12:05:07,680 - INFO -    Processing grid point 20/94 (grid_id=20)
+2025-11-05 12:05:18,998 - INFO -    Processing grid point 21/94 (grid_id=21)
+2025-11-05 12:05:33,767 - INFO -    Processing grid point 22/94 (grid_id=22)
+2025-11-05 12:05:45,329 - INFO -    Processing grid point 23/94 (grid_id=23)
+2025-11-05 12:05:56,861 - INFO -    Processing grid point 24/94 (grid_id=24)
+2025-11-05 12:06:12,420 - INFO -    Processing grid point 25/94 (grid_id=25)
+2025-11-05 12:06:23,171 - INFO -    Processing grid point 26/94 (grid_id=26)
+2025-11-05 12:06:34,246 - INFO -    Processing grid point 27/94 (grid_id=27)
+2025-11-05 12:06:44,849 - INFO -    Processing grid point 28/94 (grid_id=28)
+2025-11-05 12:06:55,307 - INFO -    Processing grid point 29/94 (grid_id=29)
+2025-11-05 12:07:09,644 - INFO -    Processing grid point 30/94 (grid_id=30)
+2025-11-05 12:07:19,992 - INFO -    Processing grid point 31/94 (grid_id=31)
+2025-11-05 12:07:30,587 - INFO -    Processing grid point 32/94 (grid_id=32)
+2025-11-05 12:07:41,506 - INFO -    Processing grid point 33/94 (grid_id=33)
+2025-11-05 12:07:52,573 - INFO -    Processing grid point 34/94 (grid_id=34)
+2025-11-05 12:08:02,842 - INFO -    Processing grid point 35/94 (grid_id=35)
+2025-11-05 12:08:13,772 - INFO -    Processing grid point 36/94 (grid_id=36)
+2025-11-05 12:08:24,888 - INFO -    Processing grid point 37/94 (grid_id=37)
+2025-11-05 12:08:35,491 - INFO -    Processing grid point 38/94 (grid_id=38)
+2025-11-05 12:08:46,028 - INFO -    Processing grid point 39/94 (grid_id=39)
+2025-11-05 12:08:56,507 - INFO -    Processing grid point 40/94 (grid_id=40)
+2025-11-05 12:09:07,218 - INFO -    Processing grid point 41/94 (grid_id=41)
+2025-11-05 12:09:17,760 - INFO -    Processing grid point 42/94 (grid_id=42)
+2025-11-05 12:09:28,296 - INFO -    Processing grid point 43/94 (grid_id=43)
+2025-11-05 12:09:39,176 - INFO -    Processing grid point 44/94 (grid_id=44)
+2025-11-05 12:09:49,549 - INFO -    Processing grid point 45/94 (grid_id=45)
+2025-11-05 12:10:00,031 - INFO -    Processing grid point 46/94 (grid_id=46)
+2025-11-05 12:10:12,046 - INFO -    Processing grid point 47/94 (grid_id=47)
+2025-11-05 12:10:22,927 - INFO -    Processing grid point 48/94 (grid_id=48)
+2025-11-05 12:10:33,514 - INFO -    Processing grid point 49/94 (grid_id=49)
+2025-11-05 12:10:44,246 - INFO -    Processing grid point 50/94 (grid_id=50)
+2025-11-05 12:10:54,340 - INFO -    Processing grid point 51/94 (grid_id=51)
+2025-11-05 12:11:05,703 - INFO -    Processing grid point 52/94 (grid_id=52)
+2025-11-05 12:11:16,439 - INFO -    Processing grid point 53/94 (grid_id=53)
+2025-11-05 12:11:26,914 - INFO -    Processing grid point 54/94 (grid_id=54)
+2025-11-05 12:11:37,669 - INFO -    Processing grid point 55/94 (grid_id=55)
+2025-11-05 12:11:48,247 - INFO -    Processing grid point 56/94 (grid_id=56)
+2025-11-05 12:11:58,677 - INFO -    Processing grid point 57/94 (grid_id=57)
+2025-11-05 12:12:09,138 - INFO -    Processing grid point 58/94 (grid_id=58)
+2025-11-05 12:12:19,459 - INFO -    Processing grid point 59/94 (grid_id=59)
+2025-11-05 12:12:30,381 - INFO -    Processing grid point 60/94 (grid_id=60)
+2025-11-05 12:12:41,064 - INFO -    Processing grid point 61/94 (grid_id=61)
+2025-11-05 12:12:51,593 - INFO -    Processing grid point 62/94 (grid_id=62)
+2025-11-05 12:13:01,853 - INFO -    Processing grid point 63/94 (grid_id=63)
+2025-11-05 12:13:14,547 - INFO -    Processing grid point 64/94 (grid_id=64)
+2025-11-05 12:13:25,571 - INFO -    Processing grid point 65/94 (grid_id=65)
+2025-11-05 12:13:36,494 - INFO -    Processing grid point 66/94 (grid_id=66)
+2025-11-05 12:13:47,025 - INFO -    Processing grid point 67/94 (grid_id=67)
+2025-11-05 12:13:57,961 - INFO -    Processing grid point 68/94 (grid_id=68)
+2025-11-05 12:14:08,412 - INFO -    Processing grid point 69/94 (grid_id=69)
+2025-11-05 12:14:19,723 - INFO -    Processing grid point 70/94 (grid_id=70)
+2025-11-05 12:14:30,452 - INFO -    Processing grid point 71/94 (grid_id=71)
+2025-11-05 12:14:42,141 - INFO -    Processing grid point 72/94 (grid_id=72)
+2025-11-05 12:14:52,948 - INFO -    Processing grid point 73/94 (grid_id=73)
+2025-11-05 12:15:09,220 - INFO -    Processing grid point 74/94 (grid_id=74)
+2025-11-05 12:15:20,225 - INFO -    Processing grid point 75/94 (grid_id=75)
+2025-11-05 12:15:31,313 - INFO -    Processing grid point 76/94 (grid_id=76)
+2025-11-05 12:15:43,128 - INFO -    Processing grid point 77/94 (grid_id=77)
+2025-11-05 12:15:53,744 - INFO -    Processing grid point 78/94 (grid_id=78)
+2025-11-05 12:16:04,323 - INFO -    Processing grid point 79/94 (grid_id=79)
+2025-11-05 12:16:15,331 - INFO -    Processing grid point 80/94 (grid_id=80)
+2025-11-05 12:16:28,518 - INFO -    Processing grid point 81/94 (grid_id=81)
+2025-11-05 12:16:40,180 - INFO -    Processing grid point 82/94 (grid_id=82)
+2025-11-05 12:16:50,793 - INFO -    Processing grid point 83/94 (grid_id=83)
+2025-11-05 12:17:01,896 - INFO -    Processing grid point 84/94 (grid_id=84)
+2025-11-05 12:17:12,703 - INFO -    Processing grid point 85/94 (grid_id=85)
+2025-11-05 12:17:23,433 - INFO -    Processing grid point 86/94 (grid_id=86)
+2025-11-05 12:17:33,917 - INFO -    Processing grid point 87/94 (grid_id=87)
+2025-11-05 12:17:44,878 - INFO -    Processing grid point 88/94 (grid_id=88)
+2025-11-05 12:17:55,482 - INFO -    Processing grid point 89/94 (grid_id=89)
+2025-11-05 12:18:06,181 - INFO -    Processing grid point 90/94 (grid_id=90)
+2025-11-05 12:18:16,641 - INFO -    Processing grid point 91/94 (grid_id=91)
+2025-11-05 12:18:26,802 - INFO -    Processing grid point 92/94 (grid_id=92)
+2025-11-05 12:18:37,711 - INFO -    Processing grid point 93/94 (grid_id=93)
+2025-11-05 12:18:48,438 - INFO -    Processing grid point 94/94 (grid_id=94)
+2025-11-05 12:19:00,038 - INFO - Extracted 12,126 records from 94 grid points
+2025-11-05 12:19:00,039 - INFO - ================================================================================
+2025-11-05 12:19:00,044 - INFO -    NOAA GFSwave complete: 12,126 records
+2025-11-05 12:19:00,044 - INFO -    >>> GFSwave processing took: 1044.68 seconds (17.41 minutes)
+2025-11-05 12:19:00,044 - INFO -    Sample timestamp: 2025-11-05T03:00:00-08:00
+2025-11-05 12:19:00,044 - INFO -    Enhancing with GFS Atmospheric data (pressure)...
+2025-11-05 12:19:00,046 - INFO -    GFS Atmospheric: fetching weather data...
+2025-11-05 12:19:00,046 - INFO -    Searching for available GFS Atmospheric dataset...
+2025-11-05 12:19:00,047 - INFO -    Starting search from 2025-11-05 12z
+2025-11-05 12:19:01,018 - INFO -    Wind gust (gustsfc) available in this dataset
+2025-11-05 12:19:01,031 - INFO -    [OK] Found GFS Atmospheric: https://nomads.ncep.noaa.gov/dods/gfs_0p25/gfs20251105/gfs_0p25_12z
+2025-11-05 12:19:01,032 - INFO -    Loading GFS Atmospheric dataset...
+2025-11-05 12:19:01,706 - INFO -    [OK] GFS Atmospheric dataset loaded successfully
+2025-11-05 12:19:01,707 - INFO -    GFS dataset time range: 2025-11-05 12:00:00+00:00 to 2025-11-21 12:00:00+00:00 (UTC)
+2025-11-05 12:19:01,707 - INFO -    Filtered to 127 time steps in 16-day forecast window
+2025-11-05 12:19:01,707 - INFO -    Grouping beaches by location...
+2025-11-05 12:19:01,708 - INFO -    Grouped 94 beaches into 48 location groups
+2025-11-05 12:19:01,708 - INFO -    Loading location group 1/48: 41.75,-124.50 (2 beaches)
+2025-11-05 12:19:23,844 - INFO -    Location 41.75,-124.50 loaded successfully
+2025-11-05 12:19:23,844 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:19:28,845 - INFO -    Loading location group 2/48: 41.75,-124.25 (2 beaches)
+2025-11-05 12:19:49,581 - INFO -    Location 41.75,-124.25 loaded successfully
+2025-11-05 12:19:49,581 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:19:54,581 - INFO -    Loading location group 3/48: 41.50,-124.50 (1 beaches)
+2025-11-05 12:20:15,912 - INFO -    Location 41.50,-124.50 loaded successfully
+2025-11-05 12:20:15,912 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:20:20,913 - INFO -    Loading location group 4/48: 41.50,-124.25 (1 beaches)
+2025-11-05 12:20:42,323 - INFO -    Location 41.50,-124.25 loaded successfully
+2025-11-05 12:20:42,323 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:20:47,324 - INFO -    Loading location group 5/48: 41.25,-124.50 (2 beaches)
+2025-11-05 12:21:08,044 - INFO -    Location 41.25,-124.50 loaded successfully
+2025-11-05 12:21:08,044 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:21:13,044 - INFO -    Loading location group 6/48: 41.25,-124.25 (2 beaches)
+2025-11-05 12:21:34,566 - INFO -    Location 41.25,-124.25 loaded successfully
+2025-11-05 12:21:34,567 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:21:39,567 - INFO -    Loading location group 7/48: 41.00,-124.50 (1 beaches)
+2025-11-05 12:21:59,322 - INFO -    Location 41.00,-124.50 loaded successfully
+2025-11-05 12:21:59,323 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:22:04,323 - INFO -    Loading location group 8/48: 41.00,-124.25 (1 beaches)
+2025-11-05 12:22:25,166 - INFO -    Location 41.00,-124.25 loaded successfully
+2025-11-05 12:22:25,166 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:22:30,167 - INFO -    Loading location group 9/48: 40.75,-124.50 (2 beaches)
+2025-11-05 12:22:50,790 - INFO -    Location 40.75,-124.50 loaded successfully
+2025-11-05 12:22:50,791 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:22:55,791 - INFO -    Loading location group 10/48: 40.75,-124.25 (2 beaches)
+2025-11-05 12:23:15,743 - INFO -    Location 40.75,-124.25 loaded successfully
+2025-11-05 12:23:15,743 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:23:20,744 - INFO -    Loading location group 11/48: 40.50,-124.50 (1 beaches)
+2025-11-05 12:23:40,224 - INFO -    Location 40.50,-124.50 loaded successfully
+2025-11-05 12:23:40,224 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:23:45,225 - INFO -    Loading location group 12/48: 40.25,-124.50 (2 beaches)
+2025-11-05 12:24:05,711 - INFO -    Location 40.25,-124.50 loaded successfully
+2025-11-05 12:24:05,711 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:24:10,711 - INFO -    Loading location group 13/48: 40.25,-124.25 (1 beaches)
+2025-11-05 12:24:31,793 - INFO -    Location 40.25,-124.25 loaded successfully
+2025-11-05 12:24:31,794 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:24:36,794 - INFO -    Loading location group 14/48: 40.00,-124.50 (1 beaches)
+2025-11-05 12:24:57,152 - INFO -    Location 40.00,-124.50 loaded successfully
+2025-11-05 12:24:57,152 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:25:02,153 - INFO -    Loading location group 15/48: 40.00,-124.25 (1 beaches)
+2025-11-05 12:25:24,803 - INFO -    Location 40.00,-124.25 loaded successfully
+2025-11-05 12:25:24,804 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:25:29,804 - INFO -    Loading location group 16/48: 37.75,-122.75 (4 beaches)
+2025-11-05 12:25:49,929 - INFO -    Location 37.75,-122.75 loaded successfully
+2025-11-05 12:25:49,929 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:25:54,929 - INFO -    Loading location group 17/48: 37.50,-122.75 (2 beaches)
+2025-11-05 12:26:15,457 - INFO -    Location 37.50,-122.75 loaded successfully
+2025-11-05 12:26:15,457 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:26:20,457 - INFO -    Loading location group 18/48: 37.50,-122.50 (1 beaches)
+2025-11-05 12:26:41,838 - INFO -    Location 37.50,-122.50 loaded successfully
+2025-11-05 12:26:41,838 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:26:46,839 - INFO -    Loading location group 19/48: 37.25,-122.75 (4 beaches)
+2025-11-05 12:27:07,439 - INFO -    Location 37.25,-122.75 loaded successfully
+2025-11-05 12:27:07,439 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:27:12,440 - INFO -    Loading location group 20/48: 37.25,-122.50 (2 beaches)
+2025-11-05 12:27:32,592 - INFO -    Location 37.25,-122.50 loaded successfully
+2025-11-05 12:27:32,592 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:27:37,592 - INFO -    Loading location group 21/48: 37.00,-122.75 (2 beaches)
+2025-11-05 12:27:58,136 - INFO -    Location 37.00,-122.75 loaded successfully
+2025-11-05 12:27:58,137 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:28:03,137 - INFO -    Loading location group 22/48: 37.00,-122.50 (1 beaches)
+2025-11-05 12:28:26,789 - INFO -    Location 37.00,-122.50 loaded successfully
+2025-11-05 12:28:26,789 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:28:31,790 - INFO -    Loading location group 23/48: 36.75,-122.75 (4 beaches)
+2025-11-05 12:28:52,071 - INFO -    Location 36.75,-122.75 loaded successfully
+2025-11-05 12:28:52,071 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:28:57,072 - INFO -    Loading location group 24/48: 36.75,-122.50 (2 beaches)
+2025-11-05 12:29:17,002 - INFO -    Location 36.75,-122.50 loaded successfully
+2025-11-05 12:29:17,002 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:29:22,002 - INFO -    Loading location group 25/48: 36.50,-122.75 (2 beaches)
+2025-11-05 12:29:41,853 - INFO -    Location 36.50,-122.75 loaded successfully
+2025-11-05 12:29:41,853 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:29:46,854 - INFO -    Loading location group 26/48: 36.50,-122.50 (1 beaches)
+2025-11-05 12:30:06,503 - INFO -    Location 36.50,-122.50 loaded successfully
+2025-11-05 12:30:06,503 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:30:11,503 - INFO -    Loading location group 27/48: 36.25,-122.75 (4 beaches)
+2025-11-05 12:30:33,269 - INFO -    Location 36.25,-122.75 loaded successfully
+2025-11-05 12:30:33,269 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:30:38,269 - INFO -    Loading location group 28/48: 36.25,-122.50 (2 beaches)
+2025-11-05 12:30:58,021 - INFO -    Location 36.25,-122.50 loaded successfully
+2025-11-05 12:30:58,022 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:31:03,022 - INFO -    Loading location group 29/48: 36.00,-122.75 (2 beaches)
+2025-11-05 12:31:23,473 - INFO -    Location 36.00,-122.75 loaded successfully
+2025-11-05 12:31:23,473 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:31:28,474 - INFO -    Loading location group 30/48: 36.00,-122.50 (1 beaches)
+2025-11-05 12:31:49,948 - INFO -    Location 36.00,-122.50 loaded successfully
+2025-11-05 12:31:49,948 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:31:54,949 - INFO -    Loading location group 31/48: 35.75,-122.75 (4 beaches)
+2025-11-05 12:32:15,671 - INFO -    Location 35.75,-122.75 loaded successfully
+2025-11-05 12:32:15,671 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:32:20,671 - INFO -    Loading location group 32/48: 35.75,-122.50 (2 beaches)
+2025-11-05 12:32:41,482 - INFO -    Location 35.75,-122.50 loaded successfully
+2025-11-05 12:32:41,482 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:32:46,483 - INFO -    Loading location group 33/48: 35.50,-122.75 (2 beaches)
+2025-11-05 12:33:06,591 - INFO -    Location 35.50,-122.75 loaded successfully
+2025-11-05 12:33:06,591 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:33:11,591 - INFO -    Loading location group 34/48: 35.50,-122.50 (1 beaches)
+2025-11-05 12:33:32,436 - INFO -    Location 35.50,-122.50 loaded successfully
+2025-11-05 12:33:32,436 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:33:37,437 - INFO -    Loading location group 35/48: 35.25,-122.75 (4 beaches)
+2025-11-05 12:33:57,425 - INFO -    Location 35.25,-122.75 loaded successfully
+2025-11-05 12:33:57,425 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:34:02,426 - INFO -    Loading location group 36/48: 35.25,-122.50 (2 beaches)
+2025-11-05 12:34:26,905 - INFO -    Location 35.25,-122.50 loaded successfully
+2025-11-05 12:34:26,905 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:34:31,905 - INFO -    Loading location group 37/48: 35.00,-122.75 (2 beaches)
+2025-11-05 12:34:52,122 - INFO -    Location 35.00,-122.75 loaded successfully
+2025-11-05 12:34:52,122 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:34:57,123 - INFO -    Loading location group 38/48: 35.00,-122.50 (1 beaches)
+2025-11-05 12:35:23,118 - INFO -    Location 35.00,-122.50 loaded successfully
+2025-11-05 12:35:23,118 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:35:28,118 - INFO -    Loading location group 39/48: 33.50,-118.00 (1 beaches)
+2025-11-05 12:35:48,396 - INFO -    Location 33.50,-118.00 loaded successfully
+2025-11-05 12:35:48,396 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:35:53,397 - INFO -    Loading location group 40/48: 33.50,-117.75 (1 beaches)
+2025-11-05 12:36:15,136 - INFO -    Location 33.50,-117.75 loaded successfully
+2025-11-05 12:36:15,136 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:36:20,137 - INFO -    Loading location group 41/48: 33.25,-118.00 (2 beaches)
+2025-11-05 12:36:40,766 - INFO -    Location 33.25,-118.00 loaded successfully
+2025-11-05 12:36:40,767 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:36:45,767 - INFO -    Loading location group 42/48: 33.25,-117.75 (4 beaches)
+2025-11-05 12:37:05,705 - INFO -    Location 33.25,-117.75 loaded successfully
+2025-11-05 12:37:05,705 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:37:10,706 - INFO -    Loading location group 43/48: 33.00,-118.00 (1 beaches)
+2025-11-05 12:37:30,220 - INFO -    Location 33.00,-118.00 loaded successfully
+2025-11-05 12:37:30,221 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:37:35,221 - INFO -    Loading location group 44/48: 33.00,-117.75 (2 beaches)
+2025-11-05 12:37:55,710 - INFO -    Location 33.00,-117.75 loaded successfully
+2025-11-05 12:37:55,710 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:38:00,711 - INFO -    Loading location group 45/48: 32.75,-118.00 (2 beaches)
+2025-11-05 12:38:20,063 - INFO -    Location 32.75,-118.00 loaded successfully
+2025-11-05 12:38:20,063 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:38:25,064 - INFO -    Loading location group 46/48: 32.75,-117.75 (4 beaches)
+2025-11-05 12:38:44,920 - INFO -    Location 32.75,-117.75 loaded successfully
+2025-11-05 12:38:44,920 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:38:49,920 - INFO -    Loading location group 47/48: 32.50,-118.00 (1 beaches)
+2025-11-05 12:39:09,558 - INFO -    Location 32.50,-118.00 loaded successfully
+2025-11-05 12:39:09,558 - INFO -    Waiting 5.0s before next location...
+2025-11-05 12:39:14,558 - INFO -    Loading location group 48/48: 32.50,-117.75 (2 beaches)
+2025-11-05 12:39:34,729 - INFO -    Location 32.50,-117.75 loaded successfully
+2025-11-05 12:39:34,742 - INFO -    Processing beaches using cached grid data...
+2025-11-05 12:39:34,881 - INFO -    GFS: Built record index with 12126 entries
+2025-11-05 12:39:34,881 - INFO -    GFS: Built fuzzy match index for 94 beaches
+2025-11-05 12:39:35,497 - INFO -    GFS Atmospheric: filled 47752 field values
+2025-11-05 12:39:35,497 - INFO -    GFS Atmospheric: exact matches: 11938, fuzzy matches: 0
+2025-11-05 12:39:35,497 - INFO -    GFS Atmospheric: skipped 0 timestamps (no matching records within 90 min)
+2025-11-05 12:39:35,497 - INFO -    GFS Atmospheric: match rate: 100.0% (11938/11938)
+2025-11-05 12:39:35,497 - INFO -    GFS Atmospheric: completed in 1235.45 seconds (20.59 minutes)
+2025-11-05 12:39:35,501 - INFO -    >>> GFS Atmospheric enhancement took: 1235.46 seconds
+2025-11-05 12:39:35,501 - INFO -    Enhancing with Open Meteo data (weather_codes/water_temp/wind)...
+2025-11-05 12:39:35,505 - INFO -    Open-Meteo supplement: aligning to NOAA timestamps and filling only missing fields…
+2025-11-05 12:39:35,609 - INFO -    Will supplement 94 beaches, 12126 hour-rows need fill.
+2025-11-05 12:39:35,615 - INFO -    Open-Meteo: now_local=2025-11-05 12:39:35.615306-08:00, requested range: 2025-11-05 03:00:00-08:00 to 2025-11-21 03:00:00-08:00
+2025-11-05 12:39:35,615 - INFO -    Open-Meteo: allowed range: 2025-10-29 00:00:00-08:00 to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:35,615 - WARNING -    Open-Meteo: requested end 2025-11-21 03:00:00-08:00 exceeds 10-day forecast limit, capping to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:35,616 - INFO -    Open-Meteo: final date range 2025-11-05 to 2025-11-15
+2025-11-05 12:39:35,616 - INFO -    Batch 1/5: 20 beaches, window 2025-11-05 → 2025-11-15
+2025-11-05 12:39:36,500 - INFO -       Waiting briefly before Marine call…
+2025-11-05 12:39:38,442 - INFO -    Open-Meteo: now_local=2025-11-05 12:39:38.442087-08:00, requested range: 2025-11-05 03:00:00-08:00 to 2025-11-21 03:00:00-08:00
+2025-11-05 12:39:38,442 - INFO -    Open-Meteo: allowed range: 2025-10-29 00:00:00-08:00 to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:38,442 - WARNING -    Open-Meteo: requested end 2025-11-21 03:00:00-08:00 exceeds 10-day forecast limit, capping to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:38,443 - INFO -    Open-Meteo: final date range 2025-11-05 to 2025-11-15
+2025-11-05 12:39:38,443 - INFO -    Batch 2/5: 20 beaches, window 2025-11-05 → 2025-11-15
+2025-11-05 12:39:38,443 - INFO -    Waiting 2.0s between Open-Meteo batches…
+2025-11-05 12:39:40,785 - INFO -       Waiting briefly before Marine call…
+2025-11-05 12:39:42,229 - INFO -    Open-Meteo: now_local=2025-11-05 12:39:42.229427-08:00, requested range: 2025-11-05 03:00:00-08:00 to 2025-11-21 03:00:00-08:00
+2025-11-05 12:39:42,229 - INFO -    Open-Meteo: allowed range: 2025-10-29 00:00:00-08:00 to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:42,229 - WARNING -    Open-Meteo: requested end 2025-11-21 03:00:00-08:00 exceeds 10-day forecast limit, capping to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:42,230 - INFO -    Open-Meteo: final date range 2025-11-05 to 2025-11-15
+2025-11-05 12:39:42,230 - INFO -    Batch 3/5: 20 beaches, window 2025-11-05 → 2025-11-15
+2025-11-05 12:39:42,230 - INFO -    Waiting 2.0s between Open-Meteo batches…
+2025-11-05 12:39:44,573 - INFO -       Waiting briefly before Marine call…
+2025-11-05 12:39:46,008 - INFO -    Open-Meteo: now_local=2025-11-05 12:39:46.008314-08:00, requested range: 2025-11-05 03:00:00-08:00 to 2025-11-21 03:00:00-08:00
+2025-11-05 12:39:46,008 - INFO -    Open-Meteo: allowed range: 2025-10-29 00:00:00-08:00 to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:46,009 - WARNING -    Open-Meteo: requested end 2025-11-21 03:00:00-08:00 exceeds 10-day forecast limit, capping to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:46,009 - INFO -    Open-Meteo: final date range 2025-11-05 to 2025-11-15
+2025-11-05 12:39:46,009 - INFO -    Batch 4/5: 20 beaches, window 2025-11-05 → 2025-11-15
+2025-11-05 12:39:46,009 - INFO -    Waiting 2.0s between Open-Meteo batches…
+2025-11-05 12:39:48,354 - INFO -       Waiting briefly before Marine call…
+2025-11-05 12:39:49,776 - INFO -    Open-Meteo: now_local=2025-11-05 12:39:49.776277-08:00, requested range: 2025-11-05 03:00:00-08:00 to 2025-11-21 03:00:00-08:00
+2025-11-05 12:39:49,776 - INFO -    Open-Meteo: allowed range: 2025-10-29 00:00:00-08:00 to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:49,776 - WARNING -    Open-Meteo: requested end 2025-11-21 03:00:00-08:00 exceeds 10-day forecast limit, capping to 2025-11-15 00:00:00-08:00
+2025-11-05 12:39:49,777 - INFO -    Open-Meteo: final date range 2025-11-05 to 2025-11-15
+2025-11-05 12:39:49,777 - INFO -    Batch 5/5: 14 beaches, window 2025-11-05 → 2025-11-15
+2025-11-05 12:39:49,777 - INFO -    Waiting 2.0s between Open-Meteo batches…
+2025-11-05 12:39:52,125 - INFO -       Waiting briefly before Marine call…
+2025-11-05 12:39:53,615 - INFO -    Open-Meteo supplement: filled 188 weather codes using cross-hour neighbors
+2025-11-05 12:39:53,617 - INFO -    Open-Meteo supplement: fill complete.
+2025-11-05 12:39:53,621 - INFO -    >>> Open Meteo enhancement took: 18.12 seconds
+2025-11-05 12:39:53,621 - INFO -    Enhancing with NOAA CO-OPS data (tides)...
+2025-11-05 12:39:53,623 - INFO -    NOAA Tides supplement: fetching tide predictions...
+2025-11-05 12:39:53,633 - INFO -    NOAA Tides: fetching data from 20251105 to 20251122
+2025-11-05 12:39:53,634 - INFO -    NOAA Tides supplement: processing 94 beaches...
+2025-11-05 12:39:53,634 - INFO -    NOAA Tides: using 11 tide stations
+2025-11-05 12:40:00,456 - INFO -    NOAA Tides supplement: filled 12137 field values
+2025-11-05 12:40:00,460 - INFO -    >>> CO-OPS enhancement took: 6.84 seconds
+2025-11-05 12:40:00,460 - INFO -    Uploading fully enhanced grid forecast records to database...
+2025-11-05 12:40:00,613 - INFO -    Uploading 12126 records to grid_forecast_data...
+2025-11-05 12:40:02,240 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:02,589 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:02,918 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:03,257 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:03,556 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:03,875 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:04,237 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:04,485 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:04,731 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:04,980 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:05,196 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:05,358 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:05,566 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:05,727 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,007 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,166 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,318 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,473 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,628 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,816 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:06,975 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:07,136 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:07,296 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:07,446 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:07,572 - INFO - HTTP Request: POST https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_forecast_data?on_conflict=grid_id%2Ctimestamp&columns=%22tertiary_swell_period_s%22%2C%22water_temp_f%22%2C%22primary_swell_height_ft%22%2C%22tertiary_swell_height_ft%22%2C%22surf_height_max_ft%22%2C%22wind_direction_deg%22%2C%22tide_level_ft%22%2C%22tertiary_swell_direction%22%2C%22pressure_inhg%22%2C%22wave_energy_kj%22%2C%22secondary_swell_direction%22%2C%22primary_swell_direction%22%2C%22weather%22%2C%22wind_gust_mph%22%2C%22surf_height_min_ft%22%2C%22primary_swell_period_s%22%2C%22wind_speed_mph%22%2C%22secondary_swell_period_s%22%2C%22secondary_swell_height_ft%22%2C%22temperature%22%2C%22timestamp%22%2C%22grid_id%22 "HTTP/2 201 Created"
+2025-11-05 12:40:07,574 - INFO -    Successfully upserted 12126 records to grid_forecast_data
+2025-11-05 12:40:07,579 - INFO -    >>> Database upsert took: 7.12 seconds (0.12 minutes)
+2025-11-05 12:40:07,579 - INFO -    >>> TOTAL grid forecast update time: 2318.67 seconds (38.64 minutes)
+2025-11-05 12:40:07,579 - INFO - OK: Grid forecast update completed: 94 grid points, 12,126 records upserted (with CDIP, GFS Atmospheric, Open Meteo, CO-OPS)
+2025-11-05 12:40:07,596 - INFO - STEP 2: Processing daily conditions (Astral)
+2025-11-05 12:40:07,597 - INFO -    Fetching counties from database...
+2025-11-05 12:40:07,672 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/counties?select=%2A "HTTP/2 404 Not Found"
+2025-11-05 12:40:07,675 - ERROR -    Error fetching counties: {'message': 'relation "public.counties" does not exist', 'code': '42P01', 'hint': None, 'details': None}
+2025-11-05 12:40:07,675 - INFO -    Astral: calculating daily sun/moon data locally...
+2025-11-05 12:40:07,675 - INFO -    Astral: calculated 0 daily records
+2025-11-05 12:40:07,676 - WARNING -    No records to upsert to daily_county_conditions
+2025-11-05 12:40:07,676 - INFO -    >>> Astral processing took: 0.08 seconds
+2025-11-05 12:40:07,676 - INFO - STEP 3: Generating final statistics
+2025-11-05 12:40:08,155 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/beaches?select=%2A "HTTP/2 206 Partial Content"
+2025-11-05 12:40:08,189 - INFO -    beaches: 1336 records
+2025-11-05 12:40:12,174 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/forecast_data?select=%2A "HTTP/2 206 Partial Content"
+2025-11-05 12:40:12,202 - INFO -    forecast_data: 85504 records
+2025-11-05 12:40:12,315 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/daily_county_conditions?select=%2A "HTTP/2 200 OK"
+2025-11-05 12:40:12,315 - INFO -    daily_county_conditions: 105 records
+2025-11-05 12:40:12,315 - INFO - Database statistics:
+2025-11-05 12:40:12,316 - INFO -    beaches: 1,336 records
+2025-11-05 12:40:12,316 - INFO -    forecast_data: 85,504 records
+2025-11-05 12:40:12,316 - INFO -    daily_county_conditions: 105 records
+2025-11-05 12:40:12,316 - INFO -    >>> Statistics generation took: 4.64 seconds
+2025-11-05 12:40:12,316 - INFO - Fetching grid points from database...
+2025-11-05 12:40:12,375 - INFO - HTTP Request: GET https://wborkytqlmkcgwzhsoiz.supabase.co/rest/v1/grid_points?select=id%2Clatitude%2Clongitude%2Clatitude_index%2Clongitude_index%2Cregion "HTTP/2 200 OK"
+2025-11-05 12:40:12,376 - INFO - Found 94 grid points
+2025-11-05 12:40:12,376 - INFO - ================================================================================
+2025-11-05 12:40:12,376 - INFO - GRID-BASED DATABASE UPDATE COMPLETED!
+2025-11-05 12:40:12,376 - INFO - ================================================================================
+2025-11-05 12:40:12,376 - INFO - EXECUTION SUMMARY:
+2025-11-05 12:40:12,376 - INFO -    - Total execution time: 2324.1 seconds (38.73 minutes)
+2025-11-05 12:40:12,376 - INFO -    - Grid points processed: 94
+2025-11-05 12:40:12,377 - INFO -    - Counties processed: 0
+2025-11-05 12:40:12,377 - INFO -    - Grid forecast records: 12,126
+2025-11-05 12:40:12,377 - INFO -    - Daily condition records: 0
+2025-11-05 12:40:12,377 - INFO -    - Total records: 12,126
+2025-11-05 12:40:12,377 - INFO -    - Records per grid point: 129.0
+2025-11-05 12:40:12,377 - INFO -    - Processing rate: 5.2 records/second
+2025-11-05 12:40:12,377 - INFO - 
+2025-11-05 12:40:12,377 - INFO - EFFICIENCY COMPARISON:
+2025-11-05 12:40:12,377 - INFO -    - Beach-based approach: ~172,344 records (1,336 beaches × 129 times)
+2025-11-05 12:40:12,377 - INFO -    - Grid-based approach: 12,126 records (94 grids × 129 times)
+2025-11-05 12:40:12,378 - INFO -    - Database size reduction: 93.0%
+2025-11-05 12:40:12,378 - INFO - ================================================================================
+2025-11-05 12:40:12,378 - INFO - DATA SOURCES USED (100% Public Domain):
+2025-11-05 12:40:12,378 - INFO -    - NOAA GFSwave - Direct grid extraction for waves (no interpolation)
+2025-11-05 12:40:12,378 - INFO -    - GFS Atmospheric - Pressure data
+2025-11-05 12:40:12,378 - INFO -    - Open Meteo - Weather codes, water temperature, wind speed/gust (16-day forecast)
+2025-11-05 12:40:12,378 - INFO -    - NOAA CO-OPS - Tides
+2025-11-05 12:40:12,378 - INFO -    - Astral library - Sun/moon astronomical data (NOAA algorithms)
+2025-11-05 12:40:12,378 - INFO -    - All data in imperial units
+2025-11-05 12:40:12,378 - INFO - ================================================================================
+2025-11-05 12:40:12,379 - INFO - [OK] Grid-based script completed successfully
+2025-11-05 12:40:12,379 - INFO - Exiting with code: 0

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Neighbor fill post-processor for `forecast_data`.
-Copy missing values from the nearest beach at the same (bucketed) timestamp.
+Neighbor fill post-processor for `grid_forecast_data`.
+Copy missing values from the nearest grid point at the same (bucketed) timestamp.
 Optionally, if a field has no donors at that time bucket, search nearby buckets.
 """
 
@@ -19,16 +19,17 @@ import pandas as pd
 import pytz
 
 from config import logger
-from database import fetch_all_beaches, supabase
+from database import supabase
+from noaa_grid_handler import fetch_grid_points_from_db
 from utils import chunk_iter
 
 # --------------------------------------------------------------------- #
-# IMPROVED: Auto-detect all fillable fields from forecast_data table
+# IMPROVED: Auto-detect all fillable fields from grid_forecast_data table
 # --------------------------------------------------------------------- #
 # Exclude these columns from neighbor fill (primary keys, timestamps, etc.)
 EXCLUDED_FIELDS = {
     "id",
-    "beach_id",
+    "grid_id",
     "timestamp",
     "created_at",
     "updated_at",
@@ -36,14 +37,14 @@ EXCLUDED_FIELDS = {
 
 def get_all_fillable_fields() -> Tuple[str, ...]:
     """
-    Auto-detect all fillable columns from the forecast_data table.
+    Auto-detect all fillable columns from the grid_forecast_data table.
     Excludes primary keys, identifiers, and timestamps.
     """
     from database import supabase
 
     try:
         # Get a sample record to find all column names
-        result = supabase.table("forecast_data").select("*").limit(1).execute()
+        result = supabase.table("grid_forecast_data").select("*").limit(1).execute()
 
         if not result.data:
             # Fallback to known fields if table is empty
@@ -213,7 +214,7 @@ def fetch_recent_forecast_records(
     verbose: bool = False,
 ) -> List[Dict]:
     # include id so we can update by primary key
-    select_fields = ["id", "beach_id", "timestamp", *fields]
+    select_fields = ["id", "grid_id", "timestamp", *fields]
     select_clause = ",".join(select_fields)
 
     records: List[Dict] = []
@@ -224,11 +225,11 @@ def fetch_recent_forecast_records(
         end = start + page_size - 1
         resp = (
             supabase
-            .table("forecast_data")
+            .table("grid_forecast_data")
             .select(select_clause)
             .gte("timestamp", start_iso)
             .order("timestamp", desc=False)   # deterministic pagination
-            .order("beach_id", desc=False)
+            .order("grid_id", desc=False)
             .range(start, end)
             .execute()
         )
@@ -334,13 +335,13 @@ def fill_from_neighbors_rowwise(
             stats["skipped_bad_timestamp"] += 1
             continue
 
-        bid = str(rec.get("beach_id")) if rec.get("beach_id") is not None else None
-        if bid not in beach_meta:
+        gid = str(rec.get("grid_id")) if rec.get("grid_id") is not None else None
+        if gid not in beach_meta:
             stats["skipped_no_coords"] += 1
             continue
 
         grouped[ts_key].append(idx)
-        meta_by_index[idx] = beach_meta[bid]
+        meta_by_index[idx] = beach_meta[gid]
 
     sorted_keys = sorted(grouped.keys())
     stats["buckets_built"] = len(sorted_keys)
@@ -434,7 +435,7 @@ def fill_from_neighbors_rowwise(
                     if verbose and len(stats["examples"][field]) < 5:
                         stats["examples"][field].append({
                             "timestamp": ts_key,
-                            "beach_id": records[idx].get("beach_id"),
+                            "grid_id": records[idx].get("grid_id"),
                             "value": best_value,
                             "distance_km": best_distance,
                         })
@@ -477,7 +478,7 @@ def fill_from_neighbors_rowwise(
         rec = records[record_idx]
         payload = {
             "id": rec["id"],
-            "beach_id": rec["beach_id"],
+            "grid_id": rec["grid_id"],
             "timestamp": rec["timestamp"],
         }
         for f in fields_changed:
@@ -522,10 +523,10 @@ def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int =
 
         # Track which fields we're updating for logging
         for k in update_data.keys():
-            if k not in ('id', 'beach_id', 'timestamp'):
+            if k not in ('id', 'grid_id', 'timestamp'):
                 fields_being_updated.add(k)
 
-        if len(update_data) > 3:  # More than just id, beach_id, timestamp
+        if len(update_data) > 3:  # More than just id, grid_id, timestamp
             cleaned_updates.append(update_data)
 
     if not cleaned_updates:
@@ -545,7 +546,7 @@ def upsert_updates(updates: List[Dict], dry_run: bool = False, batch_size: int =
             try:
                 # Use upsert with on_conflict to update existing rows
                 # This is much faster than individual updates
-                supabase.table("forecast_data").upsert(
+                supabase.table("grid_forecast_data").upsert(
                     batch,
                     on_conflict="id",  # Primary key conflict resolution
                     ignore_duplicates=False  # Actually update the rows
@@ -589,22 +590,22 @@ def main(argv: Optional[List[str]] = None) -> bool:
     logger.info(f"Processing {len(fields)} fields: {', '.join(fields)}")
     logger.info("=" * 80)
 
-    beaches = fetch_all_beaches()
-    if not beaches:
-        logger.error("Post-fill: no beaches available; aborting")
+    grid_points = fetch_grid_points_from_db()
+    if not grid_points:
+        logger.error("Post-fill: no grid points available; aborting")
         return False
 
-    # normalize beach IDs to str; skip missing coords
+    # normalize grid IDs to str; skip missing coords
     beach_meta: Dict[str, Tuple[float, float]] = {}
-    for b in beaches:
-        bid = str(b.get("id"))
-        lat, lon = b.get("LATITUDE"), b.get("LONGITUDE")
+    for gp in grid_points:
+        gid = str(gp.get("id"))
+        lat, lon = gp.get("latitude"), gp.get("longitude")
         if lat is None or lon is None:
             continue
-        beach_meta[bid] = (float(lat), float(lon))
+        beach_meta[gid] = (float(lat), float(lon))
 
     if not beach_meta:
-        logger.error("Post-fill: no beaches with coordinates; aborting")
+        logger.error("Post-fill: no grid points with coordinates; aborting")
         return False
 
     if args.start_iso:

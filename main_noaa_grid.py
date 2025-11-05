@@ -35,7 +35,7 @@ def update_grid_forecast_data():
       1) NOAA GFSwave (extract data directly from 94 grid points)
       2) CDIP enhancement (better wave accuracy)
       3) GFS Atmospheric supplement (pressure)
-      4) Open Meteo supplement (weather, temperature, water temperature) - 16 days
+      4) Open Meteo supplement (weather codes, water temperature, wind speed/gust) - 16 days
       5) NOAA CO-OPS supplement (tides)
       6) Store in grid_forecast_data table
       7) Beaches lookup their forecast via grid_id foreign key
@@ -110,8 +110,8 @@ def update_grid_forecast_data():
         gfs_atmo_time = time.time() - gfs_atmo_start
         logger.info(f"   >>> GFS Atmospheric enhancement took: {gfs_atmo_time:.2f} seconds")
 
-        # --- OPEN METEO SUPPLEMENT (WEATHER & WATER TEMP) ---
-        logger.info("   Enhancing with Open Meteo data (weather/water_temp)...")
+        # --- OPEN METEO SUPPLEMENT (WEATHER CODES, WATER TEMP, WIND) ---
+        logger.info("   Enhancing with Open Meteo data (weather_codes/water_temp/wind)...")
         openmeteo_start = time.time()
         # Temporarily rename grid_id to beach_id for Open Meteo handler
         for rec in gfs_enhanced:
@@ -217,14 +217,14 @@ def print_startup_banner():
     logger.info("DATA SOURCES (All Public Domain - Free for Commercial Use):")
     logger.info("  - NOAA GFSwave - Wave/swell forecasts (direct grid extraction)")
     logger.info("  - GFS Atmospheric - Pressure data")
-    logger.info("  - Open Meteo - Weather codes, temperature, water temperature (16 days)")
+    logger.info("  - Open Meteo - Weather codes, water temperature, wind speed/gust (16 days)")
     logger.info("  - NOAA CO-OPS - Tides")
     logger.info("  - Astral library - Sun/moon rise/set, moon phase (using NOAA algorithms)")
     logger.info("")
     logger.info("DATA FLOW:")
     logger.info("  1. Extract wave data from 94 grid points (NOAA GFSwave + CDIP)")
     logger.info("  2. Supplement with pressure (GFS Atmospheric)")
-    logger.info("  3. Supplement with weather & water temp (Open Meteo)")
+    logger.info("  3. Supplement with weather codes, water temp & wind (Open Meteo)")
     logger.info("  4. Supplement with tides (NOAA CO-OPS)")
     logger.info("  5. Store in grid_forecast_data table")
     logger.info("  6. Beaches lookup nearest grid point forecast via grid_id")
@@ -267,7 +267,7 @@ def print_completion_summary(start_time, grid_count, counties_count, forecast_re
     logger.info("DATA SOURCES USED (100% Public Domain):")
     logger.info("   - NOAA GFSwave - Direct grid extraction for waves (no interpolation)")
     logger.info("   - GFS Atmospheric - Pressure data")
-    logger.info("   - Open Meteo - Weather, temperature, water temperature (16-day forecast)")
+    logger.info("   - Open Meteo - Weather codes, water temperature, wind speed/gust (16-day forecast)")
     logger.info("   - NOAA CO-OPS - Tides")
     logger.info("   - Astral library - Sun/moon astronomical data (NOAA algorithms)")
     logger.info("   - All data in imperial units")

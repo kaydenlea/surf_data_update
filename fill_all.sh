@@ -12,7 +12,7 @@ echo ""
 echo "=== VERIFICATION ==="
 python -c "
 from database import supabase
-resp = supabase.table('forecast_data').select('id', count='exact').is_('weather', 'null').execute()
+resp = supabase.table('grid_forecast_data').select('id', count='exact').is_('weather', 'null').execute()
 print(f'Remaining weather nulls: {resp.count}')
 if resp.count == 0:
     print('✓ All nulls filled successfully!')
