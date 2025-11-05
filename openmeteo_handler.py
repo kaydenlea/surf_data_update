@@ -351,10 +351,23 @@ def _derive_local_date_range(lo_ts, hi_ts):
     """
     Given local tz-aware pandas Timestamps, return (start_date_str, end_date_str) for Open-Meteo.
     Open-Meteo expects date strings (YYYY-MM-DD) inclusive range for hourly queries.
+    Caps the range to 16 days from today to stay within Open-Meteo's free tier limits.
     """
+    # Cap to Open-Meteo's 16-day forecast limit BEFORE padding (free tier)
+    now_local = pd.Timestamp.now(tz=lo_ts.tz)
+    max_end_date_ts = now_local.normalize() + pd.Timedelta(days=16)
+
+    # Clamp hi_ts first before ceiling
+    if hi_ts > max_end_date_ts:
+        logger.warning(f"   Open-Meteo: requested end timestamp {hi_ts} exceeds 16-day limit, capping to {max_end_date_ts}")
+        hi_ts = max_end_date_ts
+
     # add small padding to be safe with hourly boundaries
-    start_date = lo_ts.floor("D").strftime("%Y-%m-%d")
-    end_date = (hi_ts.ceil("D")).strftime("%Y-%m-%d")
+    start_date_ts = lo_ts.floor("D")
+    end_date_ts = hi_ts.floor("D")  # Use floor instead of ceil to avoid going past limit
+
+    start_date = start_date_ts.strftime("%Y-%m-%d")
+    end_date = end_date_ts.strftime("%Y-%m-%d")
     return start_date, end_date
 
 def get_openmeteo_supplement_data(beaches, existing_records):
@@ -426,6 +439,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
         safe_openmeteo_delay()
 
         # 5) MARINE call: sea surface temp & tide (local timezone)
+        # Using forecast_days instead of start_date/end_date for better data coverage
         marine_params = {
             "latitude": lats,
             "longitude": lons,
@@ -441,8 +455,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 "wind_wave_direction"
             ],
             "timezone": "America/Los_Angeles",
-            "start_date": start_date,
-            "end_date": end_date
+            "forecast_days": 16
         }
         mrs = api_request_with_retry(openmeteo.weather_api, OPENMETEO_MARINE_URL, params=marine_params)
 
@@ -460,9 +473,14 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 wh = wrs[i].Hourly()
                 mh = mrs[i].Hourly()
 
-                # Construct local timestamps (OM returns time ranges in epoch seconds UTC with local tz requested)
-                timestamps = pd.to_datetime(
+                # Construct local timestamps for BOTH weather and marine (they may differ)
+                weather_timestamps = pd.to_datetime(
                     range(wh.Time(), wh.TimeEnd(), wh.Interval()),
+                    unit="s", utc=True
+                ).tz_convert("America/Los_Angeles")
+
+                marine_timestamps = pd.to_datetime(
+                    range(mh.Time(), mh.TimeEnd(), mh.Interval()),
                     unit="s", utc=True
                 ).tz_convert("America/Los_Angeles")
 
@@ -482,27 +500,29 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                 wind_wave_period_s = mh.Variables(7).ValuesAsNumpy()
                 wind_wave_direction = mh.Variables(8).ValuesAsNumpy()
 
-                # FIXED: For each hour, align timestamps to clean 3-hour intervals
-                for j, ts_local in enumerate(timestamps):
+                # Process WEATHER data with weather timestamps
+                for j, ts_local in enumerate(weather_timestamps):
                     ts_local_aware = pd.Timestamp(ts_local)
-                    
+
                     # Apply same alignment logic as NOAA handler
                     local_hour = ts_local_aware.hour
                     pacific_intervals = [0, 3, 6, 9, 12, 15, 18, 21]
-                    
+
                     # Find the closest 3-hour interval
                     closest_interval = min(pacific_intervals, key=lambda x: abs(x - local_hour))
-                    
+
                     # Create clean aligned timestamp
                     clean_local_time = ts_local_aware.replace(
-                        hour=closest_interval, 
-                        minute=0, 
-                        second=0, 
+                        hour=closest_interval,
+                        minute=0,
+                        second=0,
                         microsecond=0
                     )
-                    
-                    ts_iso = clean_local_time.isoformat()
-                    
+
+                    # Convert to UTC for matching database timestamps
+                    clean_utc_time = clean_local_time.tz_convert('UTC')
+                    ts_iso = clean_utc_time.isoformat()
+
                     if ts_iso not in needed_by_beach[bid]:
                         continue  # we don't need this hour
 
@@ -516,7 +536,72 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                         continue  # shouldn't happen, but guard anyway
                     rec = updated_records[idx]
 
-                    # Prepare candidate values
+                    # Prepare candidate values from WEATHER API
+                    temp_val = nearest_valid_value(temp_c, j)
+                    weather_val = nearest_valid_value(weather_code, j)
+                    wind_speed_val = nearest_valid_value(wind_speed_kph, j)
+                    wind_gust_val = nearest_valid_value(wind_gust_kph, j)
+                    pressure_val = nearest_valid_value(pressure_hpa, j)
+
+                    candidates = {
+                        "temperature":   safe_float(celsius_to_fahrenheit(temp_val)) if temp_val is not None else None,
+                        "weather":       safe_int(weather_val) if weather_val is not None else None,
+                        "wind_speed_mph": safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None,
+                        "wind_gust_mph": safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None,
+                        "pressure_inhg": safe_float(hpa_to_inhg(pressure_val)) if pressure_val is not None else None,
+                    }
+
+                    # Guardrail: ensure gusts are never lower than speed
+                    existing_speed = rec.get("wind_speed_mph")
+                    existing_gust = rec.get("wind_gust_mph")
+                    cand_speed = candidates.get("wind_speed_mph")
+                    cand_gust = candidates.get("wind_gust_mph")
+                    final_speed = cand_speed if ("wind_speed_mph" in missing and cand_speed is not None) else existing_speed
+                    final_gust  = cand_gust  if ("wind_gust_mph"  in missing and cand_gust  is not None) else existing_gust
+                    if final_speed is not None and final_gust is not None and final_gust < final_speed:
+                        if "wind_gust_mph" in missing and cand_gust is not None:
+                            candidates["wind_gust_mph"] = final_speed
+
+                    # Only set the fields that are actually missing in this record
+                    for f in missing:
+                        val = candidates.get(f, None)
+                        if val is not None:
+                            rec[f] = val
+
+                # Process MARINE data with marine timestamps (separate loop for water_temp, tides, etc.)
+                for j, ts_local in enumerate(marine_timestamps):
+                    ts_local_aware = pd.Timestamp(ts_local)
+
+                    # Apply same alignment logic
+                    local_hour = ts_local_aware.hour
+                    pacific_intervals = [0, 3, 6, 9, 12, 15, 18, 21]
+                    closest_interval = min(pacific_intervals, key=lambda x: abs(x - local_hour))
+                    clean_local_time = ts_local_aware.replace(
+                        hour=closest_interval,
+                        minute=0,
+                        second=0,
+                        microsecond=0
+                    )
+
+                    # Convert to UTC for matching database timestamps
+                    clean_utc_time = clean_local_time.tz_convert('UTC')
+                    ts_iso = clean_utc_time.isoformat()
+
+                    if ts_iso not in needed_by_beach[bid]:
+                        continue
+
+                    key = f"{bid}_{ts_iso}"
+                    if key not in missing_fields_by_key:
+                        continue
+
+                    missing = missing_fields_by_key[key]
+                    idx = key_to_index.get(key)
+                    if idx is None:
+                        continue
+                    rec = updated_records[idx]
+
+                    # Prepare candidate values from MARINE API
+                    water_temp_val = nearest_valid_value(water_temp_c, j)
                     tide_level_val = nearest_valid_value(tide_level_m, j)
                     raw_tide_ft = safe_float(meters_to_feet(tide_level_val)) if tide_level_val is not None else None
                     adjusted_tide_ft = (raw_tide_ft + TIDE_ADJUSTMENT_FT) if raw_tide_ft is not None else None
@@ -543,25 +628,13 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     surf_min_ft = safe_float(surf_min_ft) if surf_min_ft is not None else None
                     surf_max_ft = safe_float(surf_max_ft) if surf_max_ft is not None else None
 
-                    temp_val = nearest_valid_value(temp_c, j)
-                    weather_val = nearest_valid_value(weather_code, j)
-                    wind_speed_val = nearest_valid_value(wind_speed_kph, j)
-                    wind_gust_val = nearest_valid_value(wind_gust_kph, j)
-                    water_temp_val = nearest_valid_value(water_temp_c, j)
-                    pressure_val = nearest_valid_value(pressure_hpa, j)
-
                     wave_energy_kj = None
                     if swell_height_ft is not None and swell_period_s_val is not None and swell_period_s_val > 0:
                         wave_energy_kj = calculate_wave_energy_kj(swell_height_ft, swell_period_s_val)
                         wave_energy_kj = safe_float(wave_energy_kj) if wave_energy_kj is not None else None
 
-                    candidates = {
-                        "temperature":   safe_float(celsius_to_fahrenheit(temp_val)) if temp_val is not None else None,
-                        "weather":       safe_int(weather_val) if weather_val is not None else None,
-                        "wind_speed_mph": safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None,
-                        "wind_gust_mph": safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None,
+                    marine_candidates = {
                         "water_temp_f":  safe_float(celsius_to_fahrenheit(water_temp_val)) if water_temp_val is not None else None,
-                        "pressure_inhg": safe_float(hpa_to_inhg(pressure_val)) if pressure_val is not None else None,
                         "tide_level_ft": adjusted_tide_ft,
                         "primary_swell_height_ft": swell_height_ft,
                         "primary_swell_period_s": swell_period_s_val,
@@ -574,23 +647,9 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                         "wave_energy_kj": wave_energy_kj,
                     }
 
-                    # Guardrail: ensure gusts are never lower than speed
-                    # Determine effective speed/gust considering existing record values
-                    existing_speed = rec.get("wind_speed_mph")
-                    existing_gust = rec.get("wind_gust_mph")
-                    cand_speed = candidates.get("wind_speed_mph")
-                    cand_gust = candidates.get("wind_gust_mph")
-                    # What speed/gust will end up on the record after this update?
-                    final_speed = cand_speed if ("wind_speed_mph" in missing and cand_speed is not None) else existing_speed
-                    final_gust  = cand_gust  if ("wind_gust_mph"  in missing and cand_gust  is not None) else existing_gust
-                    if final_speed is not None and final_gust is not None and final_gust < final_speed:
-                        # Prefer bumping gust up to at least speed
-                        if "wind_gust_mph" in missing and cand_gust is not None:
-                            candidates["wind_gust_mph"] = final_speed
-
                     # Only set the fields that are actually missing in this record
                     for f in missing:
-                        val = candidates.get(f, None)
+                        val = marine_candidates.get(f, None)
                         if val is not None:
                             rec[f] = val
 

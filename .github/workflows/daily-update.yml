@@ -44,7 +44,7 @@ jobs:
 
       - name: Run daily update (surf + tides)
         run: |
-          python main_noaa.py
+          python main_noaa_grid.py
           python tide.py
 
       - name: Upload run log artifact (optional)

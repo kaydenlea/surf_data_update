@@ -18,7 +18,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV
 VC_API_KEY = os.environ.get("VC_API_KEY")
 
 # Script settings (match your existing project as needed)
-DAYS_FORECAST = 8
+DAYS_FORECAST = 16  # Extended to 16 days using Open Meteo
 BATCH_SIZE = 20
 UPSERT_CHUNK = 500  # Reduced to avoid Supabase payload size limits
 MAX_WORKERS = 3

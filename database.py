@@ -403,6 +403,47 @@ def upsert_forecast_data(records, table_name="forecast_data"):
     logger.info(f"   Successfully upserted {total_inserted} records to {table_name}")
     return total_inserted
 
+
+def upsert_grid_forecast_data(records, table_name="grid_forecast_data"):
+    """Upsert grid forecast records to database in chunks."""
+    if not records:
+        logger.warning(f"   No records to upsert to {table_name}")
+        return 0
+
+    # Prepare records (allow zero values for wind, temp, water temp)
+    prepared = _prepare_records_for_upsert(
+        records,
+        {"grid_id", "timestamp"},
+        skip_zero_floats=True,
+        allow_zero_fields={"wind_speed_mph", "wind_gust_mph", "temperature", "water_temp_f"}
+    )
+    if not prepared:
+        logger.warning(f"   No grid forecast records had non-null values to upsert into {table_name}")
+        return 0
+
+    # Deduplicate records to avoid "cannot affect row a second time" error
+    deduplicated = _deduplicate_records(prepared, ("grid_id", "timestamp"))
+
+    logger.info(f"   Uploading {len(deduplicated)} records to {table_name}...")
+    total_inserted = 0
+
+    for chunk in chunk_iter(deduplicated, UPSERT_CHUNK):
+        try:
+            # Use defaultToNull=false to preserve existing values for missing fields
+            supabase.table(table_name).upsert(
+                chunk,
+                on_conflict="grid_id,timestamp",
+                default_to_null=False  # Don't set missing fields to NULL on update
+            ).execute()
+            total_inserted += len(chunk)
+            logger.debug(f"   Upserted chunk of {len(chunk)} records")
+        except Exception as e:
+            logger.error(f"ERROR: Error upserting {table_name} chunk: {e}")
+
+    logger.info(f"   Successfully upserted {total_inserted} records to {table_name}")
+    return total_inserted
+
+
 def upsert_daily_conditions(records, table_name="daily_county_conditions"):
     """Upsert daily condition records to database in chunks."""
     if not records:

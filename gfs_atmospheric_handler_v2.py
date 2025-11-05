@@ -117,6 +117,13 @@ def get_gfs_atmospheric_dataset_url() -> Optional[str]:
                         ds.close()
                         continue
 
+                    # Check for optional wind gust variable
+                    has_gust = "gustsfc" in ds.variables
+                    if has_gust:
+                        logger.info(f"   Wind gust (gustsfc) available in this dataset")
+                    else:
+                        logger.info(f"   Wind gust (gustsfc) NOT available in this dataset")
+
                     ds.close()
                     logger.info(f"   [OK] Found GFS Atmospheric: {url}")
                     return url
@@ -156,6 +163,8 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
         # Optional variables
         cloud = None
         precip = None
+        wind_gust = None
+
         if 'tcdcclm' in ds.data_vars:
             try:
                 cloud = ds["tcdcclm"].sel(lat=grid_lat, lon=grid_lon, method='nearest').values
@@ -168,6 +177,12 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
             except Exception:
                 pass
 
+        if 'gustsfc' in ds.data_vars:
+            try:
+                wind_gust = ds["gustsfc"].sel(lat=grid_lat, lon=grid_lon, method='nearest').values
+            except Exception:
+                pass
+
         # Slice with the time index mask
         grid_data = {
             'time_vals': filtered_time_vals,
@@ -175,6 +190,7 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
             'pressure_pa': pres[sel_idx],
             'cloud_cover_pct': cloud[sel_idx] if cloud is not None else None,
             'precip_rate_kgm2s': precip[sel_idx] if precip is not None else None,
+            'wind_gust_ms': wind_gust[sel_idx] if wind_gust is not None else None,
         }
         return grid_data
 
@@ -211,11 +227,11 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
 
     logger.info(f"   GFS dataset time range: {time_vals_full[0]} to {time_vals_full[-1]} (UTC)")
 
-    # Filter to 8-day window
+    # Filter to 16-day window (extended from 8 days)
     pacific_tz = pytz.timezone("America/Los_Angeles")
     now_pacific = datetime.now(pacific_tz)
     window_start = now_pacific.replace(hour=0, minute=0, second=0, microsecond=0)
-    window_end = window_start + pd.Timedelta(days=8)
+    window_end = window_start + pd.Timedelta(days=16)
 
     window_start_utc = window_start.astimezone(pytz.UTC)
     window_end_utc = window_end.astimezone(pytz.UTC)
@@ -223,7 +239,7 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
     sel_idx = (time_vals_full >= window_start_utc) & (time_vals_full <= window_end_utc)
     filtered_time_vals = time_vals_full[sel_idx]
 
-    logger.info(f"   Filtered to {len(filtered_time_vals)} time steps in 8-day forecast window")
+    logger.info(f"   Filtered to {len(filtered_time_vals)} time steps in 16-day forecast window")
 
     # Step 1: Group beaches by location (optimized for GFS 0.25 degree grid)
     logger.info("   Grouping beaches by location...")
@@ -417,6 +433,16 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                     if not np.isnan(pres_pa):
                         rec["pressure_inhg"] = safe_float(pa_to_inhg(pres_pa))
                         filled_count += 1
+
+                # Fill wind gust (if available and not already filled from GFSwave)
+                if grid_data['wind_gust_ms'] is not None:
+                    gust_ms = grid_data['wind_gust_ms'][i]
+                    if not np.isnan(gust_ms):
+                        gust_mph = safe_float(mps_to_mph(gust_ms))
+                        # Only fill if not already set from GFSwave or if GFSwave value was NULL
+                        if gust_mph is not None and rec.get("wind_gust_mph") is None:
+                            rec["wind_gust_mph"] = gust_mph
+                            filled_count += 1
 
                 # Fill weather code
                 cloud_pct = None
