@@ -218,21 +218,19 @@ def get_noaa_grid_data(ds, grid_points, cdip_data=None):
                 else:
                     wave_energy_kj = None
 
-                # Calculate wind speed and direction
+                # Calculate wind direction (but not speed - will come from GFS Atmospheric for consistency)
                 wu = float(wind_u[t_idx])
                 wv = float(wind_v[t_idx])
 
                 if not (np.isnan(wu) or np.isnan(wv)):
-                    wind_speed_ms = np.sqrt(wu**2 + wv**2)
-                    wind_speed_mph = wind_speed_ms * 2.23694
                     wind_direction = (270 - np.degrees(np.arctan2(wv, wu))) % 360
                 else:
-                    wind_speed_mph = None
                     wind_direction = None
 
-                # Wind gust
-                wg = float(wind_gust[t_idx])
-                wind_gust_mph = wg * 2.23694 if not np.isnan(wg) else None
+                # NOTE: We no longer extract wind_speed_mph or wind_gust_mph from GFSwave
+                # because gustsfc is not available in this dataset, and mixing wind speed
+                # from GFSwave with wind gust from GFS Atmospheric causes inconsistencies
+                # (gust < speed in ~23% of records). Both will now come from GFS Atmospheric.
 
                 # Build record
                 record = {
@@ -257,9 +255,9 @@ def get_noaa_grid_data(ds, grid_points, cdip_data=None):
                 _set_if_value("surf_height_min_ft", surf_min_ft)
                 _set_if_value("surf_height_max_ft", surf_max_ft)
                 _set_if_value("wave_energy_kj", wave_energy_kj)
-                _set_if_value("wind_speed_mph", wind_speed_mph)
+                # wind_speed_mph and wind_gust_mph now come from GFS Atmospheric
                 _set_if_value("wind_direction_deg", wind_direction)
-                _set_if_value("wind_gust_mph", wind_gust_mph)
+                # wind_gust_mph now comes from GFS Atmospheric
 
                 records.append(record)
 

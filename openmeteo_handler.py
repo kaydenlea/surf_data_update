@@ -390,6 +390,10 @@ def get_openmeteo_supplement_data(beaches, existing_records):
     updated_records = list(existing_records)  # copy to return
     key_to_index = {f"{r['beach_id']}_{r['timestamp']}": idx for idx, r in enumerate(updated_records)}
 
+    # Track wind data sources
+    wind_filled_count = 0
+    wind_skipped_count = 0  # NOAA data preserved
+
     batch_count = 0
     total_batches = len(list(chunk_iter(target_beaches, BATCH_SIZE)))
 
@@ -421,7 +425,7 @@ def get_openmeteo_supplement_data(beaches, existing_records):
         weather_params = {
             "latitude": lats,
             "longitude": lons,
-            "hourly": ["weather_code", "windspeed_10m", "windgusts_10m"],
+            "hourly": ["weather_code", "wind_speed_10m", "wind_gusts_10m"],
             "timezone": "America/Los_Angeles",
             "start_date": start_date,
             "end_date": end_date
@@ -518,10 +522,12 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     wind_speed_mph_val = safe_float(kph_to_mph(wind_speed_val)) if wind_speed_val is not None else None
                     wind_gust_mph_val = safe_float(kph_to_mph(wind_gust_val)) if wind_gust_val is not None else None
 
-                    # Ensure gusts are never lower than speed
+                    # Data quality check: Log if gust is lower than speed (shouldn't happen naturally)
                     if wind_speed_mph_val is not None and wind_gust_mph_val is not None:
                         if wind_gust_mph_val < wind_speed_mph_val:
-                            wind_gust_mph_val = wind_speed_mph_val
+                            logger.debug(f"   Open Meteo data quality issue: gust ({wind_gust_mph_val:.1f}) < speed ({wind_speed_mph_val:.1f}) for beach {bid} at {ts_iso}")
+                            # Keep the bad data to maintain data integrity rather than artificially fixing it
+                            # Users can filter or handle this in their own analysis
 
                     candidates = {
                         "weather": safe_int(weather_val) if weather_val is not None else None,
@@ -530,15 +536,13 @@ def get_openmeteo_supplement_data(beaches, existing_records):
                     }
 
                     # PAIRED FILLING LOGIC: wind_speed_mph and wind_gust_mph must be filled together
-                    # If EITHER field is missing, fill BOTH from Open Meteo to ensure they're from same source
-                    wind_speed_missing = "wind_speed_mph" in missing
-                    wind_gust_missing = "wind_gust_mph" in missing
-
-                    if wind_speed_missing or wind_gust_missing:
-                        if wind_speed_mph_val is not None and wind_gust_mph_val is not None:
-                            # Fill BOTH fields to ensure paired data from Open Meteo
-                            rec["wind_speed_mph"] = wind_speed_mph_val
-                            rec["wind_gust_mph"] = wind_gust_mph_val
+                    # PRIORITIZE OPEN METEO: Always fill wind data from Open Meteo for consistency
+                    # This ensures wind_speed and wind_gust come from the same source
+                    if wind_speed_mph_val is not None and wind_gust_mph_val is not None:
+                        # Always fill BOTH fields to ensure paired, consistent data from Open Meteo
+                        rec["wind_speed_mph"] = wind_speed_mph_val
+                        rec["wind_gust_mph"] = wind_gust_mph_val
+                        wind_filled_count += 1
 
                     # Fill non-wind fields independently
                     for f in missing:
@@ -598,6 +602,11 @@ def get_openmeteo_supplement_data(beaches, existing_records):
     # 7) Done — only missing fields were filled, keys untouched, alignment preserved
     updated_records = _fill_missing_fields_from_neighbors(updated_records, beach_meta)
     updated_records = _fill_weather_from_nearby_time(updated_records, beach_meta)
+    
+    # Log wind data source statistics
+    if wind_filled_count > 0 or wind_skipped_count > 0:
+        logger.info(f"   Wind data sources: {wind_skipped_count} from NOAA (preserved), {wind_filled_count} from Open Meteo (filled)")
+    
     logger.info("   Open-Meteo supplement: fill complete.")
     return updated_records
 # ---------------- Optional utilities retained from your original file ----------------

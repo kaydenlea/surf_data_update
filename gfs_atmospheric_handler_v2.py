@@ -164,6 +164,16 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
         cloud = None
         precip = None
         wind_gust = None
+        wind_u = None
+        wind_v = None
+
+        # Extract wind components (u and v) to calculate wind speed
+        if 'ugrd10m' in ds.data_vars and 'vgrd10m' in ds.data_vars:
+            try:
+                wind_u = ds["ugrd10m"].sel(lat=grid_lat, lon=grid_lon, method='nearest').values
+                wind_v = ds["vgrd10m"].sel(lat=grid_lat, lon=grid_lon, method='nearest').values
+            except Exception:
+                pass
 
         if 'tcdcclm' in ds.data_vars:
             try:
@@ -191,6 +201,8 @@ def extract_grid_point_data(ds, grid_lat, grid_lon, sel_idx, filtered_time_vals)
             'cloud_cover_pct': cloud[sel_idx] if cloud is not None else None,
             'precip_rate_kgm2s': precip[sel_idx] if precip is not None else None,
             'wind_gust_ms': wind_gust[sel_idx] if wind_gust is not None else None,
+            'wind_u_ms': wind_u[sel_idx] if wind_u is not None else None,
+            'wind_v_ms': wind_v[sel_idx] if wind_v is not None else None,
         }
         return grid_data
 
@@ -434,12 +446,27 @@ def get_gfs_atmospheric_supplement_data(beaches: List[Dict], existing_records: L
                         rec["pressure_inhg"] = safe_float(pa_to_inhg(pres_pa))
                         filled_count += 1
 
-                # Fill wind gust (if available and not already filled from GFSwave)
+                # Fill wind speed (from u/v components) - FALLBACK ONLY
+                # Open Meteo is prioritized for wind data, GFS Atmospheric is fallback
+                if grid_data['wind_u_ms'] is not None and grid_data['wind_v_ms'] is not None:
+                    wind_u_val = grid_data['wind_u_ms'][i]
+                    wind_v_val = grid_data['wind_v_ms'][i]
+                    if not np.isnan(wind_u_val) and not np.isnan(wind_v_val):
+                        # Calculate wind speed from u/v components
+                        wind_speed_ms = np.sqrt(wind_u_val**2 + wind_v_val**2)
+                        wind_speed_mph = safe_float(mps_to_mph(wind_speed_ms))
+                        # Only fill if Open Meteo hasn't already filled it
+                        if wind_speed_mph is not None and rec.get("wind_speed_mph") is None:
+                            rec["wind_speed_mph"] = wind_speed_mph
+                            filled_count += 1
+
+                # Fill wind gust - FALLBACK ONLY
+                # Open Meteo is prioritized for wind data, GFS Atmospheric is fallback
                 if grid_data['wind_gust_ms'] is not None:
                     gust_ms = grid_data['wind_gust_ms'][i]
                     if not np.isnan(gust_ms):
                         gust_mph = safe_float(mps_to_mph(gust_ms))
-                        # Only fill if not already set from GFSwave or if GFSwave value was NULL
+                        # Only fill if Open Meteo hasn't already filled it
                         if gust_mph is not None and rec.get("wind_gust_mph") is None:
                             rec["wind_gust_mph"] = gust_mph
                             filled_count += 1
